@@ -1,0 +1,57 @@
+name: StaffDeck
+options:
+  bundleIdPrefix: tech.maneki
+  deploymentTarget:
+    iOS: "18.0"
+    macOS: "15.0"
+  xcodeVersion: "26.0"
+  createIntermediateGroups: true
+packages:
+  Libsql:
+    url: https://github.com/tursodatabase/libsql-swift
+    from: 0.3.2
+targets:
+  StaffDeck:
+    type: application
+    platform: auto
+    supportedDestinations: [iOS, macOS]
+    sources:
+      - path: StaffDeck
+      - path: Database/schema.sql
+        buildPhase: resources
+    dependencies:
+      - package: Libsql
+        product: Libsql
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: tech.maneki.staffdeck
+        MARKETING_VERSION: 1.0.0
+        CURRENT_PROJECT_VERSION: 1
+        SWIFT_VERSION: 5.0
+        SWIFT_STRICT_CONCURRENCY: minimal
+        ENABLE_APP_SANDBOX: NO
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Staff Deck
+        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.education
+        INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        SUPPORTS_MACCATALYST: NO
+        TARGETED_DEVICE_FAMILY: "1,2"
+    scheme:
+      testTargets:
+        - StaffDeckTests
+  StaffDeckTests:
+    type: bundle.unit-test
+    platform: macOS
+    deploymentTarget: "15.0"
+    sources:
+      - path: StaffDeckTests
+    dependencies:
+      - target: StaffDeck
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: tech.maneki.staffdeck.tests
+        GENERATE_INFOPLIST_FILE: YES
+        SWIFT_VERSION: 5.0
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/StaffDeck.app/Contents/MacOS/StaffDeck"
+        BUNDLE_LOADER: "$(TEST_HOST)"
