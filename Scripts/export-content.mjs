@@ -39,6 +39,12 @@ const additions = JSON.parse(
     "utf8",
   ),
 );
+const fundamentalTopics = JSON.parse(
+  fs.readFileSync(
+    path.join(nativeRoot, "Content", "java-fundamentals-topics.json"),
+    "utf8",
+  ),
+);
 const practices = extractArray("practice-data.ts", "practices");
 
 if (webFlashcards.length !== 160) {
@@ -54,7 +60,24 @@ const webFundamentals = webFlashcards.filter(
 const webOtherTopics = webFlashcards.filter(
   (card) => card.topic !== "Java Fundamentals",
 );
-const flashcards = [...webFundamentals, ...additions, ...webOtherTopics];
+const fundamentalTopicByID = new Map();
+for (const [topic, cardIDs] of Object.entries(fundamentalTopics)) {
+  for (const cardID of cardIDs) {
+    if (fundamentalTopicByID.has(cardID)) {
+      throw new Error(`Java Fundamentals card ${cardID} belongs to multiple subtopics`);
+    }
+    fundamentalTopicByID.set(cardID, topic);
+  }
+}
+
+const fundamentalsWithTopics = [...webFundamentals, ...additions].map((card) => {
+  const fundamentalTopic = fundamentalTopicByID.get(card.id);
+  if (!fundamentalTopic) {
+    throw new Error(`Java Fundamentals card ${card.id} has no subtopic`);
+  }
+  return { ...card, fundamentalTopic };
+});
+const flashcards = [...fundamentalsWithTopics, ...webOtherTopics];
 
 const ids = flashcards.map((card) => card.id).sort((a, b) => a - b);
 if (ids.some((id, index) => id !== index + 1)) {
@@ -63,6 +86,11 @@ if (ids.some((id, index) => id !== index + 1)) {
 const fundamentals = flashcards.filter((card) => card.topic === "Java Fundamentals");
 if (fundamentals.length !== 41) {
   throw new Error(`Expected 41 Java Fundamentals cards, found ${fundamentals.length}`);
+}
+if (fundamentalTopicByID.size !== fundamentals.length) {
+  throw new Error(
+    `Expected subtopic metadata for ${fundamentals.length} Java Fundamentals cards, found ${fundamentalTopicByID.size}`,
+  );
 }
 if (practices.length !== 208) {
   throw new Error(`Expected 208 practices, found ${practices.length}`);

@@ -9,6 +9,7 @@ struct FlashcardsView: View {
     @EnvironmentObject private var model: AppModel
     let topic: InterviewTopic
     @State private var mode = "Review due"
+    @State private var fundamentalTopic: FundamentalTopic?
     @State private var history = "Any history"
     @State private var query = ""
     @State private var index = 0
@@ -25,8 +26,13 @@ struct FlashcardsView: View {
     private var filtered: [Flashcard] {
         model.flashcards.filter { card in
             guard card.topic == topic.rawValue else { return false }
+            guard matchesFundamentalTopic(card) else { return false }
             guard query.isEmpty || [
-                card.question, card.answer, card.example, card.topic,
+                card.question,
+                card.answer,
+                card.example,
+                card.topic,
+                card.fundamentalTopic?.rawValue ?? "",
             ].joined(separator: " ").localizedCaseInsensitiveContains(query) else { return false }
             if history == "New only", model.reviews[card.id] != nil { return false }
             if history == "Reviewed", model.reviews[card.id] == nil { return false }
@@ -35,7 +41,7 @@ struct FlashcardsView: View {
             }
             return true
         }
-        .sorted { $0.id < $1.id }
+        .sorted(by: comesBefore)
     }
 
     private var current: Flashcard? {
@@ -45,6 +51,7 @@ struct FlashcardsView: View {
     private var dueCount: Int {
         model.flashcards.filter {
             guard $0.topic == topic.rawValue else { return false }
+            guard matchesFundamentalTopic($0) else { return false }
             return (model.reviews[$0.id]?.dueAt ?? .distantPast) <= Date()
         }.count
     }
@@ -92,6 +99,7 @@ struct FlashcardsView: View {
         .navigationTitle(topic.rawValue)
         .onChange(of: query) { _, _ in resetPosition() }
         .onChange(of: mode) { _, _ in resetPosition() }
+        .onChange(of: fundamentalTopic) { _, _ in resetPosition() }
         .onChange(of: history) { _, _ in resetPosition() }
         .onChange(of: current?.id) { _, cardID in
             saveDraft()
@@ -110,6 +118,9 @@ struct FlashcardsView: View {
             HStack(spacing: 12) {
                 modePicker
                 searchField
+                if topic == .javaFundamentals {
+                    fundamentalTopicPicker
+                }
                 historyPicker
             }
 
@@ -117,6 +128,9 @@ struct FlashcardsView: View {
                 modePicker
                 HStack(spacing: 10) {
                     searchField
+                    if topic == .javaFundamentals {
+                        fundamentalTopicPicker
+                    }
                     historyPicker
                 }
             }
@@ -138,6 +152,18 @@ struct FlashcardsView: View {
             .frame(minWidth: 180)
     }
 
+    private var fundamentalTopicPicker: some View {
+        Picker("Fundamental topic", selection: $fundamentalTopic) {
+            Text("All fundamental topics")
+                .tag(nil as FundamentalTopic?)
+            ForEach(FundamentalTopic.allCases) { topic in
+                Text(topic.rawValue)
+                    .tag(Optional(topic))
+            }
+        }
+        .frame(width: 250)
+    }
+
     private var historyPicker: some View {
         Picker("History", selection: $history) {
             Text("Any history").tag("Any history")
@@ -150,7 +176,7 @@ struct FlashcardsView: View {
     private func card(_ card: Flashcard) -> some View {
         VStack(alignment: .leading, spacing: 20) {
             HStack {
-                Text(card.topic)
+                Text(card.fundamentalTopic?.rawValue ?? card.topic)
                     .font(.caption.weight(.bold))
                     .padding(.horizontal, 10)
                     .padding(.vertical, 6)
@@ -413,6 +439,22 @@ struct FlashcardsView: View {
         index = 0
         revealed = false
         detail = "Answer"
+    }
+
+    private func matchesFundamentalTopic(_ card: Flashcard) -> Bool {
+        guard topic == .javaFundamentals, let fundamentalTopic else {
+            return true
+        }
+        return card.fundamentalTopic == fundamentalTopic
+    }
+
+    private func comesBefore(_ left: Flashcard, _ right: Flashcard) -> Bool {
+        guard topic == .javaFundamentals else {
+            return left.id < right.id
+        }
+        let leftOrder = left.fundamentalTopic?.sortOrder ?? Int.max
+        let rightOrder = right.fundamentalTopic?.sortOrder ?? Int.max
+        return leftOrder == rightOrder ? left.id < right.id : leftOrder < rightOrder
     }
 
     private func move(_ delta: Int) {

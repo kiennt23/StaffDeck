@@ -78,5 +78,15 @@ final class AppModelTests: XCTestCase {
         XCTAssertEqual(model.flashcards.map(\.id).max(), 181)
         XCTAssertEqual(fundamentals.count, 41)
         XCTAssertTrue(fundamentals.allSatisfy { $0.followUps.count == 3 })
+        XCTAssertTrue(fundamentals.allSatisfy { $0.fundamentalTopic != nil })
+        XCTAssertEqual(
+            Set(fundamentals.compactMap(\.fundamentalTopic)),
+            Set(FundamentalTopic.allCases)
+        )
+        XCTAssertTrue(
+            model.flashcards
+                .filter { $0.topic != InterviewTopic.javaFundamentals.rawValue }
+                .allSatisfy { $0.fundamentalTopic == nil }
+        )
     }
 }

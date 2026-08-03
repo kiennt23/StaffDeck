@@ -78,9 +78,26 @@ enum SidebarDestination: Hashable {
     case workspace(WorkspaceSection)
 }
 
+enum FundamentalTopic: String, Codable, CaseIterable, Identifiable {
+    case languageSemantics = "Language Semantics & Values"
+    case objectModel = "Object Model & Initialization"
+    case collections = "Collections & Ordering"
+    case functionalJava = "Functional Java"
+    case exceptions = "Exceptions & Resources"
+    case modernTypes = "Generics & Modern Types"
+    case runtime = "Runtime, Annotations & Modules"
+
+    var id: String { rawValue }
+
+    var sortOrder: Int {
+        Self.allCases.firstIndex(of: self) ?? Self.allCases.count
+    }
+}
+
 struct Flashcard: Codable, Identifiable, Hashable {
     let id: Int
     let topic: String
+    let fundamentalTopic: FundamentalTopic?
     let question: String
     let testing: String
     let outline: [String]

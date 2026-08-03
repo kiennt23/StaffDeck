@@ -20,7 +20,8 @@
       "Why can a method mutate an object but not replace the caller's reference?",
       "How does this behavior affect defensive copying of collections?",
       "What test would distinguish reassignment from mutation?"
-    ]
+    ],
+    "fundamentalTopic": "Language Semantics & Values"
   },
   {
     "id": 142,
@@ -43,7 +44,8 @@
       "Why can `Integer` comparisons with `==` appear to work for some values?",
       "Where can implicit unboxing introduce a hidden `NullPointerException`?",
       "When is a primitive collection or array worth considering?"
-    ]
+    ],
+    "fundamentalTopic": "Language Semantics & Values"
   },
   {
     "id": 143,
@@ -66,7 +68,8 @@
       "What does `equals` do when a class does not override it?",
       "Why is `Objects.equals` useful around nullable values?",
       "How can a poor equality definition corrupt collection behavior?"
-    ]
+    ],
+    "fundamentalTopic": "Language Semantics & Values"
   },
   {
     "id": 144,
@@ -89,7 +92,8 @@
       "Why does immutability make `String` a safe hash-map key?",
       "Can two equal strings have different references?",
       "When could application-level interning create a memory problem?"
-    ]
+    ],
+    "fundamentalTopic": "Language Semantics & Values"
   },
   {
     "id": 145,
@@ -112,7 +116,8 @@
       "Why can concatenation inside a loop become quadratic?",
       "Does `StringBuffer` make a multi-step shared construction logically thread-safe?",
       "When is `String.join` clearer than a manual builder?"
-    ]
+    ],
+    "fundamentalTopic": "Language Semantics & Values"
   },
   {
     "id": 146,
@@ -135,7 +140,8 @@
       "Why can the selected overload differ after assigning an argument to a broader declared type?",
       "What does a static method call through a base-typed reference invoke?",
       "How does `@Override` prevent a subtle maintenance bug?"
-    ]
+    ],
+    "fundamentalTopic": "Object Model & Initialization"
   },
   {
     "id": 147,
@@ -158,7 +164,8 @@
       "How are conflicting interface default methods resolved?",
       "What compatibility risk appears when an interface gains a method?",
       "When is a composed strategy better than either choice?"
-    ]
+    ],
+    "fundamentalTopic": "Object Model & Initialization"
   },
   {
     "id": 148,
@@ -181,7 +188,8 @@
       "What is the fragile-base-class problem?",
       "How would you test Liskov substitutability in a concrete hierarchy?",
       "When does inheritance communicate the domain better than composition?"
-    ]
+    ],
+    "fundamentalTopic": "Object Model & Initialization"
   },
   {
     "id": 149,
@@ -204,7 +212,8 @@
       "Why does `final List<Item>` not make the list immutable?",
       "What is the difference between an unmodifiable view and a defensive copy?",
       "How can leaking `this` during construction undermine safe publication?"
-    ]
+    ],
+    "fundamentalTopic": "Object Model & Initialization"
   },
   {
     "id": 150,
@@ -227,7 +236,8 @@
       "What can a subclass override observe when called from a superclass constructor?",
       "How can circular static initialization expose default values?",
       "What approach would you use for thread-safe lazy initialization?"
-    ]
+    ],
+    "fundamentalTopic": "Object Model & Initialization"
   },
   {
     "id": 151,
@@ -250,7 +260,8 @@
       "When would `LinkedHashMap` be preferable to `HashMap`?",
       "Why is `Map` not a subtype of `Collection`?",
       "Which queue implementation would you use for priority-based work?"
-    ]
+    ],
+    "fundamentalTopic": "Collections & Ordering"
   },
   {
     "id": 152,
@@ -273,7 +284,8 @@
       "Why is middle insertion into a `LinkedList` often still O(n)?",
       "What does amortized O(1) append mean for `ArrayList`?",
       "Why is `ArrayDeque` usually a better queue?"
-    ]
+    ],
+    "fundamentalTopic": "Collections & Ordering"
   },
   {
     "id": 153,
@@ -296,7 +308,8 @@
       "What happens when two unequal keys have the same hash code?",
       "Why can mutating a key make an entry unreachable?",
       "When should a map be pre-sized?"
-    ]
+    ],
+    "fundamentalTopic": "Collections & Ordering"
   },
   {
     "id": 154,
@@ -319,7 +332,8 @@
       "Why are arrays covariant while generic collections are invariant?",
       "What code produces `ArrayStoreException`?",
       "When does avoiding boxing materially affect a design?"
-    ]
+    ],
+    "fundamentalTopic": "Collections & Ordering"
   },
   {
     "id": 155,
@@ -342,7 +356,8 @@
       "What happens when a `TreeSet` comparator returns zero for unequal objects?",
       "Why is `(a, b) -> a.id - b.id` unsafe?",
       "When should a type avoid implementing `Comparable`?"
-    ]
+    ],
+    "fundamentalTopic": "Collections & Ordering"
   },
   {
     "id": 156,
@@ -365,7 +380,8 @@
       "Why is fail-fast behavior not a thread-safety guarantee?",
       "What does weakly consistent iteration mean?",
       "When is `CopyOnWriteArrayList` appropriate?"
-    ]
+    ],
+    "fundamentalTopic": "Collections & Ordering"
   },
   {
     "id": 157,
@@ -388,7 +404,8 @@
       "Which operation actually starts processing a stream pipeline?",
       "Why can `sorted` require substantial buffering?",
       "How should a stream backed by a file be managed?"
-    ]
+    ],
+    "fundamentalTopic": "Functional Java"
   },
   {
     "id": 158,
@@ -411,7 +428,8 @@
       "What is the difference between `map(Optional::of)` and `flatMap` over optionals?",
       "Why is appending to a shared list unsafe in a parallel stream?",
       "Which workload characteristics make parallel streams ineffective?"
-    ]
+    ],
+    "fundamentalTopic": "Functional Java"
   },
   {
     "id": 159,
@@ -434,7 +452,8 @@
       "Why can `orElse` perform unnecessary work?",
       "When is an empty collection better than an optional collection?",
       "How would you model absence versus lookup failure?"
-    ]
+    ],
+    "fundamentalTopic": "Functional Java"
   },
   {
     "id": 160,
@@ -457,7 +476,8 @@
       "In what order are multiple resources closed?",
       "Which exception is primary when both the body and `close` fail?",
       "How should an API communicate whether it owns a supplied resource?"
-    ]
+    ],
+    "fundamentalTopic": "Exceptions & Resources"
   },
   {
     "id": 161,
@@ -477,7 +497,8 @@
       "In what order do superclass and subclass fields initialize?",
       "Why can a constructor not call both `this(...)` and `super(...)` directly?",
       "Why is calling an overridable method from a constructor dangerous?"
-    ]
+    ],
+    "fundamentalTopic": "Object Model & Initialization"
   },
   {
     "id": 162,
@@ -497,7 +518,8 @@
       "Which modifiers are allowed on a top-level class?",
       "Can a subclass in another package access a protected member through a superclass instance?",
       "Why can excessive `public` visibility make refactoring harder?"
-    ]
+    ],
+    "fundamentalTopic": "Object Model & Initialization"
   },
   {
     "id": 163,
@@ -517,7 +539,8 @@
       "When can a checked exception make an API harder to evolve?",
       "Why should normal domain outcomes often avoid exceptions?",
       "What happens to a checked exception inside a lambda whose functional interface does not declare it?"
-    ]
+    ],
+    "fundamentalTopic": "Exceptions & Resources"
   },
   {
     "id": 164,
@@ -537,7 +560,8 @@
       "Why can you add `null` but not an `Animal` to `List<? extends Animal>`?",
       "What is the difference between `List<?>` and a raw `List`?",
       "How can a type token preserve runtime type information?"
-    ]
+    ],
+    "fundamentalTopic": "Generics & Modern Types"
   },
   {
     "id": 165,
@@ -557,7 +581,8 @@
       "Why does arithmetic on two bytes produce an `int`?",
       "How can you detect integer overflow?",
       "Why is `new BigDecimal(0.1)` different from `new BigDecimal(\"0.1\")`?"
-    ]
+    ],
+    "fundamentalTopic": "Language Semantics & Values"
   },
   {
     "id": 166,
@@ -577,7 +602,8 @@
       "Why is comparing enums with `==` correct?",
       "Why should an ordinal not be stored in a database?",
       "When would a sealed hierarchy express the domain better than an enum?"
-    ]
+    ],
+    "fundamentalTopic": "Generics & Modern Types"
   },
   {
     "id": 167,
@@ -597,7 +623,8 @@
       "Can a functional interface contain default methods?",
       "Why must a captured local variable be effectively final?",
       "How does `this` differ between a lambda and an anonymous class?"
-    ]
+    ],
+    "fundamentalTopic": "Functional Java"
   },
   {
     "id": 168,
@@ -617,7 +644,8 @@
       "How do you instantiate a non-static inner class?",
       "Why can an inner class contribute to a memory leak?",
       "When is an anonymous class preferable to a lambda?"
-    ]
+    ],
+    "fundamentalTopic": "Object Model & Initialization"
   },
   {
     "id": 169,
@@ -637,7 +665,8 @@
       "Can a record extend another class?",
       "How do you validate record components in a compact constructor?",
       "Why can a record be unsafe as a cache key?"
-    ]
+    ],
+    "fundamentalTopic": "Generics & Modern Types"
   },
   {
     "id": 170,
@@ -657,7 +686,8 @@
       "What must a permitted subtype declare?",
       "When would `non-sealed` be appropriate?",
       "How can adding a permitted subtype break consumers?"
-    ]
+    ],
+    "fundamentalTopic": "Generics & Modern Types"
   },
   {
     "id": 171,
@@ -677,7 +707,8 @@
       "How is a switch expression different from a switch statement?",
       "What does it mean for one pattern case to dominate another?",
       "How should null be handled in a pattern switch?"
-    ]
+    ],
+    "fundamentalTopic": "Generics & Modern Types"
   },
   {
     "id": 172,
@@ -697,7 +728,8 @@
       "Why is an empty collection usually better than null?",
       "Where should `requireNonNull` checks live?",
       "What can nullability annotations guarantee without static-analysis tooling?"
-    ]
+    ],
+    "fundamentalTopic": "Language Semantics & Values"
   },
   {
     "id": 173,
@@ -717,7 +749,8 @@
       "What is the runtime parameter type of `String... values`?",
       "Why can generic varargs produce heap pollution?",
       "When is `@SafeVarargs` valid?"
-    ]
+    ],
+    "fundamentalTopic": "Language Semantics & Values"
   },
   {
     "id": 174,
@@ -737,7 +770,8 @@
       "When is CLASS retention useful?",
       "Does `@Inherited` apply to method annotations?",
       "What is the difference between declaration and type-use annotations?"
-    ]
+    ],
+    "fundamentalTopic": "Runtime, Annotations & Modules"
   },
   {
     "id": 175,
@@ -757,7 +791,8 @@
       "Can `var value = null` compile?",
       "Why might an explicit interface type be preferable?",
       "Does `var` affect generated bytecode or runtime dispatch?"
-    ]
+    ],
+    "fundamentalTopic": "Language Semantics & Values"
   },
   {
     "id": 176,
@@ -777,7 +812,8 @@
       "Do wildcard imports include subpackages?",
       "Can an import bypass package-private visibility?",
       "Why is moving a public class between packages a breaking change?"
-    ]
+    ],
+    "fundamentalTopic": "Language Semantics & Values"
   },
   {
     "id": 177,
@@ -797,7 +833,8 @@
       "Are static interface methods inherited by implementing classes?",
       "How is a diamond conflict between defaults resolved?",
       "Can a private interface method be abstract?"
-    ]
+    ],
+    "fundamentalTopic": "Object Model & Initialization"
   },
   {
     "id": 178,
@@ -817,7 +854,8 @@
       "Can an override narrow its parameter type?",
       "Why are primitive return types not covariant?",
       "Can two methods differ only in return type?"
-    ]
+    ],
+    "fundamentalTopic": "Object Model & Initialization"
   },
   {
     "id": 179,
@@ -837,7 +875,8 @@
       "What events trigger class initialization?",
       "What happens after a static initializer throws?",
       "Why can the same class name represent incompatible runtime types?"
-    ]
+    ],
+    "fundamentalTopic": "Runtime, Annotations & Modules"
   },
   {
     "id": 180,
@@ -857,7 +896,8 @@
       "How is `opens` different from `exports`?",
       "What is a split package?",
       "How do automatic modules help migration?"
-    ]
+    ],
+    "fundamentalTopic": "Runtime, Annotations & Modules"
   },
   {
     "id": 181,
@@ -877,7 +917,8 @@
       "How do modules affect reflective access?",
       "Why does reflection complicate native-image compilation?",
       "When is a generated adapter preferable to reflection?"
-    ]
+    ],
+    "fundamentalTopic": "Runtime, Annotations & Modules"
   },
   {
     "id": 1,

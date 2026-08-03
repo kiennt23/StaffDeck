@@ -27,7 +27,8 @@ open StaffDeck.xcodeproj
 To refresh the bundled study content, the exporter reads generated content from
 the Staff Deck web project and checks the expected counts before writing the app
 resources. It merges the native Java fundamentals additions under `Content/`
-before exporting. Point it at the web project explicitly:
+and applies their maintained subtopic grouping before exporting. Point it at
+the web project explicitly:
 
 ```bash
 STAFF_DECK_WEB_ROOT=/path/to/flashcards-app node Scripts/export-content.mjs
