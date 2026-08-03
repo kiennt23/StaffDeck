@@ -65,4 +65,18 @@ final class AppModelTests: XCTestCase {
             Set(InterviewTopic.allCases.map(\.rawValue))
         )
     }
+
+    func testJavaFundamentalsCoverageAndCardIDs() {
+        let model = AppModel()
+        let fundamentals = model.flashcards.filter {
+            $0.topic == InterviewTopic.javaFundamentals.rawValue
+        }
+
+        XCTAssertEqual(model.flashcards.count, 181)
+        XCTAssertEqual(Set(model.flashcards.map(\.id)).count, 181)
+        XCTAssertEqual(model.flashcards.map(\.id).min(), 1)
+        XCTAssertEqual(model.flashcards.map(\.id).max(), 181)
+        XCTAssertEqual(fundamentals.count, 41)
+        XCTAssertTrue(fundamentals.allSatisfy { $0.followUps.count == 3 })
+    }
 }

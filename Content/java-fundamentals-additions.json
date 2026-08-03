@@ -1,0 +1,422 @@
+[
+  {
+    "id": 161,
+    "topic": "Java Fundamentals",
+    "question": "How do constructors, `this`, `super`, and constructor chaining work?",
+    "testing": "State the construction order and explain how Java requires constructor delegation to happen.",
+    "outline": [
+      "A constructor initializes a new instance and has no return type.",
+      "`this(...)` delegates to another constructor in the same class; `super(...)` delegates to the superclass.",
+      "Either delegation call must be the constructor's first statement, and only one can appear directly.",
+      "If omitted, Java inserts `super()` when an accessible no-argument superclass constructor exists."
+    ],
+    "answer": "A constructor establishes an object's initial invariant. `this(...)` calls another constructor in the same class, while `super(...)` calls a superclass constructor. The delegation must be the first statement, so a constructor cannot directly invoke both. If neither is written, Java attempts to insert `super()` automatically.\n\nSuperclass construction completes before subclass fields and the subclass constructor body. I use one primary constructor for validation and make convenience constructors delegate to it, avoiding duplicated initialization logic.",
+    "example": "`Order(String id) { this(id, List.of()); }` delegates to the primary constructor. That primary constructor implicitly or explicitly calls `super(...)` before initializing `Order` state.",
+    "staffSignal": "Common trap: assuming Java always provides a usable no-argument constructor. A subclass fails to compile when its superclass has no accessible no-argument constructor and `super(...)` is omitted.",
+    "followUps": [
+      "In what order do superclass and subclass fields initialize?",
+      "Why can a constructor not call both `this(...)` and `super(...)` directly?",
+      "Why is calling an overridable method from a constructor dangerous?"
+    ]
+  },
+  {
+    "id": 162,
+    "topic": "Java Fundamentals",
+    "question": "What do Java's access modifiers actually permit?",
+    "testing": "Compare private, package-private, protected, and public access precisely.",
+    "outline": [
+      "`private` restricts access to the declaring top-level nest.",
+      "No modifier means package-private access within the same package.",
+      "`protected` adds subclass access, with special rules across package boundaries.",
+      "`public` permits access wherever the declaring type itself is accessible."
+    ],
+    "answer": "`private` is the narrowest access, package-private exposes a member within its package, `protected` adds access for subclasses, and `public` exposes it wherever the containing type is accessible. A top-level type itself can be public or package-private.\n\nCross-package protected access is often misunderstood: subclass code accesses the inherited member through the subclass relationship, not through any arbitrary superclass instance. I default to the narrowest visibility that supports the design and treat public and protected members as compatibility commitments.",
+    "example": "A package-private repository implementation can be used by services in `com.example.orders` without becoming part of the library's public API. Tests in the same package can still exercise it directly.",
+    "staffSignal": "Common trap: treating `protected` as simply “package plus everywhere for subclasses.” Across packages, the qualifying reference and subclass context matter.",
+    "followUps": [
+      "Which modifiers are allowed on a top-level class?",
+      "Can a subclass in another package access a protected member through a superclass instance?",
+      "Why can excessive `public` visibility make refactoring harder?"
+    ]
+  },
+  {
+    "id": 163,
+    "topic": "Java Fundamentals",
+    "question": "How do checked exceptions, unchecked exceptions, and `Error` differ?",
+    "testing": "Classify Java throwables and explain what callers are required or expected to handle.",
+    "outline": [
+      "Checked exceptions extend `Exception` but not `RuntimeException`; callers must catch or declare them.",
+      "Unchecked exceptions extend `RuntimeException` and do not require catch-or-declare handling.",
+      "`Error` represents serious JVM or environment failures that application code normally does not recover from locally.",
+      "The hierarchy does not decide whether a failure is retryable or a normal domain outcome."
+    ],
+    "answer": "A checked exception is enforced by the compiler's catch-or-declare rule. An unchecked exception is a `RuntimeException` and carries no such requirement. `Error` is a separate branch used for serious runtime conditions such as linkage failures or exhausted memory; ordinary application code generally should not catch it broadly.\n\nThe type should match the caller contract. Checked exceptions can make recoverable external failures explicit, while unchecked exceptions often represent violated preconditions or failures that cannot be handled meaningfully at every layer. Domain rejection and retryability still need separate semantics.",
+    "example": "A file import may expose `IOException` because the caller can choose another file or report failure. Passing a negative quantity may throw `IllegalArgumentException`. Neither category alone says whether retrying is safe.",
+    "staffSignal": "Common trap: catching `Throwable` or `Error` to keep a service running. That can hide conditions under which the process is no longer trustworthy.",
+    "followUps": [
+      "When can a checked exception make an API harder to evolve?",
+      "Why should normal domain outcomes often avoid exceptions?",
+      "What happens to a checked exception inside a lambda whose functional interface does not declare it?"
+    ]
+  },
+  {
+    "id": 164,
+    "topic": "Java Fundamentals",
+    "question": "Why are Java generics invariant, and how do wildcards and PECS help?",
+    "testing": "Explain generic assignability, bounded wildcards, and the practical consequence of type erasure.",
+    "outline": [
+      "`List<Dog>` is not a subtype of `List<Animal>` because callers could otherwise insert a different animal.",
+      "`? extends T` is useful for a producer that is read as `T`.",
+      "`? super T` is useful for a consumer that accepts `T` values.",
+      "Type erasure removes most generic arguments at runtime and restricts reification, overloads, and array creation."
+    ],
+    "answer": "Generics are invariant: even when `Dog` extends `Animal`, `List<Dog>` does not extend `List<Animal>`. Allowing that assignment would let code add a `Cat` to a list that promises to contain only dogs. Wildcards express safe variance: read values from `? extends Animal`, and add dogs to `? super Dog`—the PECS rule.\n\nJava implements most generics through type erasure, so runtime code usually sees the raw class rather than full type arguments. That is why `new T()`, generic arrays, and overloads differing only by generic arguments are restricted.",
+    "example": "`void feedAll(List<? extends Animal> animals)` can read animals but cannot safely add one. `void addDogs(List<? super Dog> target)` can add a dog but reads values only as `Object`.",
+    "staffSignal": "Common trap: using wildcards everywhere. Use them at API boundaries to express variance; concrete type parameters are often clearer when inputs and outputs share the same type relationship.",
+    "followUps": [
+      "Why can you add `null` but not an `Animal` to `List<? extends Animal>`?",
+      "What is the difference between `List<?>` and a raw `List`?",
+      "How can a type token preserve runtime type information?"
+    ]
+  },
+  {
+    "id": 165,
+    "topic": "Java Fundamentals",
+    "question": "How do numeric promotion, narrowing casts, overflow, and precision behave?",
+    "testing": "Predict Java numeric conversions without relying on surprising output puzzles.",
+    "outline": [
+      "Arithmetic on `byte`, `short`, and `char` generally promotes operands to `int`.",
+      "Widening conversions are implicit; narrowing conversions require a cast and may lose information.",
+      "Integer overflow wraps using two's-complement arithmetic rather than throwing by default.",
+      "Floating-point values are binary approximations and should not represent exact decimal money."
+    ],
+    "answer": "Java promotes smaller integral operands to `int` for most arithmetic. Widening conversions such as `int` to `long` are implicit, while narrowing conversions require a cast because high bits or precision may be lost. Integer overflow wraps silently; use exact arithmetic helpers when overflow must be detected.\n\n`float` and `double` follow binary floating-point rules, so many decimal fractions are approximate. Use `BigDecimal` constructed from a decimal string, or fixed minor units, when the domain requires exact decimal behavior and explicit rounding.",
+    "example": "`byte total = a + b` does not compile without a cast because the sum is an `int`. `Math.addExact(Integer.MAX_VALUE, 1)` throws instead of silently wrapping. `new BigDecimal(\"0.1\")` preserves the intended decimal value.",
+    "staffSignal": "Common trap: adding a cast only to silence the compiler. A cast documents acceptance of possible truncation; it does not make the conversion safe.",
+    "followUps": [
+      "Why does arithmetic on two bytes produce an `int`?",
+      "How can you detect integer overflow?",
+      "Why is `new BigDecimal(0.1)` different from `new BigDecimal(\"0.1\")`?"
+    ]
+  },
+  {
+    "id": 166,
+    "topic": "Java Fundamentals",
+    "question": "What does an enum provide beyond named integer or string constants?",
+    "testing": "Explain enum identity, type safety, behavior, and collection support.",
+    "outline": [
+      "Each enum constant is a singleton instance of the enum type.",
+      "Enums are type-safe, can contain fields and methods, and can implement interfaces.",
+      "Use `==` for enum identity and avoid persisting `ordinal()` as a durable contract.",
+      "`EnumSet` and `EnumMap` provide compact, efficient collections for enum keys."
+    ],
+    "answer": "An enum defines a closed set of singleton instances with a distinct Java type. Unlike string or integer constants, invalid values cannot be passed without an explicit conversion. Enums can own fields, methods, and per-constant behavior and can implement interfaces. Identity comparison with `==` is safe.\n\nNames may be appropriate for stable external representation, but ordinals are positional implementation details and change when constants are reordered. Adding a new constant can also break exhaustive switches or downstream serializers, so enum evolution is still an API decision.",
+    "example": "`PaymentStatus.APPROVED` cannot be confused with an unrelated `OrderStatus`. Persist `APPROVED`, or an explicit wire code, rather than ordinal `2`. Use `EnumSet<Permission>` for a compact permission set.",
+    "staffSignal": "Common trap: treating an enum as permanently closed outside one process. Persisted data and independently deployed consumers need an unknown-value strategy before new constants are emitted.",
+    "followUps": [
+      "Why is comparing enums with `==` correct?",
+      "Why should an ordinal not be stored in a database?",
+      "When would a sealed hierarchy express the domain better than an enum?"
+    ]
+  },
+  {
+    "id": 167,
+    "topic": "Java Fundamentals",
+    "question": "How do functional interfaces, lambdas, and method references relate?",
+    "testing": "Describe the target type of a lambda and the restrictions on captured local variables.",
+    "outline": [
+      "A functional interface has one abstract method, regardless of inherited default methods.",
+      "A lambda receives its parameter and return types from a target functional-interface type.",
+      "Method references are alternate syntax for compatible lambdas, not a different execution model.",
+      "Captured local variables must be final or effectively final."
+    ],
+    "answer": "A lambda is converted to a target functional-interface type—an interface with one abstract method. The target supplies parameter, return, and checked-exception information. A method reference such as `String::trim` is simply concise syntax when an existing method matches that function shape.\n\nLambdas can capture instance state and local variables, but captured locals must be final or effectively final because Java captures their values rather than exposing mutable stack variables. I use `@FunctionalInterface` to make intent explicit and prefer named methods when a lambda contains substantial policy or branching.",
+    "example": "`Function<String, String> normalize = String::trim;` and `value -> value.trim()` have the same target shape. A local `prefix` may be captured only if it is not reassigned.",
+    "staffSignal": "Common trap: assuming a lambda creates a new scope for `this`. Inside a lambda, `this` refers to the enclosing instance; anonymous classes behave differently.",
+    "followUps": [
+      "Can a functional interface contain default methods?",
+      "Why must a captured local variable be effectively final?",
+      "How does `this` differ between a lambda and an anonymous class?"
+    ]
+  },
+  {
+    "id": 168,
+    "topic": "Java Fundamentals",
+    "question": "How do static nested, inner, local, and anonymous classes differ?",
+    "testing": "Explain which nested forms retain an enclosing instance and where each can be declared.",
+    "outline": [
+      "A static nested class does not require an instance of the enclosing class.",
+      "A non-static inner class carries an enclosing instance and can access its instance members.",
+      "A local class is declared inside a block and can capture effectively final locals.",
+      "An anonymous class declares and instantiates an unnamed subtype in one expression."
+    ],
+    "answer": "A static nested class is namespaced inside another class but has no implicit enclosing instance. A non-static inner class retains a reference to its enclosing object and can access that object's members. Local classes live inside a method or block, while anonymous classes create a one-off unnamed subtype.\n\nThe implicit outer reference affects construction, lifetime, and serialization. I prefer static nested classes unless access to a particular outer instance is part of the design. Lambdas often replace anonymous classes for functional behavior, but they differ in identity, scope, and the meaning of `this`.",
+    "example": "A static `Builder` does not keep the built object's factory alive. A non-static listener declared inside a large controller can accidentally retain that controller for as long as the listener is registered.",
+    "staffSignal": "Common trap: making every nested helper an inner class. The hidden outer reference can retain memory and makes the helper impossible to construct independently.",
+    "followUps": [
+      "How do you instantiate a non-static inner class?",
+      "Why can an inner class contribute to a memory leak?",
+      "When is an anonymous class preferable to a lambda?"
+    ]
+  },
+  {
+    "id": 169,
+    "topic": "Java Fundamentals",
+    "question": "What does a record generate, and what does it not guarantee?",
+    "testing": "State record semantics without incorrectly claiming deep immutability.",
+    "outline": [
+      "A record declares a transparent data aggregate whose state is its components.",
+      "Java generates private final fields, accessors, a canonical constructor, `equals`, `hashCode`, and `toString`.",
+      "A compact constructor can validate or normalize component values.",
+      "Records are shallowly immutable; referenced objects can still mutate."
+    ],
+    "answer": "A record is a concise class for a transparent aggregate whose state is described by its components. Java supplies component accessors, final fields, a canonical constructor, and value-oriented `equals`, `hashCode`, and `toString`. A compact constructor can validate or defensively copy values.\n\nRecords are final and cannot extend another class, though they can implement interfaces. They are only shallowly immutable: a record containing a mutable list still exposes mutation unless construction and access are designed carefully.",
+    "example": "`record Money(Currency currency, BigDecimal amount)` naturally models a value. `record Tags(List<String> values)` should use `values = List.copyOf(values)` in its compact constructor.",
+    "staffSignal": "Common trap: using a record for an entity whose identity and lifecycle are not its current fields, or assuming a final component reference makes its contents immutable.",
+    "followUps": [
+      "Can a record extend another class?",
+      "How do you validate record components in a compact constructor?",
+      "Why can a record be unsafe as a cache key?"
+    ]
+  },
+  {
+    "id": 170,
+    "topic": "Java Fundamentals",
+    "question": "What does a sealed class or interface control?",
+    "testing": "Explain permitted subtypes and the obligations placed on those subtypes.",
+    "outline": [
+      "A sealed type restricts which classes or interfaces may directly extend or implement it.",
+      "Permitted direct subtypes must be `final`, `sealed`, or `non-sealed`.",
+      "The closed hierarchy supports exhaustive reasoning and pattern matching.",
+      "Adding a subtype can still break source-level exhaustiveness or serialized consumers."
+    ],
+    "answer": "A sealed class or interface defines a controlled set of direct subtypes through its permits relationship. Each permitted subtype must close the hierarchy with `final`, continue it with `sealed`, or reopen it with `non-sealed`. This makes domain alternatives explicit and lets the compiler reason about exhaustive switches.\n\nThe hierarchy is closed only at the Java type level. Adding a new subtype may break exhaustive source code, wire discriminators, or consumers written in other languages. I use sealing when the owner can genuinely control and evolve the alternatives.",
+    "example": "A sealed `PaymentResult` can permit `Approved`, `Declined`, and `Pending`. A switch can handle all three without a default, making a newly added result visible at compilation.",
+    "staffSignal": "Common trap: treating a sealed hierarchy as automatically backward-compatible. Exhaustive callers and serializers are consumers of the closed set.",
+    "followUps": [
+      "What must a permitted subtype declare?",
+      "When would `non-sealed` be appropriate?",
+      "How can adding a permitted subtype break consumers?"
+    ]
+  },
+  {
+    "id": 171,
+    "topic": "Java Fundamentals",
+    "question": "How do pattern matching and modern `switch` expressions improve type handling?",
+    "testing": "Explain flow-sensitive pattern variables, exhaustiveness, and expression results.",
+    "outline": [
+      "An `instanceof` pattern combines a type check with a scoped variable.",
+      "A switch expression produces a value and uses `yield` for multi-statement arms.",
+      "Pattern switches can select by type and use guarded cases where supported.",
+      "Exhaustiveness is required for expressions and works especially well with enums and sealed types."
+    ],
+    "answer": "Pattern matching lets Java combine a successful type test with a variable whose scope follows control flow, removing a separate cast. A switch expression returns a value, prevents accidental fall-through in arrow cases, and requires exhaustive handling. Multi-statement arms use `yield` to provide the result.\n\nType patterns work particularly well with sealed hierarchies because the compiler knows the permitted alternatives. Case order still matters when one pattern dominates another, and null handling must be explicit rather than assumed.",
+    "example": "`if (value instanceof String text && !text.isBlank())` safely scopes `text`. A switch over a sealed result can return an HTTP status for every permitted subtype without a default arm.",
+    "staffSignal": "Common trap: adding a broad pattern before a narrower subtype pattern. The narrower case becomes dominated and cannot be reached.",
+    "followUps": [
+      "How is a switch expression different from a switch statement?",
+      "What does it mean for one pattern case to dominate another?",
+      "How should null be handled in a pattern switch?"
+    ]
+  },
+  {
+    "id": 172,
+    "topic": "Java Fundamentals",
+    "question": "How should Java code represent and validate nullability?",
+    "testing": "Distinguish required values, optional results, empty collections, and defensive null checks.",
+    "outline": [
+      "Java reference types may hold `null` unless a contract, validation, or tool says otherwise.",
+      "Use `Objects.requireNonNull` to fail at the boundary where a required value enters.",
+      "Return an empty collection rather than null for a collection result.",
+      "Use `Optional` selectively for a single possibly absent return value, not as universal storage."
+    ],
+    "answer": "Java's type system normally permits null for any reference, so APIs must make nullability explicit through naming, documentation, annotations, validation, or richer types. `Objects.requireNonNull` is useful at construction and public boundaries because it fails close to the violated contract and can name the parameter.\n\nA collection result should generally be empty rather than null. `Optional` can express one absent return value, while parameters and persistent fields usually need a clearer domain model. Null checks do not replace designing invalid states out of the API.",
+    "example": "A constructor uses `this.currency = Objects.requireNonNull(currency, \"currency\")`. A search returns `List.of()` when no matches exist, while `findCustomer` may return `Optional<Customer>`.",
+    "staffSignal": "Common trap: allowing null deep into the system and adding scattered checks. Validate ownership boundaries so later code can rely on a stable invariant.",
+    "followUps": [
+      "Why is an empty collection usually better than null?",
+      "Where should `requireNonNull` checks live?",
+      "What can nullability annotations guarantee without static-analysis tooling?"
+    ]
+  },
+  {
+    "id": 173,
+    "topic": "Java Fundamentals",
+    "question": "How do varargs work, and what risks arise with arrays and generics?",
+    "testing": "Explain the array translation, call syntax, and heap-pollution warning.",
+    "outline": [
+      "A varargs parameter is compiled as an array parameter and must appear last.",
+      "Callers may pass separate arguments or an existing compatible array.",
+      "A null literal can ambiguously mean a null array rather than one null element.",
+      "Generic varargs can cause heap pollution because arrays are reified while generics are erased."
+    ],
+    "answer": "`T... values` is an array parameter with convenient call syntax. The method receives a `T[]`, and callers can supply individual arguments or an existing array. Only the final parameter may be variable-arity. Overloading varargs with similar fixed-arity methods can make resolution surprising.\n\nGeneric varargs are more dangerous because the runtime array cannot fully enforce the erased generic component type. `@SafeVarargs` is appropriate only when the implementation does not write unsafe values or expose the array in a way that permits heap pollution.",
+    "example": "`format(String template, Object... args)` receives an `Object[]`. To pass one null element unambiguously, use `(Object) null`; a bare null may be treated as a null array and trigger a warning.",
+    "staffSignal": "Common trap: adding `@SafeVarargs` merely to silence a warning. It is a promise about the implementation's safety, not a compiler-generated protection.",
+    "followUps": [
+      "What is the runtime parameter type of `String... values`?",
+      "Why can generic varargs produce heap pollution?",
+      "When is `@SafeVarargs` valid?"
+    ]
+  },
+  {
+    "id": 174,
+    "topic": "Java Fundamentals",
+    "question": "What do annotation targets and retention policies control?",
+    "testing": "Explain where an annotation may appear and whether tools can observe it later.",
+    "outline": [
+      "`@Target` restricts which declarations or type uses may carry an annotation.",
+      "SOURCE retention is discarded by compilation; CLASS is stored but not normally visible through reflection.",
+      "RUNTIME retention remains available to runtime reflection.",
+      "Annotations provide metadata; behavior comes from compilers, processors, frameworks, or application code."
+    ],
+    "answer": "An annotation is structured metadata. `@Target` controls legal locations such as methods, fields, parameters, or type uses. `@Retention` controls its lifetime: SOURCE exists only for source tools, CLASS is recorded in bytecode but not normally exposed by runtime reflection, and RUNTIME is reflectively available.\n\nAnnotations do nothing by themselves. A compiler, annotation processor, framework, agent, or application must interpret them. I keep annotation contracts small because retention, defaults, inheritance, and processing behavior become part of framework compatibility.",
+    "example": "A runtime dependency-injection annotation needs `RetentionPolicy.RUNTIME`. A compile-time code-generation marker may use SOURCE because the generated code, not the annotation, is the runtime artifact.",
+    "staffSignal": "Common trap: assuming an annotation automatically enforces a rule. Without a processor or runtime consumer, it is only metadata.",
+    "followUps": [
+      "When is CLASS retention useful?",
+      "Does `@Inherited` apply to method annotations?",
+      "What is the difference between declaration and type-use annotations?"
+    ]
+  },
+  {
+    "id": 175,
+    "topic": "Java Fundamentals",
+    "question": "What does local-variable type inference with `var` change?",
+    "testing": "Explain that `var` changes source syntax, not Java's static typing.",
+    "outline": [
+      "`var` asks the compiler to infer a local variable's static type from its initializer.",
+      "It is allowed for initialized local variables and certain loop or resource variables, not fields or return types.",
+      "The inferred type is fixed and remains statically checked.",
+      "Use it when the initializer makes the type obvious; avoid it when the type communicates important meaning."
+    ],
+    "answer": "`var` is local-variable type inference, not dynamic typing. The compiler infers one concrete static type from the initializer, and assignments remain checked against that type. It cannot be used without an initializer, for a null-only initializer, for fields, parameters, or method return types.\n\nI use `var` when the initializer makes the type clearer than repeating a long generic name. I keep the explicit type when it communicates units, abstraction boundaries, or a deliberately broader interface than the concrete initializer.",
+    "example": "`var names = new ArrayList<String>();` infers `ArrayList<String>`, not `List<String>`. Writing `List<String> names = ...` may better preserve the intended interface boundary.",
+    "staffSignal": "Common trap: assuming `var` infers the type you wish the variable had. It infers from the initializer, which can accidentally expose an overly concrete type.",
+    "followUps": [
+      "Can `var value = null` compile?",
+      "Why might an explicit interface type be preferable?",
+      "Does `var` affect generated bytecode or runtime dispatch?"
+    ]
+  },
+  {
+    "id": 176,
+    "topic": "Java Fundamentals",
+    "question": "How do packages and imports affect naming and access?",
+    "testing": "Separate namespace convenience from runtime loading and access control.",
+    "outline": [
+      "A package forms part of a type's fully qualified name and participates in access control.",
+      "An import lets source use a simple name; it does not load code or add a dependency by itself.",
+      "`java.lang` and types in the current package are available without ordinary imports.",
+      "Wildcard imports do not include subpackages and can create ambiguous simple names."
+    ],
+    "answer": "A package is part of a class's fully qualified identity and defines the boundary for package-private access. An import is only a source-level name shortcut; it does not copy classes, load them, or make inaccessible members accessible. `java.lang` and the current package are implicitly available.\n\nA wildcard imports types from one package, not its subpackages. If two imports provide the same simple name, code must resolve the ambiguity with a fully qualified name. Package names should reflect stable ownership because moving a public type changes its binary name.",
+    "example": "Importing `java.util.*` does not import `java.util.concurrent.ConcurrentHashMap`. Moving `com.example.api.Order` to another package changes the type consumers link against even if its simple name remains `Order`.",
+    "staffSignal": "Common trap: treating packages as folders only. They affect binary names, visibility, module exports, serialization, and consumer compatibility.",
+    "followUps": [
+      "Do wildcard imports include subpackages?",
+      "Can an import bypass package-private visibility?",
+      "Why is moving a public class between packages a breaking change?"
+    ]
+  },
+  {
+    "id": 177,
+    "topic": "Java Fundamentals",
+    "question": "How do interface default, static, and private methods behave?",
+    "testing": "Explain which interface methods are inherited, invoked, and used for implementation sharing.",
+    "outline": [
+      "Default methods provide an inherited instance implementation that implementing classes may override.",
+      "Static interface methods belong to the interface and are not inherited as instance methods.",
+      "Private interface methods support code reuse among default or static methods.",
+      "Class methods win over interface defaults; conflicting unrelated defaults require an explicit override."
+    ],
+    "answer": "A default method gives an interface an instance implementation while preserving the functional contract. Implementing classes inherit it unless they override it. Static methods belong to the interface itself and are called through its name. Private interface methods are implementation helpers for other interface methods.\n\nResolution follows clear precedence: a compatible class method wins over a default method, and conflicting defaults from unrelated interfaces force the implementing class to resolve the ambiguity. Adding a default can aid evolution, but it can still create source or behavioral conflicts.",
+    "example": "If `Audited` and `Versioned` both define `default label()`, a class implementing both must override `label()` and may delegate with `Audited.super.label()`.",
+    "staffSignal": "Common trap: assuming default methods make interface evolution universally safe. A new default can collide with another interface or change behavior for existing implementations.",
+    "followUps": [
+      "Are static interface methods inherited by implementing classes?",
+      "How is a diamond conflict between defaults resolved?",
+      "Can a private interface method be abstract?"
+    ]
+  },
+  {
+    "id": 178,
+    "topic": "Java Fundamentals",
+    "question": "What is a covariant return type?",
+    "testing": "Explain how an overriding method may narrow its reference return type without changing parameter types.",
+    "outline": [
+      "An overriding method may return a subtype of the reference type returned by the parent method.",
+      "Parameters cannot be narrowed for overriding; changing them creates an overload instead.",
+      "Primitive return types are not covariant.",
+      "The feature reduces caller casts while preserving substitutability."
+    ],
+    "answer": "A covariant return lets an overriding method return a more specific reference type than the method it overrides. The parameters must still match the override contract; narrowing a parameter creates an overload rather than an override. Primitive return types do not have covariance.\n\nThe call remains substitutable because every returned subtype value is also valid as the parent's declared return type. Callers using the subtype can benefit from the narrower result without casting.",
+    "example": "If `Document copy()` is defined in a base class, `Invoice` may override it as `Invoice copy()`. Code through a `Document` reference still sees a `Document`, while `Invoice` callers receive an `Invoice`.",
+    "staffSignal": "Common trap: believing return type alone can distinguish overloaded methods. Java does not overload methods solely by return type.",
+    "followUps": [
+      "Can an override narrow its parameter type?",
+      "Why are primitive return types not covariant?",
+      "Can two methods differ only in return type?"
+    ]
+  },
+  {
+    "id": 179,
+    "topic": "Java Fundamentals",
+    "question": "How do class loading, linking, initialization, and object construction differ?",
+    "testing": "Separate JVM class lifecycle phases from allocating an instance.",
+    "outline": [
+      "Loading finds class bytes and creates the JVM's class representation.",
+      "Linking verifies bytecode, prepares static storage, and resolves symbolic references as needed.",
+      "Initialization executes static field initializers and static blocks once per defining class loader.",
+      "Object construction allocates and initializes a new instance after the class is initialized."
+    ],
+    "answer": "Loading brings a class definition into the JVM through a class loader. Linking verifies it, prepares static fields with default values, and resolves symbolic references eagerly or lazily. Initialization then runs static initializers once for that class as defined by a particular class loader.\n\nConstructing an object is separate: it allocates an instance and runs the superclass-to-subclass instance initialization chain. Some references, such as compile-time constants, may not trigger initialization. Initialization failures are cached and affect later uses of that class.",
+    "example": "Reading a compile-time constant may not run the declaring class's static block, while calling a static method does. Two independent class loaders can load types with the same binary name that are not assignment-compatible.",
+    "staffSignal": "Common trap: assuming a class name uniquely identifies a runtime type. JVM type identity includes the defining class loader.",
+    "followUps": [
+      "What events trigger class initialization?",
+      "What happens after a static initializer throws?",
+      "Why can the same class name represent incompatible runtime types?"
+    ]
+  },
+  {
+    "id": 180,
+    "topic": "Java Fundamentals",
+    "question": "What does the Java module system add beyond packages?",
+    "testing": "Explain named modules, dependencies, exported APIs, and reflective access boundaries.",
+    "outline": [
+      "A named module groups packages and declares dependencies with `requires`.",
+      "`exports` makes selected packages accessible to other modules at compile and runtime.",
+      "`opens` permits deep reflection without making ordinary types public API in the same way.",
+      "Services can be declared with `uses` and `provides` for decoupled discovery."
+    ],
+    "answer": "JPMS adds an explicit module boundary above packages. A module descriptor names required modules and exported packages, so public types in an unexported package are not ordinary external API. `opens` grants reflective access, either broadly or to named modules, which matters for frameworks.\n\nModules also support service discovery with `uses` and `provides`. The main benefit is reliable configuration and stronger encapsulation, but migration can expose split packages, automatic-module naming, and reflection assumptions that the class path previously tolerated.",
+    "example": "A module can `exports com.example.orders.api` while keeping `com.example.orders.internal` unexported. It may `opens com.example.orders.persistence to org.hibernate.orm.core` for controlled reflection.",
+    "staffSignal": "Common trap: assuming `public` means globally accessible. In a named module, the containing package must also be exported to the consumer.",
+    "followUps": [
+      "How is `opens` different from `exports`?",
+      "What is a split package?",
+      "How do automatic modules help migration?"
+    ]
+  },
+  {
+    "id": 181,
+    "topic": "Java Fundamentals",
+    "question": "What can reflection do, and what are its main costs and limits?",
+    "testing": "Explain runtime inspection and invocation without treating reflection as unrestricted magic.",
+    "outline": [
+      "Reflection can inspect types, members, annotations, constructors, and invoke accessible operations dynamically.",
+      "It moves checks from compile time to runtime and requires explicit error handling.",
+      "Access checks, modules, encapsulation, and runtime configuration constrain deep reflection.",
+      "Reflective discovery can add startup, native-image, debugging, and maintenance costs."
+    ],
+    "answer": "Reflection lets code inspect runtime classes, annotations, fields, methods, and constructors and perform dynamic invocation. It enables frameworks, serializers, test tools, and plugin systems, but trades compile-time guarantees for runtime lookup and exceptions. Access control and module openness still apply; deep access is increasingly constrained.\n\nThe main architectural costs are hidden dependencies, harder refactoring, reduced static analysis, startup work, and extra configuration for ahead-of-time or native compilation. Modern JVMs optimize some reflective paths, so I measure performance rather than repeat blanket claims that all reflection is slow.",
+    "example": "A serializer can inspect record components and invoke their accessors. A native-image build may require explicit reachability metadata because reflective calls are not visible through ordinary static analysis.",
+    "staffSignal": "Common trap: using `setAccessible(true)` as a design strategy. It couples code to internals and may fail under module boundaries, security constraints, or newer runtimes.",
+    "followUps": [
+      "How do modules affect reflective access?",
+      "Why does reflection complicate native-image compilation?",
+      "When is a generated adapter preferable to reflection?"
+    ]
+  }
+]

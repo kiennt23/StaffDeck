@@ -32,19 +32,37 @@ function extractArray(filename, exportName) {
   return JSON.parse(source.slice(arrayStart, arrayEnd + 1));
 }
 
-const flashcards = extractArray("flashcards.ts", "flashcards");
+const webFlashcards = extractArray("flashcards.ts", "flashcards");
+const additions = JSON.parse(
+  fs.readFileSync(
+    path.join(nativeRoot, "Content", "java-fundamentals-additions.json"),
+    "utf8",
+  ),
+);
 const practices = extractArray("practice-data.ts", "practices");
 
-if (flashcards.length !== 160) {
-  throw new Error(`Expected 160 flashcards, found ${flashcards.length}`);
+if (webFlashcards.length !== 160) {
+  throw new Error(`Expected 160 web flashcards, found ${webFlashcards.length}`);
 }
+if (additions.length !== 21) {
+  throw new Error(`Expected 21 native fundamentals additions, found ${additions.length}`);
+}
+
+const webFundamentals = webFlashcards.filter(
+  (card) => card.topic === "Java Fundamentals",
+);
+const webOtherTopics = webFlashcards.filter(
+  (card) => card.topic !== "Java Fundamentals",
+);
+const flashcards = [...webFundamentals, ...additions, ...webOtherTopics];
+
 const ids = flashcards.map((card) => card.id).sort((a, b) => a - b);
 if (ids.some((id, index) => id !== index + 1)) {
-  throw new Error("Flashcard IDs must represent 1 through 160 exactly once");
+  throw new Error("Flashcard IDs must represent 1 through 181 exactly once");
 }
 const fundamentals = flashcards.filter((card) => card.topic === "Java Fundamentals");
-if (fundamentals.length !== 20) {
-  throw new Error(`Expected 20 Java Fundamentals cards, found ${fundamentals.length}`);
+if (fundamentals.length !== 41) {
+  throw new Error(`Expected 41 Java Fundamentals cards, found ${fundamentals.length}`);
 }
 if (practices.length !== 208) {
   throw new Error(`Expected 208 practices, found ${practices.length}`);

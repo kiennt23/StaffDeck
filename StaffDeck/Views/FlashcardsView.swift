@@ -57,7 +57,7 @@ struct FlashcardsView: View {
                         eyebrow: topic.group.rawValue,
                         title: topic.rawValue,
                         subtitle: topic == .javaFundamentals
-                            ? "Recall the rule first, then verify the mechanism, example, and common traps."
+                            ? "Recall the rule first, then verify the mechanism, example, and interview note."
                             : "Answer first, then inspect the worked reasoning, Staff signal, and follow-ups."
                     )
                     Spacer()
@@ -181,8 +181,10 @@ struct FlashcardsView: View {
                 }
 
                 Picker("Answer section", selection: $detail) {
-                    Text("Worked answer").tag("Answer")
-                    Text("Answer map").tag("Outline")
+                    Text(topic == .javaFundamentals ? "Direct answer" : "Worked answer")
+                        .tag("Answer")
+                    Text(topic == .javaFundamentals ? "Key points" : "Answer map")
+                        .tag("Outline")
                     Text("Follow-ups").tag("Follow-ups")
                 }
                 .pickerStyle(.segmented)
@@ -213,7 +215,11 @@ struct FlashcardsView: View {
                                 .font(.title3)
                                 .lineSpacing(7)
                             callout("Concrete example", card.example, tint: .staffCoral)
-                            callout("Staff signal", card.staffSignal, tint: .staffGreen)
+                            callout(
+                                topic == .javaFundamentals ? "Interview note" : "Staff signal",
+                                card.staffSignal,
+                                tint: .staffGreen
+                            )
                         }
                     }
                 }
