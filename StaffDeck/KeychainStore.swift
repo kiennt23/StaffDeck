@@ -1,7 +1,7 @@
 import Foundation
 import Security
 
-struct TursoCredentials: Equatable {
+struct TursoCredentials: Equatable, Sendable {
     var databaseURL: String
     var authToken: String
 }
@@ -66,4 +66,3 @@ enum KeychainStore {
         return String(data: data, encoding: .utf8)
     }
 }
-
