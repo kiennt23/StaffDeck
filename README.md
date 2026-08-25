@@ -1,7 +1,7 @@
 # Staff Deck for macOS and iPadOS
 
 Native SwiftUI version of Staff Deck. One Xcode target runs on both macOS and
-iPadOS. The 181 flashcards and 208 practice exercises are bundled with the app;
+iPadOS. The 300 flashcards and 240 practice exercises are bundled with the app;
 personal progress and career records sync through Turso.
 
 ## Included
@@ -26,9 +26,9 @@ open StaffDeck.xcodeproj
 
 To refresh the bundled study content, the exporter reads generated content from
 the Staff Deck web project and checks the expected counts before writing the app
-resources. It merges the native Java fundamentals additions under `Content/`
-and applies their maintained subtopic grouping before exporting. Point it at
-the web project explicitly:
+resources. It merges the maintained Java fundamentals, Go track, subtopic, and
+concise-answer overrides under `Content/` before exporting. Point it at the web
+project explicitly:
 
 ```bash
 STAFF_DECK_WEB_ROOT=/path/to/flashcards-app node Scripts/export-content.mjs
@@ -96,8 +96,7 @@ xcodebuild \
   -project StaffDeck.xcodeproj \
   -scheme StaffDeck \
   -destination 'platform=macOS' \
-  -derivedDataPath .build/tests \
-  CODE_SIGNING_ALLOWED=NO \
+  -derivedDataPath .build/signed-tests \
   test
 ```
 
