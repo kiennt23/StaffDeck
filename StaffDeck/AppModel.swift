@@ -15,10 +15,18 @@ final class AppModel: ObservableObject {
     @Published var applications: [JobApplication] = []
     @Published var syncState: SyncState = .notConfigured
 
-    private let store = TursoStore()
-    private let cacheKey = "staff-deck-native-cache-v1"
+    let dependencies: AppDependencies
+    let cacheKey = "staff-deck-native-cache-v1"
+    var pendingMutations: [SyncKey: SyncEnvelope] = [:]
+    var flushTask: Task<Void, Never>?
+    var syncGeneration = 0
 
-    init() {
+    convenience init() {
+        self.init(dependencies: .live)
+    }
+
+    init(dependencies: AppDependencies) {
+        self.dependencies = dependencies
         do {
             flashcards = try ContentRepository.load([Flashcard].self, resource: "flashcards")
             practices = try ContentRepository.load([PracticeItem].self, resource: "practices")
@@ -28,335 +36,14 @@ final class AppModel: ObservableObject {
         restoreCache()
     }
 
-    func start() async {
-        guard let credentials = KeychainStore.load() else {
-            syncState = .notConfigured
-            return
-        }
-        await connect(credentials)
+    var pendingMutationCount: Int { pendingMutations.count }
+
+    func persistCache() throws {
+        dependencies.cache.set(try SyncCoding.encoder.encode(cachedState()), forKey: cacheKey)
     }
 
-    func connect(_ credentials: TursoCredentials) async {
-        syncState = .connecting
-        do {
-            try await store.connect(credentials: credentials)
-            try KeychainStore.save(credentials)
-            try await reconcileAll()
-            syncState = .connected(Date())
-            saveCache()
-        } catch {
-            syncState = .offline(error.localizedDescription)
-        }
-    }
-
-    func disconnectAndForget() async {
-        await store.disconnect()
-        KeychainStore.delete()
-        syncState = .notConfigured
-    }
-
-    func syncNow() async {
-        guard let credentials = KeychainStore.load() else {
-            syncState = .notConfigured
-            return
-        }
-        await connect(credentials)
-    }
-
-    func rate(cardID: Int, rating: Rating, now: Date = Date()) {
-        let previous = reviews[cardID]?.intervalDays ?? 1
-        let interval: Int
-        switch rating {
-        case .again: interval = 0
-        case .hard: interval = max(1, Int((Double(previous) * 1.4).rounded()))
-        case .good: interval = max(2, Int((Double(previous) * 2.3).rounded()))
-        case .easy: interval = max(4, Int((Double(previous) * 3.5).rounded()))
-        }
-        let dueAt = rating == .again
-            ? now.addingTimeInterval(10 * 60)
-            : Calendar.current.date(byAdding: .day, value: interval, to: now) ?? now
-        let record = ReviewRecord(
-            cardID: cardID,
-            dueAt: dueAt,
-            intervalDays: interval,
-            rating: rating,
-            reviews: (reviews[cardID]?.reviews ?? 0) + 1,
-            updatedAt: now
-        )
-        reviews[cardID] = record
-        saveCache()
-        push(record, collection: "flashcard-progress", id: String(cardID), updatedAt: record.updatedAt)
-    }
-
-    func saveFlashcardWork(
-        cardID: Int,
-        answer: String,
-        analysisNotes: String,
-        answerDrawing: Data?,
-        analysisDrawing: Data?
-    ) {
-        let previous = flashcardWork[cardID]
-        guard
-            previous?.answer != answer
-                || previous?.analysisNotes != analysisNotes
-                || previous?.answerDrawing != answerDrawing
-                || previous?.analysisDrawing != analysisDrawing
-        else {
-            return
-        }
-        guard
-            previous != nil
-                || !answer.isEmpty
-                || !analysisNotes.isEmpty
-                || answerDrawing != nil
-                || analysisDrawing != nil
-        else {
-            return
-        }
-
-        let record = FlashcardWork(
-            cardID: cardID,
-            answer: answer,
-            analysisNotes: analysisNotes,
-            answerDrawing: answerDrawing,
-            analysisDrawing: analysisDrawing,
-            updatedAt: Date()
-        )
-        flashcardWork[cardID] = record
-        saveCache()
-        push(
-            record,
-            collection: "flashcard-work",
-            id: String(cardID),
-            updatedAt: record.updatedAt
-        )
-    }
-
-    func savePractice(
-        itemID: String,
-        status: PracticeStatus,
-        score: Int?,
-        notes: String,
-        incrementAttempt: Bool = false
-    ) {
-        let now = Date()
-        let previous = practiceRecords[itemID]
-        let reviewDays = status == .completed && (score ?? 0) >= 3 ? 14 : 2
-        let record = PracticeRecord(
-            practiceID: itemID,
-            status: status,
-            score: score,
-            notes: notes,
-            attempts: (previous?.attempts ?? 0) + (incrementAttempt ? 1 : 0),
-            nextReviewAt: status == .notStarted
-                ? nil
-                : Calendar.current.date(byAdding: .day, value: reviewDays, to: now),
-            updatedAt: now
-        )
-        practiceRecords[itemID] = record
-        saveCache()
-        push(record, collection: "practice-progress", id: itemID, updatedAt: now)
-    }
-
-    func saveProfile(_ next: CareerProfile) {
-        var value = next
-        value.updatedAt = Date()
-        profile = value
-        saveCache()
-        push(value, collection: "career-profile", id: "default", updatedAt: value.updatedAt)
-    }
-
-    func saveStory(_ next: StaffStory) {
-        saveCareer(next, in: &stories, collection: "career-stories")
-    }
-
-    func saveCompany(_ next: TargetCompany) {
-        saveCareer(next, in: &companies, collection: "career-companies")
-    }
-
-    func saveContact(_ next: Contact) {
-        saveCareer(next, in: &contacts, collection: "career-contacts")
-    }
-
-    func saveApplication(_ next: JobApplication) {
-        saveCareer(next, in: &applications, collection: "career-applications")
-    }
-
-    func deleteStory(_ value: StaffStory) {
-        deleteCareer(value, in: &stories, collection: "career-stories")
-    }
-
-    func deleteCompany(_ value: TargetCompany) {
-        deleteCareer(value, in: &companies, collection: "career-companies")
-    }
-
-    func deleteContact(_ value: Contact) {
-        deleteCareer(value, in: &contacts, collection: "career-contacts")
-    }
-
-    func deleteApplication(_ value: JobApplication) {
-        deleteCareer(value, in: &applications, collection: "career-applications")
-    }
-
-    private func saveCareer<T: CareerRecord>(
-        _ next: T,
-        in records: inout [T],
-        collection: String
-    ) {
-        var value = next
-        value.updatedAt = Date()
-        value.isDeleted = false
-        if let index = records.firstIndex(where: { $0.id == value.id }) {
-            records[index] = value
-        } else {
-            records.append(value)
-        }
-        saveCache()
-        push(value, collection: collection, id: value.id, updatedAt: value.updatedAt)
-    }
-
-    private func deleteCareer<T: CareerRecord>(
-        _ next: T,
-        in records: inout [T],
-        collection: String
-    ) {
-        var value = next
-        value.updatedAt = Date()
-        value.isDeleted = true
-        if let index = records.firstIndex(where: { $0.id == value.id }) {
-            records[index] = value
-        }
-        saveCache()
-        push(
-            value,
-            collection: collection,
-            id: value.id,
-            updatedAt: value.updatedAt,
-            isDeleted: true
-        )
-    }
-
-    private func push<T: Encodable>(
-        _ value: T,
-        collection: String,
-        id: String,
-        updatedAt: Date,
-        isDeleted: Bool = false
-    ) {
-        guard case .connected = syncState else { return }
-        Task {
-            do {
-                try await store.upsert(
-                    value,
-                    collection: collection,
-                    id: id,
-                    updatedAt: updatedAt,
-                    isDeleted: isDeleted
-                )
-                syncState = .connected(Date())
-            } catch {
-                syncState = .offline(error.localizedDescription)
-            }
-        }
-    }
-
-    private func reconcileAll() async throws {
-        let remoteReviews = try await store.load(ReviewRecord.self, collection: "flashcard-progress")
-        reviews = try await reconcile(
-            local: Array(reviews.values),
-            remote: remoteReviews,
-            collection: "flashcard-progress",
-            id: { String($0.cardID) },
-            updatedAt: \.updatedAt
-        ).reduce(into: [:]) { $0[$1.cardID] = $1 }
-
-        let remoteFlashcardWork = try await store.load(
-            FlashcardWork.self,
-            collection: "flashcard-work"
-        )
-        flashcardWork = try await reconcile(
-            local: Array(flashcardWork.values),
-            remote: remoteFlashcardWork,
-            collection: "flashcard-work",
-            id: { String($0.cardID) },
-            updatedAt: \.updatedAt
-        ).reduce(into: [:]) { $0[$1.cardID] = $1 }
-
-        let remotePractice = try await store.load(PracticeRecord.self, collection: "practice-progress")
-        practiceRecords = try await reconcile(
-            local: Array(practiceRecords.values),
-            remote: remotePractice,
-            collection: "practice-progress",
-            id: \.practiceID,
-            updatedAt: \.updatedAt
-        ).reduce(into: [:]) { $0[$1.practiceID] = $1 }
-
-        let remoteProfiles = try await store.load(CareerProfile.self, collection: "career-profile")
-        if let remote = remoteProfiles.first, remote.updatedAt > profile.updatedAt {
-            profile = remote
-        } else {
-            try await store.upsert(
-                profile,
-                collection: "career-profile",
-                id: "default",
-                updatedAt: profile.updatedAt
-            )
-        }
-
-        stories = try await reconcileCareer(stories, collection: "career-stories")
-        companies = try await reconcileCareer(companies, collection: "career-companies")
-        contacts = try await reconcileCareer(contacts, collection: "career-contacts")
-        applications = try await reconcileCareer(applications, collection: "career-applications")
-    }
-
-    private func reconcile<T: Codable>(
-        local: [T],
-        remote: [T],
-        collection: String,
-        id: (T) -> String,
-        updatedAt: KeyPath<T, Date>
-    ) async throws -> [T] {
-        var merged = Dictionary(uniqueKeysWithValues: remote.map { (id($0), $0) })
-        for value in local {
-            let key = id(value)
-            if let cloud = merged[key], cloud[keyPath: updatedAt] >= value[keyPath: updatedAt] {
-                continue
-            }
-            merged[key] = value
-            try await store.upsert(
-                value,
-                collection: collection,
-                id: key,
-                updatedAt: value[keyPath: updatedAt]
-            )
-        }
-        return Array(merged.values)
-    }
-
-    private func reconcileCareer<T: CareerRecord>(
-        _ local: [T],
-        collection: String
-    ) async throws -> [T] {
-        let remote = try await store.load(T.self, collection: collection)
-        var merged = Dictionary(uniqueKeysWithValues: remote.map { ($0.id, $0) })
-        for value in local {
-            if let cloud = merged[value.id], cloud.updatedAt >= value.updatedAt {
-                continue
-            }
-            merged[value.id] = value
-            try await store.upsert(
-                value,
-                collection: collection,
-                id: value.id,
-                updatedAt: value.updatedAt,
-                isDeleted: value.isDeleted
-            )
-        }
-        return Array(merged.values)
-    }
-
-    private func saveCache() {
-        let state = CachedState(
+    func cachedState() -> CachedState {
+        CachedState(
             reviews: reviews,
             flashcardWork: flashcardWork,
             practice: practiceRecords,
@@ -364,28 +51,46 @@ final class AppModel: ObservableObject {
             stories: stories,
             companies: companies,
             contacts: contacts,
-            applications: applications
+            applications: applications,
+            pendingMutations: pendingMutations.values.sorted(by: Self.outboxOrder)
         )
-        let encoder = JSONEncoder()
-        encoder.dateEncodingStrategy = .millisecondsSince1970
-        if let data = try? encoder.encode(state) {
-            UserDefaults.standard.set(data, forKey: cacheKey)
+    }
+
+    func restoreCache() {
+        guard let data = dependencies.cache.data(forKey: cacheKey) else { return }
+        do {
+            let state = try SyncCoding.decoder.decode(CachedState.self, from: data)
+            applyCachedState(state)
+        } catch {
+            syncState = .offline("Cached state could not be restored: \(error.localizedDescription)")
         }
     }
 
-    private func restoreCache() {
-        guard let data = UserDefaults.standard.data(forKey: cacheKey) else { return }
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .millisecondsSince1970
-        guard let state = try? decoder.decode(CachedState.self, from: data) else { return }
+    func applyCachedState(_ state: CachedState) {
         reviews = state.reviews
-        flashcardWork = state.flashcardWork ?? [:]
+        flashcardWork = state.flashcardWork
         practiceRecords = state.practice
         profile = state.profile
         stories = state.stories
         companies = state.companies
         contacts = state.contacts
         applications = state.applications
+        pendingMutations = [:]
+        for mutation in state.pendingMutations {
+            if let previous = pendingMutations[mutation.key],
+               previous.updatedAtMilliseconds > mutation.updatedAtMilliseconds { continue }
+            pendingMutations[mutation.key] = mutation
+        }
+    }
+
+    static func outboxOrder(_ lhs: SyncEnvelope, _ rhs: SyncEnvelope) -> Bool {
+        if lhs.updatedAtMilliseconds != rhs.updatedAtMilliseconds {
+            return lhs.updatedAtMilliseconds < rhs.updatedAtMilliseconds
+        }
+        if lhs.collection.rawValue != rhs.collection.rawValue {
+            return lhs.collection.rawValue < rhs.collection.rawValue
+        }
+        return lhs.recordID < rhs.recordID
     }
 }
 
