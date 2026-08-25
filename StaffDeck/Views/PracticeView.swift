@@ -2,6 +2,7 @@ import SwiftUI
 
 struct PracticeView: View {
     @EnvironmentObject private var model: AppModel
+    let track: LanguageTrack
     @State private var kind = "All"
     @State private var topic = "All topics"
     @State private var week = 0
@@ -10,7 +11,7 @@ struct PracticeView: View {
     @State private var selectedID: String?
 
     private var topics: [String] {
-        ["All topics"] + Set(model.practices.map(\.topic)).sorted()
+        ["All topics"] + Set(model.practices.filter { $0.isAvailable(in: track) }.map(\.topic)).sorted()
     }
 
     private var weeks: [Int] {
@@ -19,6 +20,7 @@ struct PracticeView: View {
 
     private var filtered: [PracticeItem] {
         model.practices.filter { item in
+            guard item.isAvailable(in: track) else { return false }
             guard kind == "All" || item.kind == kind else { return false }
             guard topic == "All topics" || item.topic == topic else { return false }
             guard week == 0 || item.week == week else { return false }
@@ -38,6 +40,9 @@ struct PracticeView: View {
             default:
                 return true
             }
+        }
+        .sorted {
+            ($0.week, $0.number) < ($1.week, $1.number)
         }
     }
 
@@ -326,6 +331,7 @@ struct PracticeView: View {
             PracticeDetail(
                 item: item,
                 record: model.practiceRecords[item.id],
+                track: track,
                 scrollsInternally: usesInternalDetailScroll
             )
             .id(item.id)
@@ -370,14 +376,17 @@ struct PracticeView: View {
 private struct PracticeDetail: View {
     @EnvironmentObject private var model: AppModel
     let item: PracticeItem
+    let track: LanguageTrack
     let scrollsInternally: Bool
     @State private var status: PracticeStatus
     @State private var score: Int?
     @State private var notes: String
     @State private var guideOpen = false
+    @State private var modelAnswerOpen = false
 
-    init(item: PracticeItem, record: PracticeRecord?, scrollsInternally: Bool) {
+    init(item: PracticeItem, record: PracticeRecord?, track: LanguageTrack, scrollsInternally: Bool) {
         self.item = item
+        self.track = track
         self.scrollsInternally = scrollsInternally
         _status = State(initialValue: record?.status ?? .notStarted)
         _score = State(initialValue: record?.score)
@@ -412,7 +421,7 @@ private struct PracticeDetail: View {
                 Text(item.title)
                     .font(.system(.title, design: .serif, weight: .medium))
                 assignment("Assignment", item.prompt)
-                assignment("Required evidence", item.artifact)
+                assignment("Required evidence", item.artifact(for: track))
 
                 if let guide = item.guide {
                     DisclosureGroup("Worked guide", isExpanded: $guideOpen) {
@@ -422,6 +431,33 @@ private struct PracticeDetail: View {
                             assignment("Anchor problem", guide.anchorProblem)
                             assignment("Answer guide", guide.answer)
                             assignment("Complexity", guide.complexity)
+                            if !guide.pitfalls.isEmpty {
+                                VStack(alignment: .leading, spacing: 6) {
+                                    Text("PITFALLS")
+                                        .font(.caption.bold())
+                                        .tracking(1)
+                                        .foregroundStyle(Color.staffCoral)
+                                    ForEach(guide.pitfalls, id: \.self) { pitfall in
+                                        Label(pitfall, systemImage: "exclamationmark.triangle")
+                                            .lineSpacing(3)
+                                    }
+                                }
+                            }
+                        }
+                        .padding(.top, 10)
+                    }
+                }
+
+                if let modelAnswer = item.modelAnswer, !modelAnswer.isEmpty {
+                    DisclosureGroup(
+                        item.kind == "DSA" ? "This drill's approach" : "Model answer",
+                        isExpanded: $modelAnswerOpen
+                    ) {
+                        VStack(alignment: .leading, spacing: 8) {
+                            ForEach(modelAnswer, id: \.self) { point in
+                                Label(point, systemImage: "checkmark.circle")
+                                    .lineSpacing(3)
+                            }
                         }
                         .padding(.top, 10)
                     }
@@ -456,6 +492,10 @@ private struct PracticeDetail: View {
                             Button("Save notes") { save(increment: false) }
                         }
                     }
+                }
+
+                if let rubric = item.generalRubric, status != .notStarted {
+                    GeneralPracticeRubricView(rubric: rubric)
                 }
 
                 assignment("Completion gate", item.completion)
@@ -497,5 +537,36 @@ private struct PracticeDetail: View {
             notes: notes,
             incrementAttempt: increment
         )
+    }
+}
+
+private struct GeneralPracticeRubricView: View {
+    let rubric: GeneralPracticeRubric
+
+    var body: some View {
+        GroupBox("Staff-level self-review") {
+            VStack(alignment: .leading, spacing: 16) {
+                rubricSection("Signals to demonstrate", items: rubric.signals)
+                rubricSection("Strong-answer structure", items: rubric.strongAnswer)
+                rubricSection("Common misses", items: rubric.commonMisses)
+                Text(rubric.scoreGuide)
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+            }
+            .padding(.top, 8)
+        }
+    }
+
+    private func rubricSection(_ title: String, items: [String]) -> some View {
+        VStack(alignment: .leading, spacing: 7) {
+            Text(title.uppercased())
+                .font(.caption.bold())
+                .tracking(1)
+                .foregroundStyle(Color.staffGreen)
+            ForEach(items, id: \.self) {
+                Label($0, systemImage: "checkmark.circle")
+                    .font(.callout)
+            }
+        }
     }
 }
