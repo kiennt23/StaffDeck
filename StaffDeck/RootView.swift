@@ -7,24 +7,36 @@ import UIKit
 
 struct RootView: View {
     @EnvironmentObject private var model: AppModel
-    @State private var selection: SidebarDestination? = .topic(.javaFundamentals)
+    @AppStorage("staff-deck-language-track") private var trackName = LanguageTrack.java.rawValue
+    @State private var selection: SidebarDestination? = .workspace(.today)
+
+    private var track: LanguageTrack { LanguageTrack(rawValue: trackName) ?? .java }
 
     var body: some View {
         NavigationSplitView {
             List(selection: $selection) {
-                ForEach(InterviewTopicGroup.allCases) { group in
-                    Section(group.rawValue) {
-                        ForEach(InterviewTopic.topics(in: group)) { topic in
-                            Label(topic.rawValue, systemImage: topic.systemImage)
-                                .tag(SidebarDestination.topic(topic))
-                        }
+                Picker("Language track", selection: $trackName) {
+                    ForEach(LanguageTrack.allCases) { track in
+                        Text(track.title).tag(track.rawValue)
                     }
                 }
+                .pickerStyle(.segmented)
+                .labelsHidden()
+                .listRowInsets(EdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8))
 
                 Section("Workspace") {
                     ForEach(WorkspaceSection.allCases) { section in
                         Label(section.rawValue, systemImage: section.systemImage)
                             .tag(SidebarDestination.workspace(section))
+                    }
+                }
+
+                ForEach(InterviewTopicGroup.allCases) { group in
+                    Section(group.rawValue) {
+                        ForEach(InterviewTopic.topics(in: group, track: track)) { topic in
+                            Label(topic.rawValue, systemImage: topic.systemImage)
+                                .tag(SidebarDestination.topic(topic))
+                        }
                     }
                 }
             }
@@ -34,12 +46,23 @@ struct RootView: View {
             }
         } detail: {
             Group {
-                switch selection ?? .topic(.javaFundamentals) {
+                switch selection ?? .workspace(.today) {
                 case let .topic(topic):
-                    FlashcardsView(topic: topic)
+                    FlashcardsView(topic: topic, track: track)
                         .id(topic.id)
+                case .workspace(.today):
+                    TodayView(
+                        track: track,
+                        openTopic: { selection = .topic($0) },
+                        openPractice: { selection = .workspace(.practice) },
+                        openCareer: { selection = .workspace(.career) }
+                    )
+                case .workspace(.progress):
+                    LearningProgressView(track: track, openTopic: { selection = .topic($0) })
+                case .workspace(.compare):
+                    LanguageComparisonView()
                 case .workspace(.practice):
-                    PracticeView()
+                    PracticeView(track: track)
                 case .workspace(.career):
                     CareerView()
                 case .workspace(.settings):
@@ -50,6 +73,9 @@ struct RootView: View {
             .background(Color.staffPaper)
         }
         .tint(.staffGreen)
+        .onChange(of: trackName) { _, _ in
+            selection = (selection ?? .workspace(.today)).resolved(for: track)
+        }
     }
 
     private var syncSummary: some View {
