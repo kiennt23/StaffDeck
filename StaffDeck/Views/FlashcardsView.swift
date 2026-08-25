@@ -8,8 +8,16 @@ import Vision
 struct FlashcardsView: View {
     @EnvironmentObject private var model: AppModel
     let topic: InterviewTopic
+    let track: LanguageTrack
     @State private var mode = "Review due"
     @State private var fundamentalTopic: FundamentalTopic?
+    @State private var goFundamentalTopic: GoFundamentalTopic?
+    @State private var concurrencySubtopic: ConcurrencySubtopic?
+    @State private var serviceSubtopic: ServiceSubtopic?
+    @State private var databaseSubtopic: DatabaseSubtopic?
+    @State private var securitySubtopic: SecuritySubtopic?
+    @State private var reliabilitySubtopic: ReliabilitySubtopic?
+    @State private var platformSubtopic: PlatformSubtopic?
     @State private var history = "Any history"
     @State private var query = ""
     @State private var index = 0
@@ -26,13 +34,20 @@ struct FlashcardsView: View {
     private var filtered: [Flashcard] {
         model.flashcards.filter { card in
             guard card.topic == topic.rawValue else { return false }
+            guard card.isAvailable(in: track) else { return false }
             guard matchesFundamentalTopic(card) else { return false }
+            guard matchesConcurrencySubtopic(card) else { return false }
+            guard matchesServiceSubtopic(card) else { return false }
+            guard matchesDatabaseSubtopic(card) else { return false }
+            guard matchesSecuritySubtopic(card) else { return false }
+            guard matchesReliabilitySubtopic(card) else { return false }
+            guard matchesPlatformSubtopic(card) else { return false }
             guard query.isEmpty || [
                 card.question,
                 card.answer,
                 card.example,
                 card.topic,
-                card.fundamentalTopic?.rawValue ?? "",
+                card.subtopic ?? "",
             ].joined(separator: " ").localizedCaseInsensitiveContains(query) else { return false }
             if history == "New only", model.reviews[card.id] != nil { return false }
             if history == "Reviewed", model.reviews[card.id] == nil { return false }
@@ -51,7 +66,14 @@ struct FlashcardsView: View {
     private var dueCount: Int {
         model.flashcards.filter {
             guard $0.topic == topic.rawValue else { return false }
+            guard $0.isAvailable(in: track) else { return false }
             guard matchesFundamentalTopic($0) else { return false }
+            guard matchesConcurrencySubtopic($0) else { return false }
+            guard matchesServiceSubtopic($0) else { return false }
+            guard matchesDatabaseSubtopic($0) else { return false }
+            guard matchesSecuritySubtopic($0) else { return false }
+            guard matchesReliabilitySubtopic($0) else { return false }
+            guard matchesPlatformSubtopic($0) else { return false }
             return (model.reviews[$0.id]?.dueAt ?? .distantPast) <= Date()
         }.count
     }
@@ -100,6 +122,13 @@ struct FlashcardsView: View {
         .onChange(of: query) { _, _ in resetPosition() }
         .onChange(of: mode) { _, _ in resetPosition() }
         .onChange(of: fundamentalTopic) { _, _ in resetPosition() }
+        .onChange(of: goFundamentalTopic) { _, _ in resetPosition() }
+        .onChange(of: concurrencySubtopic) { _, _ in resetPosition() }
+        .onChange(of: serviceSubtopic) { _, _ in resetPosition() }
+        .onChange(of: databaseSubtopic) { _, _ in resetPosition() }
+        .onChange(of: securitySubtopic) { _, _ in resetPosition() }
+        .onChange(of: reliabilitySubtopic) { _, _ in resetPosition() }
+        .onChange(of: platformSubtopic) { _, _ in resetPosition() }
         .onChange(of: history) { _, _ in resetPosition() }
         .onChange(of: current?.id) { _, cardID in
             saveDraft()
@@ -121,6 +150,21 @@ struct FlashcardsView: View {
                 if topic == .javaFundamentals {
                     fundamentalTopicPicker
                 }
+                if topic == .goFundamentals {
+                    goFundamentalTopicPicker
+                }
+                if isConcurrencyTopic {
+                    concurrencySubtopicPicker
+                }
+                if isServiceTopic {
+                    serviceSubtopicPicker
+                }
+                if topic == .databases {
+                    databaseSubtopicPicker
+                }
+                if topic == .security { securitySubtopicPicker }
+                if topic == .reliability { reliabilitySubtopicPicker }
+                if topic == .cloudPlatform { platformSubtopicPicker }
                 historyPicker
             }
 
@@ -131,6 +175,21 @@ struct FlashcardsView: View {
                     if topic == .javaFundamentals {
                         fundamentalTopicPicker
                     }
+                if topic == .goFundamentals {
+                    goFundamentalTopicPicker
+                }
+                if isConcurrencyTopic {
+                    concurrencySubtopicPicker
+                }
+                if isServiceTopic {
+                    serviceSubtopicPicker
+                }
+                if topic == .databases {
+                    databaseSubtopicPicker
+                }
+                if topic == .security { securitySubtopicPicker }
+                if topic == .reliability { reliabilitySubtopicPicker }
+                if topic == .cloudPlatform { platformSubtopicPicker }
                     historyPicker
                 }
             }
@@ -164,6 +223,74 @@ struct FlashcardsView: View {
         .frame(width: 250)
     }
 
+    private var goFundamentalTopicPicker: some View {
+        Picker("Go fundamental topic", selection: $goFundamentalTopic) {
+            Text("All Go fundamental topics")
+                .tag(nil as GoFundamentalTopic?)
+            ForEach(GoFundamentalTopic.allCases) { topic in
+                Text(topic.rawValue)
+                    .tag(Optional(topic))
+            }
+        }
+        .frame(width: 250)
+    }
+
+    private var concurrencySubtopicPicker: some View {
+        Picker("Concurrency subtopic", selection: $concurrencySubtopic) {
+            Text("All concurrency topics")
+                .tag(nil as ConcurrencySubtopic?)
+            ForEach(ConcurrencySubtopic.allCases) { subtopic in
+                Text(subtopic.rawValue)
+                    .tag(Optional(subtopic))
+            }
+        }
+        .frame(width: 250)
+    }
+
+    private var serviceSubtopicPicker: some View {
+        Picker("Service subtopic", selection: $serviceSubtopic) {
+            Text("All service topics").tag(nil as ServiceSubtopic?)
+            ForEach(ServiceSubtopic.allCases) { subtopic in
+                Text(subtopic.rawValue).tag(Optional(subtopic))
+            }
+        }
+        .frame(width: 250)
+    }
+
+    private var databaseSubtopicPicker: some View {
+        Picker("Database subtopic", selection: $databaseSubtopic) {
+            Text("All database topics").tag(nil as DatabaseSubtopic?)
+            ForEach(DatabaseSubtopic.allCases) { subtopic in
+                Text(subtopic.rawValue).tag(Optional(subtopic))
+            }
+        }
+        .frame(width: 250)
+    }
+
+    private var securitySubtopicPicker: some View {
+        Picker("Security subtopic", selection: $securitySubtopic) {
+            Text("All security topics").tag(nil as SecuritySubtopic?)
+            ForEach(SecuritySubtopic.allCases) { Text($0.rawValue).tag(Optional($0)) }
+        }
+        .frame(width: 250)
+    }
+
+    private var reliabilitySubtopicPicker: some View {
+        Picker("Reliability subtopic", selection: $reliabilitySubtopic) {
+            Text("All reliability topics").tag(nil as ReliabilitySubtopic?)
+            ForEach(ReliabilitySubtopic.allCases) { Text($0.rawValue).tag(Optional($0)) }
+        }
+        .frame(width: 250)
+    }
+
+    private var platformSubtopicPicker: some View {
+        Picker("Platform subtopic", selection: $platformSubtopic) {
+            Text("All platform topics").tag(nil as PlatformSubtopic?)
+            ForEach(PlatformSubtopic.allCases) { Text($0.rawValue).tag(Optional($0)) }
+        }
+        .frame(width: 250)
+    }
+
     private var historyPicker: some View {
         Picker("History", selection: $history) {
             Text("Any history").tag("Any history")
@@ -176,7 +303,7 @@ struct FlashcardsView: View {
     private func card(_ card: Flashcard) -> some View {
         VStack(alignment: .leading, spacing: 20) {
             HStack {
-                Text(card.fundamentalTopic?.rawValue ?? card.topic)
+                Text(card.subtopic ?? card.topic)
                     .font(.caption.weight(.bold))
                     .padding(.horizontal, 10)
                     .padding(.vertical, 6)
@@ -442,19 +569,82 @@ struct FlashcardsView: View {
     }
 
     private func matchesFundamentalTopic(_ card: Flashcard) -> Bool {
-        guard topic == .javaFundamentals, let fundamentalTopic else {
-            return true
+        if topic == .javaFundamentals, let fundamentalTopic {
+            return card.subtopic == fundamentalTopic.rawValue
         }
-        return card.fundamentalTopic == fundamentalTopic
+        if topic == .goFundamentals, let goFundamentalTopic {
+            return card.subtopic == goFundamentalTopic.rawValue
+        }
+        return true
+    }
+
+    private var isConcurrencyTopic: Bool {
+        topic == .jvmConcurrency || topic == .goConcurrency
+    }
+
+    private func matchesConcurrencySubtopic(_ card: Flashcard) -> Bool {
+        guard isConcurrencyTopic, let concurrencySubtopic else { return true }
+        return card.subtopic == concurrencySubtopic.rawValue
+    }
+
+    private var isServiceTopic: Bool {
+        topic == .javaAPI || topic == .goServices
+    }
+
+    private func matchesServiceSubtopic(_ card: Flashcard) -> Bool {
+        guard isServiceTopic, let serviceSubtopic else { return true }
+        return card.subtopic == serviceSubtopic.rawValue
+    }
+
+    private func matchesDatabaseSubtopic(_ card: Flashcard) -> Bool {
+        guard topic == .databases, let databaseSubtopic else { return true }
+        return card.subtopic == databaseSubtopic.rawValue
+    }
+
+    private func matchesSecuritySubtopic(_ card: Flashcard) -> Bool {
+        guard topic == .security, let securitySubtopic else { return true }
+        return card.subtopic == securitySubtopic.rawValue
+    }
+
+    private func matchesReliabilitySubtopic(_ card: Flashcard) -> Bool {
+        guard topic == .reliability, let reliabilitySubtopic else { return true }
+        return card.subtopic == reliabilitySubtopic.rawValue
+    }
+
+    private func matchesPlatformSubtopic(_ card: Flashcard) -> Bool {
+        guard topic == .cloudPlatform, let platformSubtopic else { return true }
+        return card.subtopic == platformSubtopic.rawValue
     }
 
     private func comesBefore(_ left: Flashcard, _ right: Flashcard) -> Bool {
-        guard topic == .javaFundamentals else {
-            return left.id < right.id
-        }
-        let leftOrder = left.fundamentalTopic?.sortOrder ?? Int.max
-        let rightOrder = right.fundamentalTopic?.sortOrder ?? Int.max
+        let leftOrder = subtopicSortOrder(left)
+        let rightOrder = subtopicSortOrder(right)
         return leftOrder == rightOrder ? left.id < right.id : leftOrder < rightOrder
+    }
+
+    private func subtopicSortOrder(_ card: Flashcard) -> Int {
+        switch topic {
+        case .javaFundamentals: sortOrder(of: card, as: FundamentalTopic.self, fallback: nil)
+        case .goFundamentals: sortOrder(of: card, as: GoFundamentalTopic.self, fallback: nil)
+        case .jvmConcurrency, .goConcurrency: sortOrder(of: card, as: ConcurrencySubtopic.self, fallback: .runtimeDiagnostics)
+        case .javaAPI, .goServices: sortOrder(of: card, as: ServiceSubtopic.self, fallback: .testing)
+        case .databases: sortOrder(of: card, as: DatabaseSubtopic.self, fallback: .rolloutDiagnosis)
+        case .security: sortOrder(of: card, as: SecuritySubtopic.self, fallback: .guardrailsRollout)
+        case .reliability: sortOrder(of: card, as: ReliabilitySubtopic.self, fallback: .incidents)
+        case .cloudPlatform: sortOrder(of: card, as: PlatformSubtopic.self, fallback: .pavedRoad)
+        default: 0
+        }
+    }
+
+    private func sortOrder<Subtopic: CaseIterable & RawRepresentable & Equatable>(
+        of card: Flashcard,
+        as type: Subtopic.Type,
+        fallback: Subtopic?
+    ) -> Int where Subtopic.RawValue == String {
+        guard let subtopic = card.subtopic.flatMap(Subtopic.init(rawValue:)) ?? fallback else {
+            return Int.max
+        }
+        return Array(Subtopic.allCases).firstIndex(of: subtopic) ?? Int.max
     }
 
     private func move(_ delta: Int) {
