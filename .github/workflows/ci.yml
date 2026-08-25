@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  exporter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Test content exporter
+        run: node --test Scripts/export-content.test.mjs
+
+  macos:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate Xcode project
+        run: xcodegen generate
+      - name: Test Staff Deck
+        run: >-
+          xcodebuild
+          -project StaffDeck.xcodeproj
+          -scheme StaffDeck
+          -destination 'platform=macOS'
+          -derivedDataPath .build/ci
+          CODE_SIGNING_ALLOWED=NO
+          test
