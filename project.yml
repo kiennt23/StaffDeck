@@ -29,6 +29,11 @@ targets:
         CURRENT_PROJECT_VERSION: 1
         SWIFT_VERSION: 5.0
         SWIFT_STRICT_CONCURRENCY: minimal
+        CODE_SIGN_IDENTITY: Apple Development
+        "CODE_SIGN_IDENTITY[sdk=macosx*]": Apple Development
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: 7UT2LCFX8V
+        PROVISIONING_PROFILE_SPECIFIER: ""
         ENABLE_APP_SANDBOX: NO
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_CFBundleDisplayName: Staff Deck
