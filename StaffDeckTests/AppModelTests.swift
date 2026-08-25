@@ -53,8 +53,105 @@ final class AppModelTests: XCTestCase {
                 .reliability,
                 .leadership,
                 .staffScenarios,
+                .goFundamentals,
+                .goServices,
+                .goConcurrency,
+                .goArchitecture,
             ]
         )
+    }
+
+    func testGoTrackShowsGoFoundationsBeforeSharedDSA() {
+        XCTAssertEqual(
+            InterviewTopic.topics(in: .foundations, track: .go),
+            [.goFundamentals, .goServices, .goConcurrency, .goArchitecture, .dsa]
+        )
+    }
+
+    func testGoFundamentalsHaveFilterableSubtopics() {
+        let model = AppModel()
+        let goFundamentals = model.flashcards.filter { $0.topic == InterviewTopic.goFundamentals.rawValue }
+
+        XCTAssertEqual(goFundamentals.count, 44)
+        XCTAssertTrue(goFundamentals.allSatisfy { $0.subtopic != nil })
+        XCTAssertEqual(
+            Set(goFundamentals.compactMap(\.subtopic)),
+            Set(GoFundamentalTopic.allCases.map(\.rawValue))
+        )
+    }
+
+    func testConcurrencyCardsCoverEachFilterableSubtopic() {
+        assertSubtopicCoverage(topics: [.jvmConcurrency, .goConcurrency], ConcurrencySubtopic.self)
+    }
+
+    func testServiceCardsCoverEachFilterableSubtopic() {
+        assertSubtopicCoverage(topics: [.javaAPI, .goServices], ServiceSubtopic.self)
+    }
+
+    func testDatabaseCardsCoverEachFilterableSubtopic() {
+        assertSubtopicCoverage(topics: [.databases], DatabaseSubtopic.self)
+    }
+
+    func testSecurityCardsCoverEachFilterableSubtopic() {
+        assertSubtopicCoverage(topics: [.security], SecuritySubtopic.self)
+    }
+
+    func testReliabilityCardsCoverEachFilterableSubtopic() {
+        assertSubtopicCoverage(topics: [.reliability], ReliabilitySubtopic.self)
+    }
+
+    func testPlatformCardsCoverEachFilterableSubtopic() {
+        assertSubtopicCoverage(topics: [.cloudPlatform], PlatformSubtopic.self)
+    }
+
+    private func assertSubtopicCoverage<Subtopic: CaseIterable & RawRepresentable>(
+        topics: [InterviewTopic],
+        _ type: Subtopic.Type,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) where Subtopic.RawValue == String {
+        let model = AppModel()
+        for topic in topics {
+            let subtopics = model.flashcards
+                .filter { $0.topic == topic.rawValue }
+                .compactMap(\.subtopic)
+            XCTAssertEqual(
+                Set(subtopics),
+                Set(Subtopic.allCases.map(\.rawValue)),
+                "\(topic.rawValue) cards should cover every filterable subtopic",
+                file: file,
+                line: line
+            )
+        }
+    }
+
+    func testEverySubtopicBelongsToItsTopicsFilterVocabulary() {
+        let vocabularies: [InterviewTopic: Set<String>] = [
+            .javaFundamentals: Set(FundamentalTopic.allCases.map(\.rawValue)),
+            .goFundamentals: Set(GoFundamentalTopic.allCases.map(\.rawValue)),
+            .jvmConcurrency: Set(ConcurrencySubtopic.allCases.map(\.rawValue)),
+            .goConcurrency: Set(ConcurrencySubtopic.allCases.map(\.rawValue)),
+            .javaAPI: Set(ServiceSubtopic.allCases.map(\.rawValue)),
+            .goServices: Set(ServiceSubtopic.allCases.map(\.rawValue)),
+            .databases: Set(DatabaseSubtopic.allCases.map(\.rawValue)),
+            .security: Set(SecuritySubtopic.allCases.map(\.rawValue)),
+            .reliability: Set(ReliabilitySubtopic.allCases.map(\.rawValue)),
+            .cloudPlatform: Set(PlatformSubtopic.allCases.map(\.rawValue)),
+        ]
+        let model = AppModel()
+
+        for card in model.flashcards {
+            guard let subtopic = card.subtopic else { continue }
+            let topic = try! XCTUnwrap(InterviewTopic(rawValue: card.topic))
+            let vocabulary = try! XCTUnwrap(
+                vocabularies[topic],
+                "Card \(card.id) declares subtopic \"\(subtopic)\" on unfilterable topic \(card.topic)"
+            )
+            XCTAssertTrue(
+                vocabulary.contains(subtopic),
+                "Card \(card.id) declares unknown subtopic \"\(subtopic)\" for topic \(card.topic)"
+            )
+        }
     }
 
     func testEveryFlashcardTopicHasASidebarDestination() {
@@ -72,21 +169,77 @@ final class AppModelTests: XCTestCase {
             $0.topic == InterviewTopic.javaFundamentals.rawValue
         }
 
-        XCTAssertEqual(model.flashcards.count, 181)
-        XCTAssertEqual(Set(model.flashcards.map(\.id)).count, 181)
+        XCTAssertEqual(model.flashcards.count, 300)
+        XCTAssertEqual(Set(model.flashcards.map(\.id)).count, 300)
         XCTAssertEqual(model.flashcards.map(\.id).min(), 1)
-        XCTAssertEqual(model.flashcards.map(\.id).max(), 181)
-        XCTAssertEqual(fundamentals.count, 41)
+        XCTAssertEqual(model.flashcards.map(\.id).max(), 300)
+        XCTAssertEqual(fundamentals.count, 44)
         XCTAssertTrue(fundamentals.allSatisfy { $0.followUps.count == 3 })
-        XCTAssertTrue(fundamentals.allSatisfy { $0.fundamentalTopic != nil })
+        XCTAssertTrue(fundamentals.allSatisfy { $0.subtopic != nil })
         XCTAssertEqual(
-            Set(fundamentals.compactMap(\.fundamentalTopic)),
-            Set(FundamentalTopic.allCases)
+            Set(fundamentals.compactMap(\.subtopic)),
+            Set(FundamentalTopic.allCases.map(\.rawValue))
         )
         XCTAssertTrue(
             model.flashcards
                 .filter { $0.topic != InterviewTopic.javaFundamentals.rawValue }
-                .allSatisfy { $0.fundamentalTopic == nil }
+                .allSatisfy { card in
+                    card.subtopic.map { FundamentalTopic(rawValue: $0) == nil } ?? true
+                }
         )
+    }
+
+    func testEveryGeneralPracticeHasAStaffLevelRubric() {
+        let model = AppModel()
+        let generalPractices = model.practices.filter { $0.kind == "General" }
+
+        XCTAssertEqual(generalPractices.count, 136)
+        XCTAssertTrue(generalPractices.allSatisfy { practice in
+            guard let rubric = practice.generalRubric else { return false }
+            return !rubric.signals.isEmpty
+                && !rubric.strongAnswer.isEmpty
+                && !rubric.commonMisses.isEmpty
+                && !rubric.scoreGuide.isEmpty
+        })
+        XCTAssertTrue(model.practices.filter { $0.kind == "DSA" }.allSatisfy {
+            $0.generalRubric == nil
+        })
+    }
+
+    func testGoPracticesHaveTheSameCoachingFeaturesAsGeneralPractices() {
+        let model = AppModel()
+        let goPractices = model.practices.filter { $0.contentTrack == .go }
+
+        XCTAssertEqual(goPractices.count, 22)
+        XCTAssertTrue(goPractices.allSatisfy { practice in
+            practice.isAvailable(in: .go)
+                && !practice.isAvailable(in: .java)
+                && practice.generalRubric != nil
+                && practice.followUps.count == 3
+                && !practice.completion.isEmpty
+                && practice.modelAnswer?.isEmpty == false
+        })
+    }
+
+    func testTestingAndDependencyContentHasJavaGoParity() {
+        let model = AppModel()
+        let testingCards = model.flashcards.filter { (196...201).contains($0.id) }
+
+        XCTAssertEqual(testingCards.filter { $0.contentTrack == .java }.count, 3)
+        XCTAssertEqual(testingCards.filter { $0.contentTrack == .go }.count, 3)
+
+        let javaPractice = try! XCTUnwrap(model.practices.first { $0.id == "java-testing-dependencies" })
+        let goPractice = try! XCTUnwrap(model.practices.first { $0.id == "go-testing-dependencies" })
+        let sharedPractice = try! XCTUnwrap(model.practices.first { $0.id == "staff-quality-gates" })
+
+        XCTAssertTrue(javaPractice.isAvailable(in: .java))
+        XCTAssertFalse(javaPractice.isAvailable(in: .go))
+        XCTAssertTrue(goPractice.isAvailable(in: .go))
+        XCTAssertFalse(goPractice.isAvailable(in: .java))
+        XCTAssertTrue(sharedPractice.isAvailable(in: .java))
+        XCTAssertTrue(sharedPractice.isAvailable(in: .go))
+        XCTAssertTrue([javaPractice, goPractice, sharedPractice].allSatisfy {
+            $0.generalRubric != nil && $0.followUps.count == 3 && !$0.completion.isEmpty
+        })
     }
 }
