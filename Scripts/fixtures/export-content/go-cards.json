@@ -1,0 +1,9 @@
+[
+  {
+    "id": 4,
+    "topic": "Go Fundamentals",
+    "subtopic": "Types",
+    "question": "What is a Go value?",
+    "answer": "A Go answer."
+  }
+]
