@@ -15,7 +15,7 @@ struct LanguageComparisonView: View {
                 SectionHeader(
                     eyebrow: "Transfer the concept, not the syntax",
                     title: "Compare Java and Go",
-                    subtitle: "Learn one production concern through both language ecosystems, then explain the invariant and the decision rule without relying on either implementation." 
+                    subtitle: "Learn one production concern through both language ecosystems, then explain the invariant and the decision rule without relying on either implementation."
                 )
 
                 Picker("Concept", selection: $selectedID) {
