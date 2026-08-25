@@ -1,0 +1,2501 @@
+[
+  {
+    "id": 182,
+    "topic": "Go Fundamentals",
+    "contentTrack": null,
+    "subtopic": "Types & Interfaces",
+    "question": "How do Go interfaces differ from Java interfaces?",
+    "testing": "The interviewer is testing whether you can explain Go's structural interfaces, their accidental-satisfaction risk, and the typed-nil trap — and when Java's nominal model is safer.",
+    "outline": [
+      "Interfaces are satisfied implicitly; a type need not declare its intent.",
+      "Keep interfaces small and consumer-owned; accept interfaces and return concrete types.",
+      "A nil interface differs from an interface containing a typed nil pointer."
+    ],
+    "answer": "Unlike Java's nominal interfaces, Go uses structural satisfaction. This reduces coupling but makes accidental satisfaction possible, so expose small behavior-focused interfaces near consumers. Check both the dynamic type and value when diagnosing nil-interface behavior.",
+    "example": "Compare the decision with the equivalent Java service concern.",
+    "staffSignal": "Own the trade: small consumer-owned interfaces as an architectural decision, not a slogan, with the nil-interface failure mode ready as a concrete bug story.",
+    "followUps": [
+      "How can a typed nil inside an error interface surprise a caller?",
+      "What evidence would validate this design in production?",
+      "Which assumption would change your recommendation?"
+    ]
+  },
+  {
+    "id": 183,
+    "topic": "Go Fundamentals",
+    "contentTrack": null,
+    "subtopic": "Errors & Control Flow",
+    "question": "How should Go code handle errors in a service boundary?",
+    "testing": "The interviewer is testing whether you wrap causes with %w, classify with errors.Is/errors.As, and reserve panic for broken invariants.",
+    "outline": [
+      "Return errors explicitly and add context at each meaningful boundary.",
+      "Use errors.Is and errors.As for classification without losing the causal chain.",
+      "Do not use panic for expected request, dependency, or validation failures."
+    ],
+    "answer": "Go makes error flow explicit rather than using Java exceptions. Preserve wrapped causes with fmt.Errorf and %w, map trusted error classes at transport boundaries, and log once with request context. Panics are for broken invariants, not ordinary operational failure.",
+    "example": "Compare the decision with the equivalent Java service concern.",
+    "staffSignal": "Design error taxonomy as a stable transport contract: trusted classes mapped at the boundary, logged exactly once, with panic kept for programmer error.",
+    "followUps": [
+      "Where should an HTTP service translate a domain error into a status code?",
+      "What evidence would validate this design in production?",
+      "Which assumption would change your recommendation?"
+    ]
+  },
+  {
+    "id": 184,
+    "topic": "Go Fundamentals",
+    "contentTrack": null,
+    "subtopic": "Slices, Maps & Ownership",
+    "question": "What are the ownership rules for slices and maps?",
+    "testing": "The interviewer is testing whether you know slices are descriptors over shared backing arrays and that append can mutate another caller's data.",
+    "outline": [
+      "Slices are descriptors over shared backing arrays.",
+      "append can mutate shared backing storage until capacity is exceeded.",
+      "Maps are reference-like, not safe for concurrent mutation, and must be copied for ownership isolation."
+    ],
+    "answer": "A Go slice is closer to a view than a Java List value. Document whether callers retain ownership, copy input at async or cache boundaries, and avoid publishing mutable maps across goroutines. Use clone or an explicit copy when isolation matters.",
+    "example": "Compare the decision with the equivalent Java service concern.",
+    "staffSignal": "Make ownership a documented API decision — copy at async, cache, and cross-goroutine boundaries — instead of hoping callers read the source.",
+    "followUps": [
+      "Why can appending to a subslice corrupt data owned by another caller?",
+      "What evidence would validate this design in production?",
+      "Which assumption would change your recommendation?"
+    ]
+  },
+  {
+    "id": 185,
+    "topic": "Go APIs & Services",
+    "contentTrack": null,
+    "subtopic": "Clients, Timeouts & Retries",
+    "question": "How should context.Context flow through a Go service?",
+    "testing": "The interviewer is testing whether context flows as the first parameter to every blocking call, with deadlines set at ingress.",
+    "outline": [
+      "Accept context as the first parameter for request-scoped work.",
+      "Propagate cancellation, deadline, and request-scoped metadata to every blocking dependency.",
+      "Never store Context in a struct or replace a caller deadline with context.Background."
+    ],
+    "answer": "Context is Go's standard cancellation boundary, unlike ad hoc Java thread interruption or request-scoped state. Pass it through database, HTTP, gRPC, and queue calls; set a bounded deadline at ingress; and make cleanup safe when cancellation races normal completion.",
+    "example": "Compare the decision with the equivalent Java service concern.",
+    "staffSignal": "Treat context as the cancellation contract of the service: caller deadlines never silently replaced, cleanup safe when cancellation races completion.",
+    "followUps": [
+      "What leak occurs if a goroutine ignores a canceled context while sending a result?",
+      "What evidence would validate this design in production?",
+      "Which assumption would change your recommendation?"
+    ]
+  },
+  {
+    "id": 186,
+    "topic": "Go APIs & Services",
+    "contentTrack": null,
+    "subtopic": "HTTP, gRPC & API Design",
+    "question": "How do you design a production-ready Go HTTP handler?",
+    "testing": "The interviewer is testing whether handlers stay thin: bound input first, separate transport from domain, and make idempotency and error mapping explicit.",
+    "outline": [
+      "Validate and bound input before allocating or calling dependencies.",
+      "Separate transport decoding from domain logic and error classification.",
+      "Set deadlines, propagate context, produce structured logs and metrics, and test cancellation."
+    ],
+    "answer": "Use net/http as a transport boundary, not the location for domain decisions. Keep handlers thin, enforce request limits, pass Context onward, and make idempotency, authn/authz, and error responses explicit. The Staff concern is consistent operational behavior across handlers, not framework preference.",
+    "example": "Compare the decision with the equivalent Java service concern.",
+    "staffSignal": "Standardize operational behavior across handlers — limits, deadlines, structured telemetry, cancellation tests — as a paved road rather than per-handler heroics.",
+    "followUps": [
+      "Which limits protect a handler from a slow or oversized request?",
+      "What evidence would validate this design in production?",
+      "Which assumption would change your recommendation?"
+    ]
+  },
+  {
+    "id": 187,
+    "topic": "Go APIs & Services",
+    "contentTrack": null,
+    "subtopic": "Clients, Timeouts & Retries",
+    "question": "When should a Go service use a connection pool or worker pool?",
+    "testing": "The interviewer is testing whether pools bound scarce resources rather than goroutine creation, and whether sizing derives from dependency capacity.",
+    "outline": [
+      "Pools bound a scarce downstream resource or expensive setup, not ordinary goroutine creation.",
+      "Size from dependency capacity, latency, and queueing behavior.",
+      "Expose saturation, wait time, errors, and cancellation behavior."
+    ],
+    "answer": "Goroutines are cheap but database connections and downstream concurrency are not. Avoid importing Java executor habits blindly: use a worker pool only to bound work, and use a connection pool to protect a dependency. Cancellation must release queued and in-flight capacity promptly.",
+    "example": "Compare the decision with the equivalent Java service concern.",
+    "staffSignal": "Refuse Java executor habits by default: worker pools only to bound work, connection pools to protect dependencies, cancellation releasing queued capacity promptly.",
+    "followUps": [
+      "Why can adding workers make a saturated database slower?",
+      "What evidence would validate this design in production?",
+      "Which assumption would change your recommendation?"
+    ]
+  },
+  {
+    "id": 188,
+    "topic": "Go Concurrency & Runtime",
+    "contentTrack": null,
+    "subtopic": "Memory & Synchronization",
+    "question": "When should Go code use channels versus mutexes?",
+    "testing": "The interviewer is testing whether you choose mutex or channel from the invariant, not from slogans.",
+    "outline": [
+      "Use a mutex to protect shared state with a simple invariant.",
+      "Use channels to transfer ownership or coordinate lifecycle and streaming work.",
+      "Choose the smallest mechanism that makes cancellation and closure semantics obvious."
+    ],
+    "answer": "The slogan 'do not communicate by sharing memory' is not a mandate to use channels everywhere. A mutex is often simpler for a cache or counter; channels are useful for pipelines and ownership transfer. In both cases, state the invariant, shutdown path, and backpressure behavior.",
+    "example": "Compare the decision with the equivalent Java service concern.",
+    "staffSignal": "Debunk 'share memory by communicating' as a mandate: state the invariant, shutdown path, and backpressure for whichever mechanism wins.",
+    "followUps": [
+      "What channel ownership rule prevents double close panics?",
+      "What evidence would validate this design in production?",
+      "Which assumption would change your recommendation?"
+    ]
+  },
+  {
+    "id": 189,
+    "topic": "Go Concurrency & Runtime",
+    "contentTrack": null,
+    "subtopic": "Lifecycle & Cancellation",
+    "question": "How do goroutine leaks happen, and how do you prevent them?",
+    "testing": "The interviewer is testing whether you can trace who unblocks every goroutine and test cancellation under blocked dependencies.",
+    "outline": [
+      "Every goroutine needs a bounded lifetime and owner.",
+      "Blocking sends, receives, timers, and dependency calls need cancellation or completion paths.",
+      "Use context, buffered result channels where appropriate, and wait groups or errgroup for structured shutdown."
+    ],
+    "answer": "A goroutine leak is frequently a blocked communication path, not a memory-management issue. Trace who can unblock each operation, select on ctx.Done for request-scoped work, stop timers when needed, and test cancellation under blocked dependencies. Compare this to Java: cheap execution does not remove lifecycle discipline.",
+    "example": "Compare the decision with the equivalent Java service concern.",
+    "staffSignal": "Frame leaks as lifecycle-ownership failures with production detection (goroutine profiles, runtime metrics) — cheap execution never removes the discipline.",
+    "followUps": [
+      "How would you detect a leak in production before it exhausts resources?",
+      "What evidence would validate this design in production?",
+      "Which assumption would change your recommendation?"
+    ]
+  },
+  {
+    "id": 190,
+    "topic": "Go Concurrency & Runtime",
+    "contentTrack": null,
+    "subtopic": "Runtime Diagnostics",
+    "question": "How do you investigate Go CPU, allocation, or latency regressions?",
+    "testing": "The interviewer is testing whether pprof profiles form hypotheses rather than decorate guesses — same workload, compared profiles, confirmed by metrics.",
+    "outline": [
+      "Start with a reproducible workload and a baseline.",
+      "Use pprof CPU, heap, goroutine, block, and mutex profiles to test hypotheses.",
+      "Use benchmarks with memory reporting and validate improvements under representative load."
+    ],
+    "answer": "Use pprof to distinguish CPU work, allocation pressure, lock contention, blocked goroutines, and downstream waits. Avoid optimizing from a single profile: compare profiles under the same workload, confirm with metrics and traces, and preserve correctness. This is analogous to Java Flight Recorder and async-profiler, but uses Go runtime evidence.",
+    "example": "Compare the decision with the equivalent Java service concern.",
+    "staffSignal": "Match Java diagnostics instinct for instinct: pprof's five profile types as the JFR equivalent, with the discipline of comparing before optimizing.",
+    "followUps": [
+      "What does a growing goroutine profile suggest that a heap profile may not?",
+      "What evidence would validate this design in production?",
+      "Which assumption would change your recommendation?"
+    ]
+  },
+  {
+    "id": 191,
+    "topic": "Go Concurrency & Runtime",
+    "contentTrack": "go",
+    "subtopic": "Runtime Diagnostics",
+    "question": "A Go pod is OOM-killed while its heap profile is well below the container limit. Explain.",
+    "testing": "The interviewer is testing whether you can account for stacks, runtime metadata, cgo, and page retention when heap looks healthy.",
+    "outline": [
+      "Account for goroutine stacks, runtime metadata, cgo, mmap, buffers, and page retention in addition to the heap profile.",
+      "Compare container RSS, Go runtime metrics, heap profile, goroutine count, and allocation rate.",
+      "Fix the allocating or retaining path before changing limits."
+    ],
+    "answer": "A heap profile is not the full process memory picture. Inspect RSS alongside runtime metrics such as heap, stacks, and goroutines; check cgo or native libraries; and compare a healthy workload with the failing one. Set a memory limit deliberately, but treat higher limits as containment rather than proof of a fix.",
+    "example": "Compare the decision with the equivalent Java service concern.",
+    "staffSignal": "Turn the OOM into a repeatable diagnostic: RSS against runtime metrics, healthy-versus-failing comparison, and memory limits as containment — never as the fix.",
+    "followUps": [
+      "Which metric distinguishes heap growth from goroutine-stack growth?",
+      "What evidence would validate this design in production?",
+      "Which assumption would change your recommendation?"
+    ]
+  },
+  {
+    "id": 192,
+    "topic": "Staff Scenarios",
+    "contentTrack": "go",
+    "subtopic": null,
+    "question": "A Go service is slow only in Kubernetes. How do you approach it?",
+    "testing": "The interviewer is testing whether you compare environments rigorously — throttling, DNS, pools, mesh — without assuming the language or the platform is guilty.",
+    "outline": [
+      "Compare an identical workload locally and in-cluster across CPU throttling, DNS, network path, storage, and downstream waits.",
+      "Use traces and pprof profiles to separate CPU, blocking, lock contention, and dependency latency.",
+      "Change one isolating variable at a time and verify with an SLO-relevant load test."
+    ],
+    "answer": "Start with a symptom and hypothesis matrix, not a language assumption. In Go, capture CPU, goroutine, block, and mutex profiles as well as traces. Correlate them with cgroup throttling, requests/limits, DNS, service-mesh behavior, and connection-pool waits before changing code or infrastructure.",
+    "example": "Compare the decision with the equivalent Java service concern.",
+    "staffSignal": "Hypothesis matrix plus one-variable experiments with predicted signals; the durable fix lands in platform defaults, not a one-off patch.",
+    "followUps": [
+      "How would you distinguish CPU throttling from a blocked downstream call?",
+      "What evidence would validate this design in production?",
+      "Which assumption would change your recommendation?"
+    ]
+  },
+  {
+    "id": 193,
+    "topic": "Staff Scenarios",
+    "contentTrack": "go",
+    "subtopic": null,
+    "question": "You inherit fifty Go services with inconsistent observability and deployment practices. What is your strategy?",
+    "testing": "The interviewer is testing whether you run a standards program: minimum contract, paved-road automation, risk-sequenced migration.",
+    "outline": [
+      "Inventory service ownership, criticality, current SLOs, instrumentation, and deployment risk.",
+      "Offer a paved road with Go middleware, OpenTelemetry conventions, health endpoints, and progressive-delivery defaults.",
+      "Measure adoption and reliability outcomes rather than mandate a rewrite."
+    ],
+    "answer": "Define a minimum production contract, then make it easy to adopt through shared Go modules, templates, CI checks, and migration support. Standardize context propagation, structured logging, metrics, traces, timeouts, readiness, and rollback signals. Sequence by risk and leverage, while keeping explicit exceptions for unusual services.",
+    "example": "Compare the decision with the equivalent Java service concern.",
+    "staffSignal": "Adoption measured rather than mandated — the platform as a product with exception paths, migration support, and outcomes per service.",
+    "followUps": [
+      "What would make teams adopt the paved road instead of bypassing it?",
+      "What evidence would validate this design in production?",
+      "Which assumption would change your recommendation?"
+    ]
+  },
+  {
+    "id": 194,
+    "topic": "Staff Scenarios",
+    "contentTrack": "go",
+    "subtopic": null,
+    "question": "One tenant's batch job overloads Go services, Kubernetes, and the database. Design fairness.",
+    "testing": "The interviewer is testing whether you bound tenant work before it fans out and propagate cancellation so discarded work releases capacity.",
+    "outline": [
+      "Measure tenant-level admitted work, queue age, goroutines, connections, queries, and latency.",
+      "Use admission limits, weighted queues, per-tenant concurrency, and separate interactive from batch capacity.",
+      "Propagate cancellation so discarded or expired work releases capacity promptly."
+    ],
+    "answer": "Treat goroutines as work representation, not unlimited capacity. Bound tenant work before it fans out, use context deadlines throughout the pipeline, and expose queueing rather than creating unbounded goroutines. Protect database pools and downstream services with the same fairness policy, then validate outcomes by tenant rather than aggregate throughput.",
+    "example": "Compare the decision with the equivalent Java service concern.",
+    "staffSignal": "Fairness as an explicit product decision: per-tenant admission, weighted queues, interactive/batch separation, validated per tenant — not by aggregate throughput.",
+    "followUps": [
+      "Where should the first tenant limit live, and why?",
+      "What evidence would validate this design in production?",
+      "Which assumption would change your recommendation?"
+    ]
+  },
+  {
+    "id": 195,
+    "topic": "Go Fundamentals",
+    "contentTrack": "go",
+    "subtopic": "Collections & Interview Idioms",
+    "question": "How should a Go candidate choose collections in a coding interview?",
+    "testing": "The interviewer is testing whether you translate the algorithm's operations into Go's slices, maps, and container/heap — with complexity and mutation stated.",
+    "outline": [
+      "Use slices for indexed sequences and stacks; maps for membership, lookup, and counting; and container/heap or a custom heap for priority work.",
+      "State mutation, ordering, ownership, and complexity before implementation.",
+      "Avoid premature abstractions when a slice, map, or small struct expresses the invariant."
+    ],
+    "answer": "Translate the algorithm's required operations into Go's basic data structures. A slice often replaces Java's ArrayList or deque pattern; a map supports lookup and frequency; and a heap requires an explicit implementation. Explain allocation and mutation choices, especially when returning slices or sharing data across goroutines.",
+    "example": "Compare the decision with the equivalent Java service concern.",
+    "staffSignal": "Allocation and ownership choices explained, especially slice retention and sharing across goroutines — the interview-relevant differences from Java collections.",
+    "followUps": [
+      "When would you copy a slice instead of returning it directly?",
+      "What evidence would validate this design in production?",
+      "Which assumption would change your recommendation?"
+    ]
+  },
+  {
+    "id": 196,
+    "topic": "Java Fundamentals",
+    "contentTrack": "java",
+    "subtopic": "Testing & Dependency Management",
+    "question": "How do you make a Java dependency graph reproducible and safe?",
+    "testing": "The interviewer is testing whether builds are reproducible: locked versions, reviewed SBOMs, and upgrade policy as ownership.",
+    "outline": [
+      "Pin direct and transitive versions with Gradle locking or Maven controls.",
+      "Review dependency updates, SBOMs, provenance, and vulnerability findings.",
+      "Keep builds hermetic and avoid unreviewed dynamic versions."
+    ],
+    "answer": "A Staff-level dependency policy makes builds repeatable and supply-chain changes auditable. Version catalogs centralize intent, lockfiles capture resolution, and SBOM plus provenance help incident response. A scanner is evidence, not a replacement for ownership and upgrade policy.",
+    "example": "Compare the decision with the equivalent Java service concern.",
+    "staffSignal": "Supply-chain response rehearsed — a critical transitive CVE with no upstream fix becomes a compensating-control decision with a named owner, not a shrug.",
+    "followUps": [
+      "How would you respond to a critical transitive CVE with no upstream fix?",
+      "What evidence would validate this design in production?",
+      "Which assumption would change your recommendation?"
+    ]
+  },
+  {
+    "id": 197,
+    "topic": "Java Fundamentals",
+    "contentTrack": "java",
+    "subtopic": "Testing & Dependency Management",
+    "question": "What is a pragmatic Java integration-test strategy?",
+    "testing": "The interviewer is testing whether test levels map to failure classes — unit for logic, Testcontainers for real boundaries, contracts for release independence.",
+    "outline": [
+      "Use JUnit 5 for behavior and Testcontainers for real dependency boundaries.",
+      "Reserve consumer-provider contracts for independently deployed interfaces.",
+      "Keep fixtures deterministic and assert observable contracts, not implementation details."
+    ],
+    "answer": "Unit tests protect local decisions; integration tests validate configuration, SQL, serialization, and client behavior; contracts protect release independence. Disposable dependencies are usually more trustworthy than mocks for infrastructure behavior, provided their lifecycle and data setup are bounded.",
+    "example": "Compare the decision with the equivalent Java service concern.",
+    "staffSignal": "The mock-versus-real decision is made per dependency semantics, and the answer names the production bug a mock would hide.",
+    "followUps": [
+      "When would a mock hide a production bug that Testcontainers would catch?",
+      "What evidence would validate this design in production?",
+      "Which assumption would change your recommendation?"
+    ]
+  },
+  {
+    "id": 198,
+    "topic": "Java Fundamentals",
+    "contentTrack": "java",
+    "subtopic": "Testing & Dependency Management",
+    "question": "How do you avoid misleading Java performance tests?",
+    "testing": "The interviewer is testing whether JMH's warmup, forks, and blackholes are understood as JIT-trap controls, not ceremony.",
+    "outline": [
+      "Use JMH for microbenchmarks with warmup, forks, and result consumption.",
+      "Measure allocations and representative contention separately.",
+      "Treat a benchmark as a hypothesis; confirm with production-like load and profiles."
+    ],
+    "answer": "JIT compilation, dead-code elimination, caching, and warmup make naive timing unreliable. JMH controls many JVM-specific traps, while service performance still needs end-to-end evidence such as traces, JFR, and realistic dependency limits.",
+    "example": "Compare the decision with the equivalent Java service concern.",
+    "staffSignal": "A benchmark is a hypothesis — confirmed by traces and production-like load, with the p99-versus-microbench divergence ready as the counterexample.",
+    "followUps": [
+      "Why can a faster microbenchmark still worsen p99 latency?",
+      "What evidence would validate this design in production?",
+      "Which assumption would change your recommendation?"
+    ]
+  },
+  {
+    "id": 199,
+    "topic": "Go Fundamentals",
+    "contentTrack": "go",
+    "subtopic": "Modules, Tooling & Build Semantics",
+    "question": "How do Go modules make dependency changes reviewable?",
+    "testing": "The interviewer is testing whether go.mod/go.sum review, minimal version selection, and replace-directive risk are part of your change process.",
+    "outline": [
+      "Commit go.mod and go.sum and review both direct and transitive changes.",
+      "Understand minimal version selection, proxy/checksum verification, and replace risks.",
+      "Run vulnerability checks and keep module updates intentional."
+    ],
+    "answer": "Go modules provide reproducible dependency inputs when go.mod and go.sum are reviewed together. A replace directive can be useful locally but is risky as a hidden production source. Treat provenance, vulnerability response, and upgrade ownership as engineering controls rather than tooling chores.",
+    "example": "Compare the decision with the equivalent Java service concern.",
+    "staffSignal": "Provenance and upgrade ownership as engineering controls — the unnoticed replace directive is your release-risk story.",
+    "followUps": [
+      "Why can an unnoticed replace directive create a release risk?",
+      "What evidence would validate this design in production?",
+      "Which assumption would change your recommendation?"
+    ]
+  },
+  {
+    "id": 200,
+    "topic": "Go Fundamentals",
+    "contentTrack": "go",
+    "subtopic": "Modules, Tooling & Build Semantics",
+    "question": "What is a pragmatic Go integration-test strategy?",
+    "testing": "The interviewer is testing whether table-driven tests and disposable real dependencies are chosen from what each must prove.",
+    "outline": [
+      "Use table-driven unit tests at logic boundaries and real disposable dependencies for infrastructure behavior.",
+      "Use interfaces at consumer boundaries rather than mocking every concrete type.",
+      "Bound setup, cleanup, deadlines, and fixtures so failures are diagnosable."
+    ],
+    "answer": "Go's standard testing package supports table tests and subtests without requiring a framework. Prefer a real database, broker, or HTTP peer when its semantics matter; mocks are strongest when verifying your own boundary contract. Make cleanup and time budgets explicit to prevent flaky CI.",
+    "example": "Compare the decision with the equivalent Java service concern.",
+    "staffSignal": "Bounded fixtures and explicit time budgets as anti-flakiness design; the answer names which dependency behavior demands a real ephemeral service.",
+    "followUps": [
+      "What dependency behavior is worth testing against a real ephemeral service?",
+      "What evidence would validate this design in production?",
+      "Which assumption would change your recommendation?"
+    ]
+  },
+  {
+    "id": 201,
+    "topic": "Go Fundamentals",
+    "contentTrack": "go",
+    "subtopic": "Modules, Tooling & Build Semantics",
+    "question": "How do you use Go fuzzing and benchmarks safely?",
+    "testing": "The interviewer is testing whether fuzz targets wrap invariants and benchmarks report allocations under stable workloads.",
+    "outline": [
+      "Write fuzz targets around invariants, parsers, boundary conditions, and prior regressions.",
+      "Use testing.B with allocation reporting and stable workloads.",
+      "Confirm benchmark conclusions with pprof and representative load."
+    ],
+    "answer": "Native fuzzing is particularly valuable where malformed input can violate invariants. Benchmarks should report allocations and avoid benchmark noise, then profiles should explain why a change moved. Neither replaces a production-like capacity test.",
+    "example": "Compare the decision with the equivalent Java service concern.",
+    "staffSignal": "Fuzzing as regression insurance for parsers and decoders, benchmark conclusions confirmed by pprof — neither replacing capacity tests.",
+    "followUps": [
+      "What invariant would you fuzz for an HTTP request decoder?",
+      "What evidence would validate this design in production?",
+      "Which assumption would change your recommendation?"
+    ]
+  },
+  {
+    "id": 202,
+    "topic": "Staff Scenarios",
+    "contentTrack": null,
+    "subtopic": null,
+    "question": "How would you standardize quality gates without slowing teams?",
+    "testing": "The interviewer is testing whether quality gates are risk-proportioned rather than uniform, with adoption and flake metrics as the evidence loop.",
+    "outline": [
+      "Define a small risk-based baseline: reproducible dependencies, fast unit tests, targeted integration tests, and ownership of failures.",
+      "Provide templates, CI primitives, and ephemeral dependencies as a paved road.",
+      "Measure lead time, flaky-test rate, escaped defects, and adoption; allow reviewed exceptions."
+    ],
+    "answer": "Standardization succeeds when it removes repeated work and gives teams feedback proportional to risk. Avoid a uniform test-count target. Establish a platform contract, migrate high-risk services first, and use evidence to tune gates that are slow, flaky, or ineffective.",
+    "example": "Compare the decision with the equivalent Java service concern.",
+    "staffSignal": "The paved-road answer: gates teams inherit, exceptions that are reviewed and rare, and the slow-suite/low-risk team handled by tiering rather than exemption.",
+    "followUps": [
+      "How would you handle a team whose suite is slow but whose service is low risk?",
+      "What evidence would validate this design in production?",
+      "Which assumption would change your recommendation?"
+    ]
+  },
+  {
+    "id": 203,
+    "topic": "JVM & Concurrency",
+    "contentTrack": "java",
+    "subtopic": "Runtime Diagnostics",
+    "question": "How do you diagnose Java thread-pool saturation?",
+    "testing": "The interviewer is testing whether you correlate queue wait, active threads, rejection, and traces before proposing capacity.",
+    "outline": [
+      "Correlate queue wait, active threads, rejected work, connection pools, and request traces.",
+      "Use thread dumps, JFR, and async-profiler to distinguish locks, CPU, allocation, and blocking.",
+      "Bound admission before adding threads."
+    ],
+    "answer": "Thread count is not capacity. Identify the constrained resource, stop unbounded queueing, and validate a change against tail latency and error budget.",
+    "example": "Compare the decision with the equivalent Java service concern.",
+    "staffSignal": "Admission bounded before threads added; the change validated against tail latency and error budget — capacity as a measured claim.",
+    "followUps": [
+      "Why can increasing an executor size worsen p99?",
+      "What evidence would validate this design in production?",
+      "Which assumption would change your recommendation?"
+    ]
+  },
+  {
+    "id": 204,
+    "topic": "JVM & Concurrency",
+    "contentTrack": "java",
+    "subtopic": "Lifecycle & Cancellation",
+    "question": "How should Java services stop background work?",
+    "testing": "The interviewer is testing whether shutdown is designed: owners, deadlines, deliberate executor closure, retries that never outlive the deploy.",
+    "outline": [
+      "Give each task an owner, deadline, cancellation path, and shutdown policy.",
+      "Propagate interruption and close executors deliberately.",
+      "Do not let retries outlive the request or deployment budget."
+    ],
+    "answer": "Virtual threads simplify blocking execution, not lifecycle ownership. Every task still needs bounded work and cleanup.",
+    "example": "Compare the decision with the equivalent Java service concern.",
+    "staffSignal": "Virtual threads simplify execution, not lifecycle — the evidence that work survives a deploy is a shutdown test, not a code review.",
+    "followUps": [
+      "What evidence shows work survives a deploy?",
+      "What evidence would validate this design in production?",
+      "Which assumption would change your recommendation?"
+    ]
+  },
+  {
+    "id": 205,
+    "topic": "Go Concurrency & Runtime",
+    "contentTrack": "go",
+    "subtopic": "Capacity & Backpressure",
+    "question": "How do you diagnose Go goroutine saturation?",
+    "testing": "The interviewer is testing whether goroutine count is read as a symptom and profiles distinguish CPU, locks, blocked channels, and downstream waits.",
+    "outline": [
+      "Correlate goroutine, block, mutex, and CPU profiles with queue and dependency waits.",
+      "Find the blocked operation and its cancellation owner.",
+      "Bound admission before spawning more work."
+    ],
+    "answer": "A large goroutine count is a symptom. pprof and traces distinguish CPU, lock contention, blocked channels, and downstream waits.",
+    "example": "Compare the decision with the equivalent Java service concern.",
+    "staffSignal": "The blocked operation and its cancellation owner named before any fix; admission bounded before more work is spawned.",
+    "followUps": [
+      "What profile best identifies blocked channel work?",
+      "What evidence would validate this design in production?",
+      "Which assumption would change your recommendation?"
+    ]
+  },
+  {
+    "id": 206,
+    "topic": "Go Concurrency & Runtime",
+    "contentTrack": "go",
+    "subtopic": "Lifecycle & Cancellation",
+    "question": "How should Go services stop background work?",
+    "testing": "The interviewer is testing whether every goroutine has an owner, a context, and a shutdown deadline — with select guarding blocking sends.",
+    "outline": [
+      "Give each goroutine an owner, context, completion path, and shutdown deadline.",
+      "Select on ctx.Done around blocking sends and receives.",
+      "Wait for known work; do not leak retry loops through deployment."
+    ],
+    "answer": "Goroutines are cheap but not free. Structured shutdown and cancellation protect capacity and predictable deployment.",
+    "example": "Compare the decision with the equivalent Java service concern.",
+    "staffSignal": "The send-after-caller-exits failure traced to its ownership gap; structured shutdown protects capacity and predictable deploys.",
+    "followUps": [
+      "What happens when a worker sends after its caller exits?",
+      "What evidence would validate this design in production?",
+      "Which assumption would change your recommendation?"
+    ]
+  },
+  {
+    "id": 207,
+    "topic": "Staff Scenarios",
+    "contentTrack": null,
+    "subtopic": null,
+    "question": "How would you run a mixed-language latency incident?",
+    "testing": "The interviewer is testing whether incident leadership works across runtimes: shared evidence categories, not one language's tooling imposed on all.",
+    "outline": [
+      "Start with impact, SLO, and a shared symptom timeline.",
+      "Compare traces, queues, dependency waits, profiles, and deployment changes across services.",
+      "Contain safely, assign owners, and verify the durable fix with the same workload."
+    ],
+    "answer": "Use common evidence categories rather than imposing JVM or Go tooling on every team. The goal is a fast, reversible, evidence-led decision.",
+    "example": "Compare the decision with the equivalent Java service concern.",
+    "staffSignal": "The playbooks differ in tools and agree in contract — impact, SLO, timeline, reversible containment, owners, verification. The same five steps for JVM and Go.",
+    "followUps": [
+      "What should be identical in the Java and Go incident playbooks?",
+      "What evidence would validate this design in production?",
+      "Which assumption would change your recommendation?"
+    ]
+  },
+  {
+    "id": 208,
+    "topic": "Go Fundamentals",
+    "contentTrack": "go",
+    "subtopic": "Types & Interfaces",
+    "question": "What is the zero value, and why should APIs make it useful?",
+    "testing": "State the language rule, the API contract it creates, and the production failure mode.",
+    "outline": [
+      "Name the Go semantic rule before choosing an abstraction.",
+      "Make ownership, mutation, nil behavior, and error behavior explicit.",
+      "Use a small example and explain the test that would catch misuse."
+    ],
+    "answer": "Use small consumer-owned interfaces and distinguish a nil interface from an interface with a typed nil value. Choose pointer receivers consistently so method sets and mutation are unsurprising.",
+    "example": "Contrast the choice with a Java implementation, then explain why the external service contract remains the same.",
+    "staffSignal": "Uses idiomatic language features while preserving explicit contracts, safe evolution, and operational clarity.",
+    "followUps": [
+      "What production failure would this contract prevent?",
+      "How would you test the edge case?",
+      "Which requirement would change this recommendation?"
+    ]
+  },
+  {
+    "id": 209,
+    "topic": "Go Fundamentals",
+    "contentTrack": "go",
+    "subtopic": "Types & Interfaces",
+    "question": "When should a Go API use a pointer receiver versus a value receiver?",
+    "testing": "State the language rule, the API contract it creates, and the production failure mode.",
+    "outline": [
+      "Name the Go semantic rule before choosing an abstraction.",
+      "Make ownership, mutation, nil behavior, and error behavior explicit.",
+      "Use a small example and explain the test that would catch misuse."
+    ],
+    "answer": "Use small consumer-owned interfaces and distinguish a nil interface from an interface with a typed nil value. Choose pointer receivers consistently so method sets and mutation are unsurprising.",
+    "example": "Contrast the choice with a Java implementation, then explain why the external service contract remains the same.",
+    "staffSignal": "Uses idiomatic language features while preserving explicit contracts, safe evolution, and operational clarity.",
+    "followUps": [
+      "What production failure would this contract prevent?",
+      "How would you test the edge case?",
+      "Which requirement would change this recommendation?"
+    ]
+  },
+  {
+    "id": 210,
+    "topic": "Go Fundamentals",
+    "contentTrack": "go",
+    "subtopic": "Types & Interfaces",
+    "question": "How do named types differ from type aliases?",
+    "testing": "State the language rule, the API contract it creates, and the production failure mode.",
+    "outline": [
+      "Name the Go semantic rule before choosing an abstraction.",
+      "Make ownership, mutation, nil behavior, and error behavior explicit.",
+      "Use a small example and explain the test that would catch misuse."
+    ],
+    "answer": "Use small consumer-owned interfaces and distinguish a nil interface from an interface with a typed nil value. Choose pointer receivers consistently so method sets and mutation are unsurprising.",
+    "example": "Contrast the choice with a Java implementation, then explain why the external service contract remains the same.",
+    "staffSignal": "Uses idiomatic language features while preserving explicit contracts, safe evolution, and operational clarity.",
+    "followUps": [
+      "What production failure would this contract prevent?",
+      "How would you test the edge case?",
+      "Which requirement would change this recommendation?"
+    ]
+  },
+  {
+    "id": 211,
+    "topic": "Go Fundamentals",
+    "contentTrack": "go",
+    "subtopic": "Types & Interfaces",
+    "question": "Why can an interface holding a typed nil be non-nil?",
+    "testing": "State the language rule, the API contract it creates, and the production failure mode.",
+    "outline": [
+      "Name the Go semantic rule before choosing an abstraction.",
+      "Make ownership, mutation, nil behavior, and error behavior explicit.",
+      "Use a small example and explain the test that would catch misuse."
+    ],
+    "answer": "Use small consumer-owned interfaces and distinguish a nil interface from an interface with a typed nil value. Choose pointer receivers consistently so method sets and mutation are unsurprising.",
+    "example": "Contrast the choice with a Java implementation, then explain why the external service contract remains the same.",
+    "staffSignal": "Uses idiomatic language features while preserving explicit contracts, safe evolution, and operational clarity.",
+    "followUps": [
+      "What production failure would this contract prevent?",
+      "How would you test the edge case?",
+      "Which requirement would change this recommendation?"
+    ]
+  },
+  {
+    "id": 212,
+    "topic": "Go Fundamentals",
+    "contentTrack": "go",
+    "subtopic": "Types & Interfaces",
+    "question": "When should an interface be defined by its consumer?",
+    "testing": "State the language rule, the API contract it creates, and the production failure mode.",
+    "outline": [
+      "Name the Go semantic rule before choosing an abstraction.",
+      "Make ownership, mutation, nil behavior, and error behavior explicit.",
+      "Use a small example and explain the test that would catch misuse."
+    ],
+    "answer": "Use small consumer-owned interfaces and distinguish a nil interface from an interface with a typed nil value. Choose pointer receivers consistently so method sets and mutation are unsurprising.",
+    "example": "Contrast the choice with a Java implementation, then explain why the external service contract remains the same.",
+    "staffSignal": "Uses idiomatic language features while preserving explicit contracts, safe evolution, and operational clarity.",
+    "followUps": [
+      "What production failure would this contract prevent?",
+      "How would you test the edge case?",
+      "Which requirement would change this recommendation?"
+    ]
+  },
+  {
+    "id": 213,
+    "topic": "Go Fundamentals",
+    "contentTrack": "go",
+    "subtopic": "Types & Interfaces",
+    "question": "How do type assertions and type switches preserve safe boundary behavior?",
+    "testing": "State the language rule, the API contract it creates, and the production failure mode.",
+    "outline": [
+      "Name the Go semantic rule before choosing an abstraction.",
+      "Make ownership, mutation, nil behavior, and error behavior explicit.",
+      "Use a small example and explain the test that would catch misuse."
+    ],
+    "answer": "Use small consumer-owned interfaces and distinguish a nil interface from an interface with a typed nil value. Choose pointer receivers consistently so method sets and mutation are unsurprising.",
+    "example": "Contrast the choice with a Java implementation, then explain why the external service contract remains the same.",
+    "staffSignal": "Uses idiomatic language features while preserving explicit contracts, safe evolution, and operational clarity.",
+    "followUps": [
+      "What production failure would this contract prevent?",
+      "How would you test the edge case?",
+      "Which requirement would change this recommendation?"
+    ]
+  },
+  {
+    "id": 214,
+    "topic": "Go Fundamentals",
+    "contentTrack": "go",
+    "subtopic": "Types & Interfaces",
+    "question": "What contract should an exported Go type document?",
+    "testing": "State the language rule, the API contract it creates, and the production failure mode.",
+    "outline": [
+      "Name the Go semantic rule before choosing an abstraction.",
+      "Make ownership, mutation, nil behavior, and error behavior explicit.",
+      "Use a small example and explain the test that would catch misuse."
+    ],
+    "answer": "Use small consumer-owned interfaces and distinguish a nil interface from an interface with a typed nil value. Choose pointer receivers consistently so method sets and mutation are unsurprising.",
+    "example": "Contrast the choice with a Java implementation, then explain why the external service contract remains the same.",
+    "staffSignal": "Uses idiomatic language features while preserving explicit contracts, safe evolution, and operational clarity.",
+    "followUps": [
+      "What production failure would this contract prevent?",
+      "How would you test the edge case?",
+      "Which requirement would change this recommendation?"
+    ]
+  },
+  {
+    "id": 215,
+    "topic": "Go Fundamentals",
+    "contentTrack": "go",
+    "subtopic": "Errors & Control Flow",
+    "question": "How should a service add context while preserving an error cause?",
+    "testing": "State the language rule, the API contract it creates, and the production failure mode.",
+    "outline": [
+      "Name the Go semantic rule before choosing an abstraction.",
+      "Make ownership, mutation, nil behavior, and error behavior explicit.",
+      "Use a small example and explain the test that would catch misuse."
+    ],
+    "answer": "Return expected failures, wrap causes with %w, classify with errors.Is or errors.As, and map stable domain errors only at the transport boundary. Panics signal broken invariants, not ordinary requests.",
+    "example": "Contrast the choice with a Java implementation, then explain why the external service contract remains the same.",
+    "staffSignal": "Uses idiomatic language features while preserving explicit contracts, safe evolution, and operational clarity.",
+    "followUps": [
+      "What production failure would this contract prevent?",
+      "How would you test the edge case?",
+      "Which requirement would change this recommendation?"
+    ]
+  },
+  {
+    "id": 216,
+    "topic": "Go Fundamentals",
+    "contentTrack": "go",
+    "subtopic": "Errors & Control Flow",
+    "question": "When should code use errors.Is versus errors.As?",
+    "testing": "State the language rule, the API contract it creates, and the production failure mode.",
+    "outline": [
+      "Name the Go semantic rule before choosing an abstraction.",
+      "Make ownership, mutation, nil behavior, and error behavior explicit.",
+      "Use a small example and explain the test that would catch misuse."
+    ],
+    "answer": "Return expected failures, wrap causes with %w, classify with errors.Is or errors.As, and map stable domain errors only at the transport boundary. Panics signal broken invariants, not ordinary requests.",
+    "example": "Contrast the choice with a Java implementation, then explain why the external service contract remains the same.",
+    "staffSignal": "Uses idiomatic language features while preserving explicit contracts, safe evolution, and operational clarity.",
+    "followUps": [
+      "What production failure would this contract prevent?",
+      "How would you test the edge case?",
+      "Which requirement would change this recommendation?"
+    ]
+  },
+  {
+    "id": 217,
+    "topic": "Go Fundamentals",
+    "contentTrack": "go",
+    "subtopic": "Errors & Control Flow",
+    "question": "What failures justify panic, and what failures should be returned?",
+    "testing": "State the language rule, the API contract it creates, and the production failure mode.",
+    "outline": [
+      "Name the Go semantic rule before choosing an abstraction.",
+      "Make ownership, mutation, nil behavior, and error behavior explicit.",
+      "Use a small example and explain the test that would catch misuse."
+    ],
+    "answer": "Return expected failures, wrap causes with %w, classify with errors.Is or errors.As, and map stable domain errors only at the transport boundary. Panics signal broken invariants, not ordinary requests.",
+    "example": "Contrast the choice with a Java implementation, then explain why the external service contract remains the same.",
+    "staffSignal": "Uses idiomatic language features while preserving explicit contracts, safe evolution, and operational clarity.",
+    "followUps": [
+      "What production failure would this contract prevent?",
+      "How would you test the edge case?",
+      "Which requirement would change this recommendation?"
+    ]
+  },
+  {
+    "id": 218,
+    "topic": "Go Fundamentals",
+    "contentTrack": "go",
+    "subtopic": "Errors & Control Flow",
+    "question": "How should deferred cleanup handle an error returned by Close?",
+    "testing": "State the language rule, the API contract it creates, and the production failure mode.",
+    "outline": [
+      "Name the Go semantic rule before choosing an abstraction.",
+      "Make ownership, mutation, nil behavior, and error behavior explicit.",
+      "Use a small example and explain the test that would catch misuse."
+    ],
+    "answer": "Return expected failures, wrap causes with %w, classify with errors.Is or errors.As, and map stable domain errors only at the transport boundary. Panics signal broken invariants, not ordinary requests.",
+    "example": "Contrast the choice with a Java implementation, then explain why the external service contract remains the same.",
+    "staffSignal": "Uses idiomatic language features while preserving explicit contracts, safe evolution, and operational clarity.",
+    "followUps": [
+      "What production failure would this contract prevent?",
+      "How would you test the edge case?",
+      "Which requirement would change this recommendation?"
+    ]
+  },
+  {
+    "id": 219,
+    "topic": "Go Fundamentals",
+    "contentTrack": "go",
+    "subtopic": "Errors & Control Flow",
+    "question": "How do you design stable error semantics across an HTTP or gRPC boundary?",
+    "testing": "State the language rule, the API contract it creates, and the production failure mode.",
+    "outline": [
+      "Name the Go semantic rule before choosing an abstraction.",
+      "Make ownership, mutation, nil behavior, and error behavior explicit.",
+      "Use a small example and explain the test that would catch misuse."
+    ],
+    "answer": "Return expected failures, wrap causes with %w, classify with errors.Is or errors.As, and map stable domain errors only at the transport boundary. Panics signal broken invariants, not ordinary requests.",
+    "example": "Contrast the choice with a Java implementation, then explain why the external service contract remains the same.",
+    "staffSignal": "Uses idiomatic language features while preserving explicit contracts, safe evolution, and operational clarity.",
+    "followUps": [
+      "What production failure would this contract prevent?",
+      "How would you test the edge case?",
+      "Which requirement would change this recommendation?"
+    ]
+  },
+  {
+    "id": 220,
+    "topic": "Go Fundamentals",
+    "contentTrack": "go",
+    "subtopic": "Slices, Maps & Ownership",
+    "question": "What changes when append reuses a slice backing array?",
+    "testing": "State the language rule, the API contract it creates, and the production failure mode.",
+    "outline": [
+      "Name the Go semantic rule before choosing an abstraction.",
+      "Make ownership, mutation, nil behavior, and error behavior explicit.",
+      "Use a small example and explain the test that would catch misuse."
+    ],
+    "answer": "Slices may share backing arrays and maps are mutable reference-like values. Copy at cache, async, and API ownership boundaries; define nil, empty, and concurrent-access semantics explicitly.",
+    "example": "Contrast the choice with a Java implementation, then explain why the external service contract remains the same.",
+    "staffSignal": "Uses idiomatic language features while preserving explicit contracts, safe evolution, and operational clarity.",
+    "followUps": [
+      "What production failure would this contract prevent?",
+      "How would you test the edge case?",
+      "Which requirement would change this recommendation?"
+    ]
+  },
+  {
+    "id": 221,
+    "topic": "Go Fundamentals",
+    "contentTrack": "go",
+    "subtopic": "Slices, Maps & Ownership",
+    "question": "How do nil and empty slices differ at an API boundary?",
+    "testing": "State the language rule, the API contract it creates, and the production failure mode.",
+    "outline": [
+      "Name the Go semantic rule before choosing an abstraction.",
+      "Make ownership, mutation, nil behavior, and error behavior explicit.",
+      "Use a small example and explain the test that would catch misuse."
+    ],
+    "answer": "Slices may share backing arrays and maps are mutable reference-like values. Copy at cache, async, and API ownership boundaries; define nil, empty, and concurrent-access semantics explicitly.",
+    "example": "Contrast the choice with a Java implementation, then explain why the external service contract remains the same.",
+    "staffSignal": "Uses idiomatic language features while preserving explicit contracts, safe evolution, and operational clarity.",
+    "followUps": [
+      "What production failure would this contract prevent?",
+      "How would you test the edge case?",
+      "Which requirement would change this recommendation?"
+    ]
+  },
+  {
+    "id": 222,
+    "topic": "Go Fundamentals",
+    "contentTrack": "go",
+    "subtopic": "Slices, Maps & Ownership",
+    "question": "Why are concurrent map writes unsafe, and what are the alternatives?",
+    "testing": "State the language rule, the API contract it creates, and the production failure mode.",
+    "outline": [
+      "Name the Go semantic rule before choosing an abstraction.",
+      "Make ownership, mutation, nil behavior, and error behavior explicit.",
+      "Use a small example and explain the test that would catch misuse."
+    ],
+    "answer": "Slices may share backing arrays and maps are mutable reference-like values. Copy at cache, async, and API ownership boundaries; define nil, empty, and concurrent-access semantics explicitly.",
+    "example": "Contrast the choice with a Java implementation, then explain why the external service contract remains the same.",
+    "staffSignal": "Uses idiomatic language features while preserving explicit contracts, safe evolution, and operational clarity.",
+    "followUps": [
+      "What production failure would this contract prevent?",
+      "How would you test the edge case?",
+      "Which requirement would change this recommendation?"
+    ]
+  },
+  {
+    "id": 223,
+    "topic": "Go Fundamentals",
+    "contentTrack": "go",
+    "subtopic": "Slices, Maps & Ownership",
+    "question": "When must a service deep-copy a nested map or slice?",
+    "testing": "State the language rule, the API contract it creates, and the production failure mode.",
+    "outline": [
+      "Name the Go semantic rule before choosing an abstraction.",
+      "Make ownership, mutation, nil behavior, and error behavior explicit.",
+      "Use a small example and explain the test that would catch misuse."
+    ],
+    "answer": "Slices may share backing arrays and maps are mutable reference-like values. Copy at cache, async, and API ownership boundaries; define nil, empty, and concurrent-access semantics explicitly.",
+    "example": "Contrast the choice with a Java implementation, then explain why the external service contract remains the same.",
+    "staffSignal": "Uses idiomatic language features while preserving explicit contracts, safe evolution, and operational clarity.",
+    "followUps": [
+      "What production failure would this contract prevent?",
+      "How would you test the edge case?",
+      "Which requirement would change this recommendation?"
+    ]
+  },
+  {
+    "id": 224,
+    "topic": "Go Fundamentals",
+    "contentTrack": "go",
+    "subtopic": "Slices, Maps & Ownership",
+    "question": "How do you avoid retaining a large buffer through a small subslice?",
+    "testing": "State the language rule, the API contract it creates, and the production failure mode.",
+    "outline": [
+      "Name the Go semantic rule before choosing an abstraction.",
+      "Make ownership, mutation, nil behavior, and error behavior explicit.",
+      "Use a small example and explain the test that would catch misuse."
+    ],
+    "answer": "Slices may share backing arrays and maps are mutable reference-like values. Copy at cache, async, and API ownership boundaries; define nil, empty, and concurrent-access semantics explicitly.",
+    "example": "Contrast the choice with a Java implementation, then explain why the external service contract remains the same.",
+    "staffSignal": "Uses idiomatic language features while preserving explicit contracts, safe evolution, and operational clarity.",
+    "followUps": [
+      "What production failure would this contract prevent?",
+      "How would you test the edge case?",
+      "Which requirement would change this recommendation?"
+    ]
+  },
+  {
+    "id": 225,
+    "topic": "Go Fundamentals",
+    "contentTrack": "go",
+    "subtopic": "Collections & Interview Idioms",
+    "question": "How do you implement a stack or queue idiomatically with a slice?",
+    "testing": "State the language rule, the API contract it creates, and the production failure mode.",
+    "outline": [
+      "Name the Go semantic rule before choosing an abstraction.",
+      "Make ownership, mutation, nil behavior, and error behavior explicit.",
+      "Use a small example and explain the test that would catch misuse."
+    ],
+    "answer": "Choose slices for ordered work, maps for lookup, and heaps for priority. State complexity, ordering, mutation, and whether a subslice can retain or overwrite caller-owned storage.",
+    "example": "Contrast the choice with a Java implementation, then explain why the external service contract remains the same.",
+    "staffSignal": "Uses idiomatic language features while preserving explicit contracts, safe evolution, and operational clarity.",
+    "followUps": [
+      "What production failure would this contract prevent?",
+      "How would you test the edge case?",
+      "Which requirement would change this recommendation?"
+    ]
+  },
+  {
+    "id": 226,
+    "topic": "Go Fundamentals",
+    "contentTrack": "go",
+    "subtopic": "Collections & Interview Idioms",
+    "question": "When is a map the right choice for membership or frequency counting?",
+    "testing": "State the language rule, the API contract it creates, and the production failure mode.",
+    "outline": [
+      "Name the Go semantic rule before choosing an abstraction.",
+      "Make ownership, mutation, nil behavior, and error behavior explicit.",
+      "Use a small example and explain the test that would catch misuse."
+    ],
+    "answer": "Choose slices for ordered work, maps for lookup, and heaps for priority. State complexity, ordering, mutation, and whether a subslice can retain or overwrite caller-owned storage.",
+    "example": "Contrast the choice with a Java implementation, then explain why the external service contract remains the same.",
+    "staffSignal": "Uses idiomatic language features while preserving explicit contracts, safe evolution, and operational clarity.",
+    "followUps": [
+      "What production failure would this contract prevent?",
+      "How would you test the edge case?",
+      "Which requirement would change this recommendation?"
+    ]
+  },
+  {
+    "id": 227,
+    "topic": "Go Fundamentals",
+    "contentTrack": "go",
+    "subtopic": "Collections & Interview Idioms",
+    "question": "How do you choose between sort.Slice and maintaining a heap?",
+    "testing": "State the language rule, the API contract it creates, and the production failure mode.",
+    "outline": [
+      "Name the Go semantic rule before choosing an abstraction.",
+      "Make ownership, mutation, nil behavior, and error behavior explicit.",
+      "Use a small example and explain the test that would catch misuse."
+    ],
+    "answer": "Choose slices for ordered work, maps for lookup, and heaps for priority. State complexity, ordering, mutation, and whether a subslice can retain or overwrite caller-owned storage.",
+    "example": "Contrast the choice with a Java implementation, then explain why the external service contract remains the same.",
+    "staffSignal": "Uses idiomatic language features while preserving explicit contracts, safe evolution, and operational clarity.",
+    "followUps": [
+      "What production failure would this contract prevent?",
+      "How would you test the edge case?",
+      "Which requirement would change this recommendation?"
+    ]
+  },
+  {
+    "id": 228,
+    "topic": "Go Fundamentals",
+    "contentTrack": "go",
+    "subtopic": "Collections & Interview Idioms",
+    "question": "What ordering guarantees do Go maps provide?",
+    "testing": "State the language rule, the API contract it creates, and the production failure mode.",
+    "outline": [
+      "Name the Go semantic rule before choosing an abstraction.",
+      "Make ownership, mutation, nil behavior, and error behavior explicit.",
+      "Use a small example and explain the test that would catch misuse."
+    ],
+    "answer": "Choose slices for ordered work, maps for lookup, and heaps for priority. State complexity, ordering, mutation, and whether a subslice can retain or overwrite caller-owned storage.",
+    "example": "Contrast the choice with a Java implementation, then explain why the external service contract remains the same.",
+    "staffSignal": "Uses idiomatic language features while preserving explicit contracts, safe evolution, and operational clarity.",
+    "followUps": [
+      "What production failure would this contract prevent?",
+      "How would you test the edge case?",
+      "Which requirement would change this recommendation?"
+    ]
+  },
+  {
+    "id": 229,
+    "topic": "Go Fundamentals",
+    "contentTrack": "go",
+    "subtopic": "Collections & Interview Idioms",
+    "question": "How should an interview answer state complexity and mutation for a Go collection?",
+    "testing": "State the language rule, the API contract it creates, and the production failure mode.",
+    "outline": [
+      "Name the Go semantic rule before choosing an abstraction.",
+      "Make ownership, mutation, nil behavior, and error behavior explicit.",
+      "Use a small example and explain the test that would catch misuse."
+    ],
+    "answer": "Choose slices for ordered work, maps for lookup, and heaps for priority. State complexity, ordering, mutation, and whether a subslice can retain or overwrite caller-owned storage.",
+    "example": "Contrast the choice with a Java implementation, then explain why the external service contract remains the same.",
+    "staffSignal": "Uses idiomatic language features while preserving explicit contracts, safe evolution, and operational clarity.",
+    "followUps": [
+      "What production failure would this contract prevent?",
+      "How would you test the edge case?",
+      "Which requirement would change this recommendation?"
+    ]
+  },
+  {
+    "id": 230,
+    "topic": "Go Fundamentals",
+    "contentTrack": "go",
+    "subtopic": "Structs, Methods & Embedding",
+    "question": "What is promoted through embedding, and what is not inheritance?",
+    "testing": "State the language rule, the API contract it creates, and the production failure mode.",
+    "outline": [
+      "Name the Go semantic rule before choosing an abstraction.",
+      "Make ownership, mutation, nil behavior, and error behavior explicit.",
+      "Use a small example and explain the test that would catch misuse."
+    ],
+    "answer": "Embedding promotes members but does not create inheritance. Keep exported fields and method sets intentional; prefer composition when it preserves a clearer dependency contract.",
+    "example": "Contrast the choice with a Java implementation, then explain why the external service contract remains the same.",
+    "staffSignal": "Uses idiomatic language features while preserving explicit contracts, safe evolution, and operational clarity.",
+    "followUps": [
+      "What production failure would this contract prevent?",
+      "How would you test the edge case?",
+      "Which requirement would change this recommendation?"
+    ]
+  },
+  {
+    "id": 231,
+    "topic": "Go Fundamentals",
+    "contentTrack": "go",
+    "subtopic": "Structs, Methods & Embedding",
+    "question": "How do method sets affect interface satisfaction for T and *T?",
+    "testing": "State the language rule, the API contract it creates, and the production failure mode.",
+    "outline": [
+      "Name the Go semantic rule before choosing an abstraction.",
+      "Make ownership, mutation, nil behavior, and error behavior explicit.",
+      "Use a small example and explain the test that would catch misuse."
+    ],
+    "answer": "Embedding promotes members but does not create inheritance. Keep exported fields and method sets intentional; prefer composition when it preserves a clearer dependency contract.",
+    "example": "Contrast the choice with a Java implementation, then explain why the external service contract remains the same.",
+    "staffSignal": "Uses idiomatic language features while preserving explicit contracts, safe evolution, and operational clarity.",
+    "followUps": [
+      "What production failure would this contract prevent?",
+      "How would you test the edge case?",
+      "Which requirement would change this recommendation?"
+    ]
+  },
+  {
+    "id": 232,
+    "topic": "Go Fundamentals",
+    "contentTrack": "go",
+    "subtopic": "Structs, Methods & Embedding",
+    "question": "When should composition replace embedding in a service design?",
+    "testing": "State the language rule, the API contract it creates, and the production failure mode.",
+    "outline": [
+      "Name the Go semantic rule before choosing an abstraction.",
+      "Make ownership, mutation, nil behavior, and error behavior explicit.",
+      "Use a small example and explain the test that would catch misuse."
+    ],
+    "answer": "Embedding promotes members but does not create inheritance. Keep exported fields and method sets intentional; prefer composition when it preserves a clearer dependency contract.",
+    "example": "Contrast the choice with a Java implementation, then explain why the external service contract remains the same.",
+    "staffSignal": "Uses idiomatic language features while preserving explicit contracts, safe evolution, and operational clarity.",
+    "followUps": [
+      "What production failure would this contract prevent?",
+      "How would you test the edge case?",
+      "Which requirement would change this recommendation?"
+    ]
+  },
+  {
+    "id": 233,
+    "topic": "Go Fundamentals",
+    "contentTrack": "go",
+    "subtopic": "Structs, Methods & Embedding",
+    "question": "How do exported fields affect compatibility and invariants?",
+    "testing": "State the language rule, the API contract it creates, and the production failure mode.",
+    "outline": [
+      "Name the Go semantic rule before choosing an abstraction.",
+      "Make ownership, mutation, nil behavior, and error behavior explicit.",
+      "Use a small example and explain the test that would catch misuse."
+    ],
+    "answer": "Embedding promotes members but does not create inheritance. Keep exported fields and method sets intentional; prefer composition when it preserves a clearer dependency contract.",
+    "example": "Contrast the choice with a Java implementation, then explain why the external service contract remains the same.",
+    "staffSignal": "Uses idiomatic language features while preserving explicit contracts, safe evolution, and operational clarity.",
+    "followUps": [
+      "What production failure would this contract prevent?",
+      "How would you test the edge case?",
+      "Which requirement would change this recommendation?"
+    ]
+  },
+  {
+    "id": 234,
+    "topic": "Go Fundamentals",
+    "contentTrack": "go",
+    "subtopic": "Structs, Methods & Embedding",
+    "question": "Why should constructors validate dependencies even when zero values are useful?",
+    "testing": "State the language rule, the API contract it creates, and the production failure mode.",
+    "outline": [
+      "Name the Go semantic rule before choosing an abstraction.",
+      "Make ownership, mutation, nil behavior, and error behavior explicit.",
+      "Use a small example and explain the test that would catch misuse."
+    ],
+    "answer": "Embedding promotes members but does not create inheritance. Keep exported fields and method sets intentional; prefer composition when it preserves a clearer dependency contract.",
+    "example": "Contrast the choice with a Java implementation, then explain why the external service contract remains the same.",
+    "staffSignal": "Uses idiomatic language features while preserving explicit contracts, safe evolution, and operational clarity.",
+    "followUps": [
+      "What production failure would this contract prevent?",
+      "How would you test the edge case?",
+      "Which requirement would change this recommendation?"
+    ]
+  },
+  {
+    "id": 235,
+    "topic": "Go Fundamentals",
+    "contentTrack": "go",
+    "subtopic": "Functions, Generics & Composition",
+    "question": "How do closures capture loop variables, and how should code make ownership obvious?",
+    "testing": "State the language rule, the API contract it creates, and the production failure mode.",
+    "outline": [
+      "Name the Go semantic rule before choosing an abstraction.",
+      "Make ownership, mutation, nil behavior, and error behavior explicit.",
+      "Use a small example and explain the test that would catch misuse."
+    ],
+    "answer": "Use generics when the algorithm is genuinely type-independent; prefer a small interface or concrete domain type when constraints hide behavior. Validate functional options before accepting incompatible configuration.",
+    "example": "Contrast the choice with a Java implementation, then explain why the external service contract remains the same.",
+    "staffSignal": "Uses idiomatic language features while preserving explicit contracts, safe evolution, and operational clarity.",
+    "followUps": [
+      "What production failure would this contract prevent?",
+      "How would you test the edge case?",
+      "Which requirement would change this recommendation?"
+    ]
+  },
+  {
+    "id": 236,
+    "topic": "Go Fundamentals",
+    "contentTrack": "go",
+    "subtopic": "Functions, Generics & Composition",
+    "question": "When do generics improve a Go API versus hide a domain contract?",
+    "testing": "State the language rule, the API contract it creates, and the production failure mode.",
+    "outline": [
+      "Name the Go semantic rule before choosing an abstraction.",
+      "Make ownership, mutation, nil behavior, and error behavior explicit.",
+      "Use a small example and explain the test that would catch misuse."
+    ],
+    "answer": "Use generics when the algorithm is genuinely type-independent; prefer a small interface or concrete domain type when constraints hide behavior. Validate functional options before accepting incompatible configuration.",
+    "example": "Contrast the choice with a Java implementation, then explain why the external service contract remains the same.",
+    "staffSignal": "Uses idiomatic language features while preserving explicit contracts, safe evolution, and operational clarity.",
+    "followUps": [
+      "What production failure would this contract prevent?",
+      "How would you test the edge case?",
+      "Which requirement would change this recommendation?"
+    ]
+  },
+  {
+    "id": 237,
+    "topic": "Go Fundamentals",
+    "contentTrack": "go",
+    "subtopic": "Functions, Generics & Composition",
+    "question": "How should a functional option validate incompatible configuration?",
+    "testing": "State the language rule, the API contract it creates, and the production failure mode.",
+    "outline": [
+      "Name the Go semantic rule before choosing an abstraction.",
+      "Make ownership, mutation, nil behavior, and error behavior explicit.",
+      "Use a small example and explain the test that would catch misuse."
+    ],
+    "answer": "Use generics when the algorithm is genuinely type-independent; prefer a small interface or concrete domain type when constraints hide behavior. Validate functional options before accepting incompatible configuration.",
+    "example": "Contrast the choice with a Java implementation, then explain why the external service contract remains the same.",
+    "staffSignal": "Uses idiomatic language features while preserving explicit contracts, safe evolution, and operational clarity.",
+    "followUps": [
+      "What production failure would this contract prevent?",
+      "How would you test the edge case?",
+      "Which requirement would change this recommendation?"
+    ]
+  },
+  {
+    "id": 238,
+    "topic": "Go Fundamentals",
+    "contentTrack": "go",
+    "subtopic": "Functions, Generics & Composition",
+    "question": "When is a small interface clearer than a generic constraint?",
+    "testing": "State the language rule, the API contract it creates, and the production failure mode.",
+    "outline": [
+      "Name the Go semantic rule before choosing an abstraction.",
+      "Make ownership, mutation, nil behavior, and error behavior explicit.",
+      "Use a small example and explain the test that would catch misuse."
+    ],
+    "answer": "Use generics when the algorithm is genuinely type-independent; prefer a small interface or concrete domain type when constraints hide behavior. Validate functional options before accepting incompatible configuration.",
+    "example": "Contrast the choice with a Java implementation, then explain why the external service contract remains the same.",
+    "staffSignal": "Uses idiomatic language features while preserving explicit contracts, safe evolution, and operational clarity.",
+    "followUps": [
+      "What production failure would this contract prevent?",
+      "How would you test the edge case?",
+      "Which requirement would change this recommendation?"
+    ]
+  },
+  {
+    "id": 239,
+    "topic": "Go Fundamentals",
+    "contentTrack": "go",
+    "subtopic": "Functions, Generics & Composition",
+    "question": "How should a callback API expose cancellation and error behavior?",
+    "testing": "State the language rule, the API contract it creates, and the production failure mode.",
+    "outline": [
+      "Name the Go semantic rule before choosing an abstraction.",
+      "Make ownership, mutation, nil behavior, and error behavior explicit.",
+      "Use a small example and explain the test that would catch misuse."
+    ],
+    "answer": "Use generics when the algorithm is genuinely type-independent; prefer a small interface or concrete domain type when constraints hide behavior. Validate functional options before accepting incompatible configuration.",
+    "example": "Contrast the choice with a Java implementation, then explain why the external service contract remains the same.",
+    "staffSignal": "Uses idiomatic language features while preserving explicit contracts, safe evolution, and operational clarity.",
+    "followUps": [
+      "What production failure would this contract prevent?",
+      "How would you test the edge case?",
+      "Which requirement would change this recommendation?"
+    ]
+  },
+  {
+    "id": 240,
+    "topic": "Go Fundamentals",
+    "contentTrack": "go",
+    "subtopic": "Modules, Tooling & Build Semantics",
+    "question": "How does minimal version selection affect a Go module upgrade?",
+    "testing": "State the language rule, the API contract it creates, and the production failure mode.",
+    "outline": [
+      "Name the Go semantic rule before choosing an abstraction.",
+      "Make ownership, mutation, nil behavior, and error behavior explicit.",
+      "Use a small example and explain the test that would catch misuse."
+    ],
+    "answer": "Review go.mod and go.sum together, understand minimal version selection, avoid production replace directives, and use tests, vet, fuzzing, and vulnerability checks as complementary evidence.",
+    "example": "Contrast the choice with a Java implementation, then explain why the external service contract remains the same.",
+    "staffSignal": "Uses idiomatic language features while preserving explicit contracts, safe evolution, and operational clarity.",
+    "followUps": [
+      "What production failure would this contract prevent?",
+      "How would you test the edge case?",
+      "Which requirement would change this recommendation?"
+    ]
+  },
+  {
+    "id": 241,
+    "topic": "Go Fundamentals",
+    "contentTrack": "go",
+    "subtopic": "Modules, Tooling & Build Semantics",
+    "question": "What should a team review in go.mod and go.sum changes?",
+    "testing": "State the language rule, the API contract it creates, and the production failure mode.",
+    "outline": [
+      "Name the Go semantic rule before choosing an abstraction.",
+      "Make ownership, mutation, nil behavior, and error behavior explicit.",
+      "Use a small example and explain the test that would catch misuse."
+    ],
+    "answer": "Review go.mod and go.sum together, understand minimal version selection, avoid production replace directives, and use tests, vet, fuzzing, and vulnerability checks as complementary evidence.",
+    "example": "Contrast the choice with a Java implementation, then explain why the external service contract remains the same.",
+    "staffSignal": "Uses idiomatic language features while preserving explicit contracts, safe evolution, and operational clarity.",
+    "followUps": [
+      "What production failure would this contract prevent?",
+      "How would you test the edge case?",
+      "Which requirement would change this recommendation?"
+    ]
+  },
+  {
+    "id": 242,
+    "topic": "Go Fundamentals",
+    "contentTrack": "go",
+    "subtopic": "Modules, Tooling & Build Semantics",
+    "question": "Why is a replace directive risky outside local development?",
+    "testing": "State the language rule, the API contract it creates, and the production failure mode.",
+    "outline": [
+      "Name the Go semantic rule before choosing an abstraction.",
+      "Make ownership, mutation, nil behavior, and error behavior explicit.",
+      "Use a small example and explain the test that would catch misuse."
+    ],
+    "answer": "Review go.mod and go.sum together, understand minimal version selection, avoid production replace directives, and use tests, vet, fuzzing, and vulnerability checks as complementary evidence.",
+    "example": "Contrast the choice with a Java implementation, then explain why the external service contract remains the same.",
+    "staffSignal": "Uses idiomatic language features while preserving explicit contracts, safe evolution, and operational clarity.",
+    "followUps": [
+      "What production failure would this contract prevent?",
+      "How would you test the edge case?",
+      "Which requirement would change this recommendation?"
+    ]
+  },
+  {
+    "id": 243,
+    "topic": "Go Fundamentals",
+    "contentTrack": "go",
+    "subtopic": "Modules, Tooling & Build Semantics",
+    "question": "How do gofmt, go vet, tests, and static analysis fit a quality gate?",
+    "testing": "State the language rule, the API contract it creates, and the production failure mode.",
+    "outline": [
+      "Name the Go semantic rule before choosing an abstraction.",
+      "Make ownership, mutation, nil behavior, and error behavior explicit.",
+      "Use a small example and explain the test that would catch misuse."
+    ],
+    "answer": "Review go.mod and go.sum together, understand minimal version selection, avoid production replace directives, and use tests, vet, fuzzing, and vulnerability checks as complementary evidence.",
+    "example": "Contrast the choice with a Java implementation, then explain why the external service contract remains the same.",
+    "staffSignal": "Uses idiomatic language features while preserving explicit contracts, safe evolution, and operational clarity.",
+    "followUps": [
+      "What production failure would this contract prevent?",
+      "How would you test the edge case?",
+      "Which requirement would change this recommendation?"
+    ]
+  },
+  {
+    "id": 244,
+    "topic": "Go Fundamentals",
+    "contentTrack": "go",
+    "subtopic": "Modules, Tooling & Build Semantics",
+    "question": "How should package boundaries avoid import cycles and preserve ownership?",
+    "testing": "State the language rule, the API contract it creates, and the production failure mode.",
+    "outline": [
+      "Name the Go semantic rule before choosing an abstraction.",
+      "Make ownership, mutation, nil behavior, and error behavior explicit.",
+      "Use a small example and explain the test that would catch misuse."
+    ],
+    "answer": "Review go.mod and go.sum together, understand minimal version selection, avoid production replace directives, and use tests, vet, fuzzing, and vulnerability checks as complementary evidence.",
+    "example": "Contrast the choice with a Java implementation, then explain why the external service contract remains the same.",
+    "staffSignal": "Uses idiomatic language features while preserving explicit contracts, safe evolution, and operational clarity.",
+    "followUps": [
+      "What production failure would this contract prevent?",
+      "How would you test the edge case?",
+      "Which requirement would change this recommendation?"
+    ]
+  },
+  {
+    "id": 245,
+    "topic": "Go APIs & Services",
+    "contentTrack": null,
+    "subtopic": "Contracts, Types & Data",
+    "question": "How should a Go service evolve a response contract without breaking clients?",
+    "testing": "State the externally observable contract, failure behavior, and test boundary.",
+    "outline": [
+      "Preserve compatibility and make versioning explicit.",
+      "Bound input, deadlines, retries, and resource ownership.",
+      "Use unit tests for logic and disposable dependencies for infrastructure behavior."
+    ],
+    "answer": "Treat the service boundary as a stable product contract. Make validation, timeout, idempotency, error mapping, and compatibility explicit; then prove the behavior with deterministic tests at the boundary.",
+    "example": "Compare the approach with a Java client or controller without copying framework-specific mechanics.",
+    "staffSignal": "Standardizes observable behavior across services while allowing idiomatic implementation.",
+    "followUps": [
+      "Which caller behavior could this change break?",
+      "What production signal validates the rollout?",
+      "Which failure should never be retried?"
+    ]
+  },
+  {
+    "id": 246,
+    "topic": "Go APIs & Services",
+    "contentTrack": null,
+    "subtopic": "Service Testing",
+    "question": "Which Go tests prove an HTTP or gRPC boundary behaves correctly in production?",
+    "testing": "State the externally observable contract, failure behavior, and test boundary.",
+    "outline": [
+      "Preserve compatibility and make versioning explicit.",
+      "Bound input, deadlines, retries, and resource ownership.",
+      "Use unit tests for logic and disposable dependencies for infrastructure behavior."
+    ],
+    "answer": "Treat the service boundary as a stable product contract. Make validation, timeout, idempotency, error mapping, and compatibility explicit; then prove the behavior with deterministic tests at the boundary.",
+    "example": "Compare the approach with a Java client or controller without copying framework-specific mechanics.",
+    "staffSignal": "Standardizes observable behavior across services while allowing idiomatic implementation.",
+    "followUps": [
+      "Which caller behavior could this change break?",
+      "What production signal validates the rollout?",
+      "Which failure should never be retried?"
+    ]
+  },
+  {
+    "id": 247,
+    "topic": "Go APIs & Services",
+    "contentTrack": null,
+    "subtopic": "HTTP, gRPC & API Design",
+    "question": "How should a Go handler enforce request-size, validation, and deadline limits?",
+    "testing": "State the externally observable contract, failure behavior, and test boundary.",
+    "outline": [
+      "Preserve compatibility and make versioning explicit.",
+      "Bound input, deadlines, retries, and resource ownership.",
+      "Use unit tests for logic and disposable dependencies for infrastructure behavior."
+    ],
+    "answer": "Treat the service boundary as a stable product contract. Make validation, timeout, idempotency, error mapping, and compatibility explicit; then prove the behavior with deterministic tests at the boundary.",
+    "example": "Compare the approach with a Java client or controller without copying framework-specific mechanics.",
+    "staffSignal": "Standardizes observable behavior across services while allowing idiomatic implementation.",
+    "followUps": [
+      "Which caller behavior could this change break?",
+      "What production signal validates the rollout?",
+      "Which failure should never be retried?"
+    ]
+  },
+  {
+    "id": 248,
+    "topic": "Go APIs & Services",
+    "contentTrack": null,
+    "subtopic": "HTTP, gRPC & API Design",
+    "question": "How should a Go service map domain failures to stable HTTP or gRPC errors?",
+    "testing": "State the externally observable contract, failure behavior, and test boundary.",
+    "outline": [
+      "Preserve compatibility and make versioning explicit.",
+      "Bound input, deadlines, retries, and resource ownership.",
+      "Use unit tests for logic and disposable dependencies for infrastructure behavior."
+    ],
+    "answer": "Treat the service boundary as a stable product contract. Make validation, timeout, idempotency, error mapping, and compatibility explicit; then prove the behavior with deterministic tests at the boundary.",
+    "example": "Compare the approach with a Java client or controller without copying framework-specific mechanics.",
+    "staffSignal": "Standardizes observable behavior across services while allowing idiomatic implementation.",
+    "followUps": [
+      "Which caller behavior could this change break?",
+      "What production signal validates the rollout?",
+      "Which failure should never be retried?"
+    ]
+  },
+  {
+    "id": 249,
+    "topic": "Go APIs & Services",
+    "contentTrack": null,
+    "subtopic": "Contracts, Types & Data",
+    "question": "What compatibility rules apply when Go changes JSON fields, nil values, or enum-like strings?",
+    "testing": "State the externally observable contract, failure behavior, and test boundary.",
+    "outline": [
+      "Preserve compatibility and make versioning explicit.",
+      "Bound input, deadlines, retries, and resource ownership.",
+      "Use unit tests for logic and disposable dependencies for infrastructure behavior."
+    ],
+    "answer": "Treat the service boundary as a stable product contract. Make validation, timeout, idempotency, error mapping, and compatibility explicit; then prove the behavior with deterministic tests at the boundary.",
+    "example": "Compare the approach with a Java client or controller without copying framework-specific mechanics.",
+    "staffSignal": "Standardizes observable behavior across services while allowing idiomatic implementation.",
+    "followUps": [
+      "Which caller behavior could this change break?",
+      "What production signal validates the rollout?",
+      "Which failure should never be retried?"
+    ]
+  },
+  {
+    "id": 250,
+    "topic": "Go APIs & Services",
+    "contentTrack": null,
+    "subtopic": "Contracts, Types & Data",
+    "question": "How should a Go API make idempotency and request replay behavior explicit?",
+    "testing": "State the externally observable contract, failure behavior, and test boundary.",
+    "outline": [
+      "Preserve compatibility and make versioning explicit.",
+      "Bound input, deadlines, retries, and resource ownership.",
+      "Use unit tests for logic and disposable dependencies for infrastructure behavior."
+    ],
+    "answer": "Treat the service boundary as a stable product contract. Make validation, timeout, idempotency, error mapping, and compatibility explicit; then prove the behavior with deterministic tests at the boundary.",
+    "example": "Compare the approach with a Java client or controller without copying framework-specific mechanics.",
+    "staffSignal": "Standardizes observable behavior across services while allowing idiomatic implementation.",
+    "followUps": [
+      "Which caller behavior could this change break?",
+      "What production signal validates the rollout?",
+      "Which failure should never be retried?"
+    ]
+  },
+  {
+    "id": 251,
+    "topic": "Go APIs & Services",
+    "contentTrack": null,
+    "subtopic": "Clients, Timeouts & Retries",
+    "question": "How do you budget timeout, retry, and connection-pool behavior in a Go dependency client?",
+    "testing": "State the externally observable contract, failure behavior, and test boundary.",
+    "outline": [
+      "Preserve compatibility and make versioning explicit.",
+      "Bound input, deadlines, retries, and resource ownership.",
+      "Use unit tests for logic and disposable dependencies for infrastructure behavior."
+    ],
+    "answer": "Treat the service boundary as a stable product contract. Make validation, timeout, idempotency, error mapping, and compatibility explicit; then prove the behavior with deterministic tests at the boundary.",
+    "example": "Compare the approach with a Java client or controller without copying framework-specific mechanics.",
+    "staffSignal": "Standardizes observable behavior across services while allowing idiomatic implementation.",
+    "followUps": [
+      "Which caller behavior could this change break?",
+      "What production signal validates the rollout?",
+      "Which failure should never be retried?"
+    ]
+  },
+  {
+    "id": 252,
+    "topic": "Go APIs & Services",
+    "contentTrack": null,
+    "subtopic": "Service Testing",
+    "question": "When should Go service tests use a fake, a contract test, or a disposable real dependency?",
+    "testing": "State the externally observable contract, failure behavior, and test boundary.",
+    "outline": [
+      "Preserve compatibility and make versioning explicit.",
+      "Bound input, deadlines, retries, and resource ownership.",
+      "Use unit tests for logic and disposable dependencies for infrastructure behavior."
+    ],
+    "answer": "Treat the service boundary as a stable product contract. Make validation, timeout, idempotency, error mapping, and compatibility explicit; then prove the behavior with deterministic tests at the boundary.",
+    "example": "Compare the approach with a Java client or controller without copying framework-specific mechanics.",
+    "staffSignal": "Standardizes observable behavior across services while allowing idiomatic implementation.",
+    "followUps": [
+      "Which caller behavior could this change break?",
+      "What production signal validates the rollout?",
+      "Which failure should never be retried?"
+    ]
+  },
+  {
+    "id": 253,
+    "topic": "Go APIs & Services",
+    "contentTrack": null,
+    "subtopic": "Service Testing",
+    "question": "How do you test Go handler cancellation, malformed input, and partial dependency failure deterministically?",
+    "testing": "State the externally observable contract, failure behavior, and test boundary.",
+    "outline": [
+      "Preserve compatibility and make versioning explicit.",
+      "Bound input, deadlines, retries, and resource ownership.",
+      "Use unit tests for logic and disposable dependencies for infrastructure behavior."
+    ],
+    "answer": "Treat the service boundary as a stable product contract. Make validation, timeout, idempotency, error mapping, and compatibility explicit; then prove the behavior with deterministic tests at the boundary.",
+    "example": "Compare the approach with a Java client or controller without copying framework-specific mechanics.",
+    "staffSignal": "Standardizes observable behavior across services while allowing idiomatic implementation.",
+    "followUps": [
+      "Which caller behavior could this change break?",
+      "What production signal validates the rollout?",
+      "Which failure should never be retried?"
+    ]
+  },
+  {
+    "id": 254,
+    "topic": "Databases",
+    "contentTrack": "java",
+    "subtopic": "Migrations, Rollouts & Diagnosis",
+    "question": "How should a Java service keep JPA transaction boundaries, lazy loading, and retries from hiding database failure?",
+    "testing": "State the consistency boundary, failure behavior, and operational evidence.",
+    "outline": [
+      "Define the transaction, timeout, and ownership boundary.",
+      "Make schema compatibility, retries, and idempotency explicit.",
+      "Use query plans, pool metrics, and production-like tests to validate behavior."
+    ],
+    "answer": "Database code is a distributed-systems boundary. Preserve a bounded transaction, propagate cancellation, avoid hidden retries, and expose the metrics that distinguish query cost, contention, pool waiting, and migration risk.",
+    "example": "Keep the data contract the same across Java and Go while using each ecosystem's database primitives idiomatically.",
+    "staffSignal": "Balances correctness, operability, migration safety, and delivery speed.",
+    "followUps": [
+      "What is the irreversible step?",
+      "Which signal detects saturation first?",
+      "How would you roll back safely?"
+    ]
+  },
+  {
+    "id": 255,
+    "topic": "Databases",
+    "contentTrack": "go",
+    "subtopic": "Migrations, Rollouts & Diagnosis",
+    "question": "How should a Go service use context-aware database/sql queries and make scanning/null semantics explicit?",
+    "testing": "State the consistency boundary, failure behavior, and operational evidence.",
+    "outline": [
+      "Define the transaction, timeout, and ownership boundary.",
+      "Make schema compatibility, retries, and idempotency explicit.",
+      "Use query plans, pool metrics, and production-like tests to validate behavior."
+    ],
+    "answer": "Database code is a distributed-systems boundary. Preserve a bounded transaction, propagate cancellation, avoid hidden retries, and expose the metrics that distinguish query cost, contention, pool waiting, and migration risk.",
+    "example": "Keep the data contract the same across Java and Go while using each ecosystem's database primitives idiomatically.",
+    "staffSignal": "Balances correctness, operability, migration safety, and delivery speed.",
+    "followUps": [
+      "What is the irreversible step?",
+      "Which signal detects saturation first?",
+      "How would you roll back safely?"
+    ]
+  },
+  {
+    "id": 256,
+    "topic": "Databases",
+    "contentTrack": "go",
+    "subtopic": "Transactions & Consistency",
+    "question": "How should a Go service implement a transaction with an outbox while preserving retries and idempotency?",
+    "testing": "State the consistency boundary, failure behavior, and operational evidence.",
+    "outline": [
+      "Define the transaction, timeout, and ownership boundary.",
+      "Make schema compatibility, retries, and idempotency explicit.",
+      "Use query plans, pool metrics, and production-like tests to validate behavior."
+    ],
+    "answer": "Database code is a distributed-systems boundary. Preserve a bounded transaction, propagate cancellation, avoid hidden retries, and expose the metrics that distinguish query cost, contention, pool waiting, and migration risk.",
+    "example": "Keep the data contract the same across Java and Go while using each ecosystem's database primitives idiomatically.",
+    "staffSignal": "Balances correctness, operability, migration safety, and delivery speed.",
+    "followUps": [
+      "What is the irreversible step?",
+      "Which signal detects saturation first?",
+      "How would you roll back safely?"
+    ]
+  },
+  {
+    "id": 257,
+    "topic": "Databases",
+    "contentTrack": "go",
+    "subtopic": "Pools, Timeouts & Recovery",
+    "question": "How should a Go service size database/sql pools and diagnose pool wait, timeout, and leaked-row failures?",
+    "testing": "State the consistency boundary, failure behavior, and operational evidence.",
+    "outline": [
+      "Define the transaction, timeout, and ownership boundary.",
+      "Make schema compatibility, retries, and idempotency explicit.",
+      "Use query plans, pool metrics, and production-like tests to validate behavior."
+    ],
+    "answer": "Database code is a distributed-systems boundary. Preserve a bounded transaction, propagate cancellation, avoid hidden retries, and expose the metrics that distinguish query cost, contention, pool waiting, and migration risk.",
+    "example": "Keep the data contract the same across Java and Go while using each ecosystem's database primitives idiomatically.",
+    "staffSignal": "Balances correctness, operability, migration safety, and delivery speed.",
+    "followUps": [
+      "What is the irreversible step?",
+      "Which signal detects saturation first?",
+      "How would you roll back safely?"
+    ]
+  },
+  {
+    "id": 258,
+    "topic": "Databases",
+    "contentTrack": "java",
+    "subtopic": "Pools, Timeouts & Recovery",
+    "question": "How should a Java service size JDBC pools and diagnose pool wait, timeout, transaction, and connection-leak failures?",
+    "testing": "State the consistency boundary, failure behavior, and operational evidence.",
+    "outline": [
+      "Define the transaction, timeout, and ownership boundary.",
+      "Make schema compatibility, retries, and idempotency explicit.",
+      "Use query plans, pool metrics, and production-like tests to validate behavior."
+    ],
+    "answer": "Database code is a distributed-systems boundary. Preserve a bounded transaction, propagate cancellation, avoid hidden retries, and expose the metrics that distinguish query cost, contention, pool waiting, and migration risk.",
+    "example": "Keep the data contract the same across Java and Go while using each ecosystem's database primitives idiomatically.",
+    "staffSignal": "Balances correctness, operability, migration safety, and delivery speed.",
+    "followUps": [
+      "What is the irreversible step?",
+      "Which signal detects saturation first?",
+      "How would you roll back safely?"
+    ]
+  },
+  {
+    "id": 259,
+    "topic": "Security",
+    "contentTrack": "java",
+    "subtopic": "Authentication, Authorization & Tenancy",
+    "question": "How should a Java service enforce authentication and authorization at Spring Security boundaries without leaking identity into domain logic?",
+    "testing": "State the trust boundary, authorization decision, audit evidence, and failure behavior.",
+    "outline": [
+      "Authenticate once at a trusted ingress boundary.",
+      "Authorize against an explicit action, resource, and tenant scope.",
+      "Propagate trusted identity narrowly and emit privacy-safe audit evidence."
+    ],
+    "answer": "Keep identity verification, authorization policy, domain behavior, and audit events separate. Never promote caller-controlled metadata into trusted context; reject ambiguous tenant scope and prove policy with adversarial tests.",
+    "example": "The Java and Go mechanisms differ, but the trusted identity and authorization contract must remain identical.",
+    "staffSignal": "Builds a paved road that makes secure behavior easier than bypassing it.",
+    "followUps": [
+      "What is the confused-deputy risk?",
+      "Which denial should be observable?",
+      "How would you verify this rollout?"
+    ]
+  },
+  {
+    "id": 260,
+    "topic": "Security",
+    "contentTrack": "go",
+    "subtopic": "Authentication, Authorization & Tenancy",
+    "question": "How should a Go service propagate verified identity through net/http middleware and context without trusting caller-provided headers?",
+    "testing": "State the trust boundary, authorization decision, audit evidence, and failure behavior.",
+    "outline": [
+      "Authenticate once at a trusted ingress boundary.",
+      "Authorize against an explicit action, resource, and tenant scope.",
+      "Propagate trusted identity narrowly and emit privacy-safe audit evidence."
+    ],
+    "answer": "Keep identity verification, authorization policy, domain behavior, and audit events separate. Never promote caller-controlled metadata into trusted context; reject ambiguous tenant scope and prove policy with adversarial tests.",
+    "example": "The Java and Go mechanisms differ, but the trusted identity and authorization contract must remain identical.",
+    "staffSignal": "Builds a paved road that makes secure behavior easier than bypassing it.",
+    "followUps": [
+      "What is the confused-deputy risk?",
+      "Which denial should be observable?",
+      "How would you verify this rollout?"
+    ]
+  },
+  {
+    "id": 261,
+    "topic": "Reliability",
+    "contentTrack": "java",
+    "subtopic": "Observability",
+    "question": "How should a Java service correlate JFR, traces, pool metrics, and error budgets during a tail-latency regression?",
+    "testing": "State the customer impact, evidence order, safe containment, and validation SLO.",
+    "outline": [
+      "Start from the SLO and request symptoms.",
+      "Separate runtime evidence from downstream waiting and capacity saturation.",
+      "Contain reversibly, then verify under representative load."
+    ],
+    "answer": "Operational tooling differs by runtime, but the decision process is shared: quantify impact, form discriminating hypotheses, gather traces and runtime evidence, protect capacity, and verify recovery with the SLO that detected the problem.",
+    "example": "Use JFR in Java or pprof in Go without changing the incident contract.",
+    "staffSignal": "Leads with customer impact and evidence instead of a runtime-specific guess.",
+    "followUps": [
+      "What would falsify this hypothesis?",
+      "What is the safe containment action?",
+      "Which signal proves recovery?"
+    ]
+  },
+  {
+    "id": 262,
+    "topic": "Reliability",
+    "contentTrack": "go",
+    "subtopic": "Observability",
+    "question": "How should a Go service correlate pprof, traces, goroutine lifecycle, and SLO burn during a tail-latency regression?",
+    "testing": "State the customer impact, evidence order, safe containment, and validation SLO.",
+    "outline": [
+      "Start from the SLO and request symptoms.",
+      "Separate runtime evidence from downstream waiting and capacity saturation.",
+      "Contain reversibly, then verify under representative load."
+    ],
+    "answer": "Operational tooling differs by runtime, but the decision process is shared: quantify impact, form discriminating hypotheses, gather traces and runtime evidence, protect capacity, and verify recovery with the SLO that detected the problem.",
+    "example": "Use JFR in Java or pprof in Go without changing the incident contract.",
+    "staffSignal": "Leads with customer impact and evidence instead of a runtime-specific guess.",
+    "followUps": [
+      "What would falsify this hypothesis?",
+      "What is the safe containment action?",
+      "Which signal proves recovery?"
+    ]
+  },
+  {
+    "id": 263,
+    "topic": "Cloud & Platform",
+    "contentTrack": "java",
+    "subtopic": "Containers, Kubernetes & Resource Limits",
+    "question": "How should a Java container set heap, CPU, and probe budgets under Kubernetes cgroup limits?",
+    "testing": "State resource assumptions, failure signals, rollout gates, and rollback behavior.",
+    "outline": [
+      "Treat cgroup limits as runtime constraints, not deployment metadata.",
+      "Align probes, graceful shutdown, and autoscaling with the service's real dependencies.",
+      "Validate using throttling, memory, saturation, and SLO evidence."
+    ],
+    "answer": "A platform contract should make safe defaults easy: explicit resource budgets, observable saturation, bounded shutdown, and progressive rollout. Tune JVM or Go runtime behavior to the same container and dependency capacity rather than assuming cheap execution creates capacity.",
+    "example": "Use the runtime's diagnostics while keeping the Kubernetes workload contract identical.",
+    "staffSignal": "Builds reusable platform guardrails that preserve team autonomy.",
+    "followUps": [
+      "Which limit will fail first?",
+      "How does a probe amplify an outage?",
+      "What rollback signal is decisive?"
+    ]
+  },
+  {
+    "id": 264,
+    "topic": "Cloud & Platform",
+    "contentTrack": "go",
+    "subtopic": "Containers, Kubernetes & Resource Limits",
+    "question": "How should a Go container set memory, CPU, goroutine, and probe budgets under Kubernetes cgroup limits?",
+    "testing": "State resource assumptions, failure signals, rollout gates, and rollback behavior.",
+    "outline": [
+      "Treat cgroup limits as runtime constraints, not deployment metadata.",
+      "Align probes, graceful shutdown, and autoscaling with the service's real dependencies.",
+      "Validate using throttling, memory, saturation, and SLO evidence."
+    ],
+    "answer": "A platform contract should make safe defaults easy: explicit resource budgets, observable saturation, bounded shutdown, and progressive rollout. Tune JVM or Go runtime behavior to the same container and dependency capacity rather than assuming cheap execution creates capacity.",
+    "example": "Use the runtime's diagnostics while keeping the Kubernetes workload contract identical.",
+    "staffSignal": "Builds reusable platform guardrails that preserve team autonomy.",
+    "followUps": [
+      "Which limit will fail first?",
+      "How does a probe amplify an outage?",
+      "What rollback signal is decisive?"
+    ]
+  },
+  {
+    "id": 265,
+    "topic": "Go Concurrency & Runtime",
+    "contentTrack": "go",
+    "subtopic": "Memory & Synchronization",
+    "question": "When should Go use a mutex, atomic operation, channel, or sync.Map for shared state?",
+    "testing": "State the lifecycle, capacity, ownership, and diagnostic evidence before selecting a primitive.",
+    "outline": [
+      "Name the invariant and the resource being bounded.",
+      "Define cancellation, shutdown, and error propagation.",
+      "Use race tests, profiles, traces, or load evidence to validate the claim."
+    ],
+    "answer": "Concurrency primitives are implementation details around a service contract. Choose the smallest mechanism that preserves the invariant, bounds work before scarce dependencies saturate, and makes shutdown and diagnosis observable.",
+    "example": "Translate the operational invariant between Java and Go rather than copying the primitive.",
+    "staffSignal": "Connects runtime mechanics to capacity, operability, and safe incident response.",
+    "followUps": [
+      "What blocks this work?",
+      "Who owns cancellation?",
+      "Which measurement validates the change?"
+    ]
+  },
+  {
+    "id": 266,
+    "topic": "Go Concurrency & Runtime",
+    "contentTrack": "go",
+    "subtopic": "Memory & Synchronization",
+    "question": "What channel ownership rules prevent send-on-closed and double-close failures?",
+    "testing": "State the lifecycle, capacity, ownership, and diagnostic evidence before selecting a primitive.",
+    "outline": [
+      "Name the invariant and the resource being bounded.",
+      "Define cancellation, shutdown, and error propagation.",
+      "Use race tests, profiles, traces, or load evidence to validate the claim."
+    ],
+    "answer": "Concurrency primitives are implementation details around a service contract. Choose the smallest mechanism that preserves the invariant, bounds work before scarce dependencies saturate, and makes shutdown and diagnosis observable.",
+    "example": "Translate the operational invariant between Java and Go rather than copying the primitive.",
+    "staffSignal": "Connects runtime mechanics to capacity, operability, and safe incident response.",
+    "followUps": [
+      "What blocks this work?",
+      "Who owns cancellation?",
+      "Which measurement validates the change?"
+    ]
+  },
+  {
+    "id": 267,
+    "topic": "Go Concurrency & Runtime",
+    "contentTrack": "go",
+    "subtopic": "Memory & Synchronization",
+    "question": "How do you use the race detector to turn a suspected data race into a regression test?",
+    "testing": "State the lifecycle, capacity, ownership, and diagnostic evidence before selecting a primitive.",
+    "outline": [
+      "Name the invariant and the resource being bounded.",
+      "Define cancellation, shutdown, and error propagation.",
+      "Use race tests, profiles, traces, or load evidence to validate the claim."
+    ],
+    "answer": "Concurrency primitives are implementation details around a service contract. Choose the smallest mechanism that preserves the invariant, bounds work before scarce dependencies saturate, and makes shutdown and diagnosis observable.",
+    "example": "Translate the operational invariant between Java and Go rather than copying the primitive.",
+    "staffSignal": "Connects runtime mechanics to capacity, operability, and safe incident response.",
+    "followUps": [
+      "What blocks this work?",
+      "Who owns cancellation?",
+      "Which measurement validates the change?"
+    ]
+  },
+  {
+    "id": 268,
+    "topic": "Go Concurrency & Runtime",
+    "contentTrack": "go",
+    "subtopic": "Lifecycle & Cancellation",
+    "question": "How do errgroup and context create structured cancellation for fan-out work?",
+    "testing": "State the lifecycle, capacity, ownership, and diagnostic evidence before selecting a primitive.",
+    "outline": [
+      "Name the invariant and the resource being bounded.",
+      "Define cancellation, shutdown, and error propagation.",
+      "Use race tests, profiles, traces, or load evidence to validate the claim."
+    ],
+    "answer": "Concurrency primitives are implementation details around a service contract. Choose the smallest mechanism that preserves the invariant, bounds work before scarce dependencies saturate, and makes shutdown and diagnosis observable.",
+    "example": "Translate the operational invariant between Java and Go rather than copying the primitive.",
+    "staffSignal": "Connects runtime mechanics to capacity, operability, and safe incident response.",
+    "followUps": [
+      "What blocks this work?",
+      "Who owns cancellation?",
+      "Which measurement validates the change?"
+    ]
+  },
+  {
+    "id": 269,
+    "topic": "Go Concurrency & Runtime",
+    "contentTrack": "go",
+    "subtopic": "Lifecycle & Cancellation",
+    "question": "How do buffered channels, select, and cancellation prevent blocked-send goroutine leaks?",
+    "testing": "State the lifecycle, capacity, ownership, and diagnostic evidence before selecting a primitive.",
+    "outline": [
+      "Name the invariant and the resource being bounded.",
+      "Define cancellation, shutdown, and error propagation.",
+      "Use race tests, profiles, traces, or load evidence to validate the claim."
+    ],
+    "answer": "Concurrency primitives are implementation details around a service contract. Choose the smallest mechanism that preserves the invariant, bounds work before scarce dependencies saturate, and makes shutdown and diagnosis observable.",
+    "example": "Translate the operational invariant between Java and Go rather than copying the primitive.",
+    "staffSignal": "Connects runtime mechanics to capacity, operability, and safe incident response.",
+    "followUps": [
+      "What blocks this work?",
+      "Who owns cancellation?",
+      "Which measurement validates the change?"
+    ]
+  },
+  {
+    "id": 270,
+    "topic": "Go Concurrency & Runtime",
+    "contentTrack": "go",
+    "subtopic": "Lifecycle & Cancellation",
+    "question": "How should a Go service budget deadlines across queueing and downstream calls?",
+    "testing": "State the lifecycle, capacity, ownership, and diagnostic evidence before selecting a primitive.",
+    "outline": [
+      "Name the invariant and the resource being bounded.",
+      "Define cancellation, shutdown, and error propagation.",
+      "Use race tests, profiles, traces, or load evidence to validate the claim."
+    ],
+    "answer": "Concurrency primitives are implementation details around a service contract. Choose the smallest mechanism that preserves the invariant, bounds work before scarce dependencies saturate, and makes shutdown and diagnosis observable.",
+    "example": "Translate the operational invariant between Java and Go rather than copying the primitive.",
+    "staffSignal": "Connects runtime mechanics to capacity, operability, and safe incident response.",
+    "followUps": [
+      "What blocks this work?",
+      "Who owns cancellation?",
+      "Which measurement validates the change?"
+    ]
+  },
+  {
+    "id": 271,
+    "topic": "Go Concurrency & Runtime",
+    "contentTrack": "go",
+    "subtopic": "Capacity & Backpressure",
+    "question": "When should Go use a semaphore or worker pool to enforce backpressure?",
+    "testing": "State the lifecycle, capacity, ownership, and diagnostic evidence before selecting a primitive.",
+    "outline": [
+      "Name the invariant and the resource being bounded.",
+      "Define cancellation, shutdown, and error propagation.",
+      "Use race tests, profiles, traces, or load evidence to validate the claim."
+    ],
+    "answer": "Concurrency primitives are implementation details around a service contract. Choose the smallest mechanism that preserves the invariant, bounds work before scarce dependencies saturate, and makes shutdown and diagnosis observable.",
+    "example": "Translate the operational invariant between Java and Go rather than copying the primitive.",
+    "staffSignal": "Connects runtime mechanics to capacity, operability, and safe incident response.",
+    "followUps": [
+      "What blocks this work?",
+      "Who owns cancellation?",
+      "Which measurement validates the change?"
+    ]
+  },
+  {
+    "id": 272,
+    "topic": "Go Concurrency & Runtime",
+    "contentTrack": "go",
+    "subtopic": "Capacity & Backpressure",
+    "question": "How do fan-out and fan-in pipelines preserve bounded concurrency and result ownership?",
+    "testing": "State the lifecycle, capacity, ownership, and diagnostic evidence before selecting a primitive.",
+    "outline": [
+      "Name the invariant and the resource being bounded.",
+      "Define cancellation, shutdown, and error propagation.",
+      "Use race tests, profiles, traces, or load evidence to validate the claim."
+    ],
+    "answer": "Concurrency primitives are implementation details around a service contract. Choose the smallest mechanism that preserves the invariant, bounds work before scarce dependencies saturate, and makes shutdown and diagnosis observable.",
+    "example": "Translate the operational invariant between Java and Go rather than copying the primitive.",
+    "staffSignal": "Connects runtime mechanics to capacity, operability, and safe incident response.",
+    "followUps": [
+      "What blocks this work?",
+      "Who owns cancellation?",
+      "Which measurement validates the change?"
+    ]
+  },
+  {
+    "id": 273,
+    "topic": "Go Concurrency & Runtime",
+    "contentTrack": "go",
+    "subtopic": "Runtime Diagnostics",
+    "question": "How do escape analysis, allocation rate, and GC pacing affect Go latency?",
+    "testing": "State the lifecycle, capacity, ownership, and diagnostic evidence before selecting a primitive.",
+    "outline": [
+      "Name the invariant and the resource being bounded.",
+      "Define cancellation, shutdown, and error propagation.",
+      "Use race tests, profiles, traces, or load evidence to validate the claim."
+    ],
+    "answer": "Concurrency primitives are implementation details around a service contract. Choose the smallest mechanism that preserves the invariant, bounds work before scarce dependencies saturate, and makes shutdown and diagnosis observable.",
+    "example": "Translate the operational invariant between Java and Go rather than copying the primitive.",
+    "staffSignal": "Connects runtime mechanics to capacity, operability, and safe incident response.",
+    "followUps": [
+      "What blocks this work?",
+      "Who owns cancellation?",
+      "Which measurement validates the change?"
+    ]
+  },
+  {
+    "id": 274,
+    "topic": "Go Concurrency & Runtime",
+    "contentTrack": "go",
+    "subtopic": "Runtime Diagnostics",
+    "question": "What do execution traces reveal that CPU and heap profiles cannot?",
+    "testing": "State the lifecycle, capacity, ownership, and diagnostic evidence before selecting a primitive.",
+    "outline": [
+      "Name the invariant and the resource being bounded.",
+      "Define cancellation, shutdown, and error propagation.",
+      "Use race tests, profiles, traces, or load evidence to validate the claim."
+    ],
+    "answer": "Concurrency primitives are implementation details around a service contract. Choose the smallest mechanism that preserves the invariant, bounds work before scarce dependencies saturate, and makes shutdown and diagnosis observable.",
+    "example": "Translate the operational invariant between Java and Go rather than copying the primitive.",
+    "staffSignal": "Connects runtime mechanics to capacity, operability, and safe incident response.",
+    "followUps": [
+      "What blocks this work?",
+      "Who owns cancellation?",
+      "Which measurement validates the change?"
+    ]
+  },
+  {
+    "id": 275,
+    "topic": "JVM & Concurrency",
+    "contentTrack": "java",
+    "subtopic": "Runtime Diagnostics",
+    "question": "How do virtual-thread pinning and blocking synchronization affect Java capacity?",
+    "testing": "State the lifecycle, capacity, ownership, and diagnostic evidence before selecting a primitive.",
+    "outline": [
+      "Name the invariant and the resource being bounded.",
+      "Define cancellation, shutdown, and error propagation.",
+      "Use race tests, profiles, traces, or load evidence to validate the claim."
+    ],
+    "answer": "Concurrency primitives are implementation details around a service contract. Choose the smallest mechanism that preserves the invariant, bounds work before scarce dependencies saturate, and makes shutdown and diagnosis observable.",
+    "example": "Translate the operational invariant between Java and Go rather than copying the primitive.",
+    "staffSignal": "Connects runtime mechanics to capacity, operability, and safe incident response.",
+    "followUps": [
+      "What blocks this work?",
+      "Who owns cancellation?",
+      "Which measurement validates the change?"
+    ]
+  },
+  {
+    "id": 276,
+    "topic": "JVM & Concurrency",
+    "contentTrack": "java",
+    "subtopic": "Runtime Diagnostics",
+    "question": "How do JFR, native memory, and cgroup metrics explain Java container memory beyond heap usage?",
+    "testing": "State the lifecycle, capacity, ownership, and diagnostic evidence before selecting a primitive.",
+    "outline": [
+      "Name the invariant and the resource being bounded.",
+      "Define cancellation, shutdown, and error propagation.",
+      "Use race tests, profiles, traces, or load evidence to validate the claim."
+    ],
+    "answer": "Concurrency primitives are implementation details around a service contract. Choose the smallest mechanism that preserves the invariant, bounds work before scarce dependencies saturate, and makes shutdown and diagnosis observable.",
+    "example": "Translate the operational invariant between Java and Go rather than copying the primitive.",
+    "staffSignal": "Connects runtime mechanics to capacity, operability, and safe incident response.",
+    "followUps": [
+      "What blocks this work?",
+      "Who owns cancellation?",
+      "Which measurement validates the change?"
+    ]
+  },
+  {
+    "id": 277,
+    "topic": "Go Service Architecture",
+    "contentTrack": "go",
+    "subtopic": null,
+    "question": "How should a Go service compose transport, domain, persistence, and operational dependencies?",
+    "testing": "State the boundary, ownership, failure behavior, and adoption path.",
+    "outline": [
+      "Keep domain contracts independent of transport and infrastructure.",
+      "Make lifecycle, transaction, retry, and configuration behavior explicit.",
+      "Prefer a paved road of small modules and templates over an opaque framework."
+    ],
+    "answer": "Go service architecture should be explicit and composable: wire dependencies at the edge, keep handlers thin, pass context through blocking work, and expose operational policy through clear contracts. Standardize outcomes rather than reproducing Spring-style indirection.",
+    "example": "Use Java/Spring as a comparison point for the concern, not as an implementation template.",
+    "staffSignal": "Creates reusable operational leverage while retaining readable ownership and migration paths.",
+    "followUps": [
+      "Where does this dependency belong?",
+      "What failure behavior is hidden today?",
+      "How would teams adopt this incrementally?"
+    ]
+  },
+  {
+    "id": 278,
+    "topic": "Go Service Architecture",
+    "contentTrack": "go",
+    "subtopic": null,
+    "question": "When should Go use explicit constructors instead of a dependency-injection framework?",
+    "testing": "State the boundary, ownership, failure behavior, and adoption path.",
+    "outline": [
+      "Keep domain contracts independent of transport and infrastructure.",
+      "Make lifecycle, transaction, retry, and configuration behavior explicit.",
+      "Prefer a paved road of small modules and templates over an opaque framework."
+    ],
+    "answer": "Go service architecture should be explicit and composable: wire dependencies at the edge, keep handlers thin, pass context through blocking work, and expose operational policy through clear contracts. Standardize outcomes rather than reproducing Spring-style indirection.",
+    "example": "Use Java/Spring as a comparison point for the concern, not as an implementation template.",
+    "staffSignal": "Creates reusable operational leverage while retaining readable ownership and migration paths.",
+    "followUps": [
+      "Where does this dependency belong?",
+      "What failure behavior is hidden today?",
+      "How would teams adopt this incrementally?"
+    ]
+  },
+  {
+    "id": 279,
+    "topic": "Go Service Architecture",
+    "contentTrack": "go",
+    "subtopic": null,
+    "question": "How should middleware ordering enforce auth, tracing, recovery, and request limits?",
+    "testing": "State the boundary, ownership, failure behavior, and adoption path.",
+    "outline": [
+      "Keep domain contracts independent of transport and infrastructure.",
+      "Make lifecycle, transaction, retry, and configuration behavior explicit.",
+      "Prefer a paved road of small modules and templates over an opaque framework."
+    ],
+    "answer": "Go service architecture should be explicit and composable: wire dependencies at the edge, keep handlers thin, pass context through blocking work, and expose operational policy through clear contracts. Standardize outcomes rather than reproducing Spring-style indirection.",
+    "example": "Use Java/Spring as a comparison point for the concern, not as an implementation template.",
+    "staffSignal": "Creates reusable operational leverage while retaining readable ownership and migration paths.",
+    "followUps": [
+      "Where does this dependency belong?",
+      "What failure behavior is hidden today?",
+      "How would teams adopt this incrementally?"
+    ]
+  },
+  {
+    "id": 280,
+    "topic": "Go Service Architecture",
+    "contentTrack": "go",
+    "subtopic": null,
+    "question": "Where should Go transaction boundaries live, and how should retry behavior remain explicit?",
+    "testing": "State the boundary, ownership, failure behavior, and adoption path.",
+    "outline": [
+      "Keep domain contracts independent of transport and infrastructure.",
+      "Make lifecycle, transaction, retry, and configuration behavior explicit.",
+      "Prefer a paved road of small modules and templates over an opaque framework."
+    ],
+    "answer": "Go service architecture should be explicit and composable: wire dependencies at the edge, keep handlers thin, pass context through blocking work, and expose operational policy through clear contracts. Standardize outcomes rather than reproducing Spring-style indirection.",
+    "example": "Use Java/Spring as a comparison point for the concern, not as an implementation template.",
+    "staffSignal": "Creates reusable operational leverage while retaining readable ownership and migration paths.",
+    "followUps": [
+      "Where does this dependency belong?",
+      "What failure behavior is hidden today?",
+      "How would teams adopt this incrementally?"
+    ]
+  },
+  {
+    "id": 281,
+    "topic": "Go Service Architecture",
+    "contentTrack": "go",
+    "subtopic": null,
+    "question": "How should a Go service load, validate, and evolve configuration safely?",
+    "testing": "State the boundary, ownership, failure behavior, and adoption path.",
+    "outline": [
+      "Keep domain contracts independent of transport and infrastructure.",
+      "Make lifecycle, transaction, retry, and configuration behavior explicit.",
+      "Prefer a paved road of small modules and templates over an opaque framework."
+    ],
+    "answer": "Go service architecture should be explicit and composable: wire dependencies at the edge, keep handlers thin, pass context through blocking work, and expose operational policy through clear contracts. Standardize outcomes rather than reproducing Spring-style indirection.",
+    "example": "Use Java/Spring as a comparison point for the concern, not as an implementation template.",
+    "staffSignal": "Creates reusable operational leverage while retaining readable ownership and migration paths.",
+    "followUps": [
+      "Where does this dependency belong?",
+      "What failure behavior is hidden today?",
+      "How would teams adopt this incrementally?"
+    ]
+  },
+  {
+    "id": 282,
+    "topic": "Go Service Architecture",
+    "contentTrack": "go",
+    "subtopic": null,
+    "question": "How do readiness, liveness, and startup checks avoid amplifying an outage?",
+    "testing": "State the boundary, ownership, failure behavior, and adoption path.",
+    "outline": [
+      "Keep domain contracts independent of transport and infrastructure.",
+      "Make lifecycle, transaction, retry, and configuration behavior explicit.",
+      "Prefer a paved road of small modules and templates over an opaque framework."
+    ],
+    "answer": "Go service architecture should be explicit and composable: wire dependencies at the edge, keep handlers thin, pass context through blocking work, and expose operational policy through clear contracts. Standardize outcomes rather than reproducing Spring-style indirection.",
+    "example": "Use Java/Spring as a comparison point for the concern, not as an implementation template.",
+    "staffSignal": "Creates reusable operational leverage while retaining readable ownership and migration paths.",
+    "followUps": [
+      "Where does this dependency belong?",
+      "What failure behavior is hidden today?",
+      "How would teams adopt this incrementally?"
+    ]
+  },
+  {
+    "id": 283,
+    "topic": "Go Service Architecture",
+    "contentTrack": "go",
+    "subtopic": null,
+    "question": "How should a Go service expose admin and diagnostic endpoints without leaking sensitive data?",
+    "testing": "State the boundary, ownership, failure behavior, and adoption path.",
+    "outline": [
+      "Keep domain contracts independent of transport and infrastructure.",
+      "Make lifecycle, transaction, retry, and configuration behavior explicit.",
+      "Prefer a paved road of small modules and templates over an opaque framework."
+    ],
+    "answer": "Go service architecture should be explicit and composable: wire dependencies at the edge, keep handlers thin, pass context through blocking work, and expose operational policy through clear contracts. Standardize outcomes rather than reproducing Spring-style indirection.",
+    "example": "Use Java/Spring as a comparison point for the concern, not as an implementation template.",
+    "staffSignal": "Creates reusable operational leverage while retaining readable ownership and migration paths.",
+    "followUps": [
+      "Where does this dependency belong?",
+      "What failure behavior is hidden today?",
+      "How would teams adopt this incrementally?"
+    ]
+  },
+  {
+    "id": 284,
+    "topic": "Go Service Architecture",
+    "contentTrack": "go",
+    "subtopic": null,
+    "question": "When should a Go modular monolith split into separate services?",
+    "testing": "State the boundary, ownership, failure behavior, and adoption path.",
+    "outline": [
+      "Keep domain contracts independent of transport and infrastructure.",
+      "Make lifecycle, transaction, retry, and configuration behavior explicit.",
+      "Prefer a paved road of small modules and templates over an opaque framework."
+    ],
+    "answer": "Go service architecture should be explicit and composable: wire dependencies at the edge, keep handlers thin, pass context through blocking work, and expose operational policy through clear contracts. Standardize outcomes rather than reproducing Spring-style indirection.",
+    "example": "Use Java/Spring as a comparison point for the concern, not as an implementation template.",
+    "staffSignal": "Creates reusable operational leverage while retaining readable ownership and migration paths.",
+    "followUps": [
+      "Where does this dependency belong?",
+      "What failure behavior is hidden today?",
+      "How would teams adopt this incrementally?"
+    ]
+  },
+  {
+    "id": 285,
+    "topic": "Go Service Architecture",
+    "contentTrack": "go",
+    "subtopic": null,
+    "question": "How should a Go service make idempotency, outbox publishing, and retry ownership explicit?",
+    "testing": "State the boundary, ownership, failure behavior, and adoption path.",
+    "outline": [
+      "Keep domain contracts independent of transport and infrastructure.",
+      "Make lifecycle, transaction, retry, and configuration behavior explicit.",
+      "Prefer a paved road of small modules and templates over an opaque framework."
+    ],
+    "answer": "Go service architecture should be explicit and composable: wire dependencies at the edge, keep handlers thin, pass context through blocking work, and expose operational policy through clear contracts. Standardize outcomes rather than reproducing Spring-style indirection.",
+    "example": "Use Java/Spring as a comparison point for the concern, not as an implementation template.",
+    "staffSignal": "Creates reusable operational leverage while retaining readable ownership and migration paths.",
+    "followUps": [
+      "Where does this dependency belong?",
+      "What failure behavior is hidden today?",
+      "How would teams adopt this incrementally?"
+    ]
+  },
+  {
+    "id": 286,
+    "topic": "Go Service Architecture",
+    "contentTrack": "go",
+    "subtopic": null,
+    "question": "How do you design a reusable Go platform module without creating an opaque framework?",
+    "testing": "State the boundary, ownership, failure behavior, and adoption path.",
+    "outline": [
+      "Keep domain contracts independent of transport and infrastructure.",
+      "Make lifecycle, transaction, retry, and configuration behavior explicit.",
+      "Prefer a paved road of small modules and templates over an opaque framework."
+    ],
+    "answer": "Go service architecture should be explicit and composable: wire dependencies at the edge, keep handlers thin, pass context through blocking work, and expose operational policy through clear contracts. Standardize outcomes rather than reproducing Spring-style indirection.",
+    "example": "Use Java/Spring as a comparison point for the concern, not as an implementation template.",
+    "staffSignal": "Creates reusable operational leverage while retaining readable ownership and migration paths.",
+    "followUps": [
+      "Where does this dependency belong?",
+      "What failure behavior is hidden today?",
+      "How would teams adopt this incrementally?"
+    ]
+  },
+  {
+    "id": 287,
+    "topic": "Go Service Architecture",
+    "contentTrack": "go",
+    "subtopic": null,
+    "question": "How should a team migrate a large Go service package structure safely?",
+    "testing": "State the boundary, ownership, failure behavior, and adoption path.",
+    "outline": [
+      "Keep domain contracts independent of transport and infrastructure.",
+      "Make lifecycle, transaction, retry, and configuration behavior explicit.",
+      "Prefer a paved road of small modules and templates over an opaque framework."
+    ],
+    "answer": "Go service architecture should be explicit and composable: wire dependencies at the edge, keep handlers thin, pass context through blocking work, and expose operational policy through clear contracts. Standardize outcomes rather than reproducing Spring-style indirection.",
+    "example": "Use Java/Spring as a comparison point for the concern, not as an implementation template.",
+    "staffSignal": "Creates reusable operational leverage while retaining readable ownership and migration paths.",
+    "followUps": [
+      "Where does this dependency belong?",
+      "What failure behavior is hidden today?",
+      "How would teams adopt this incrementally?"
+    ]
+  },
+  {
+    "id": 288,
+    "topic": "Go Service Architecture",
+    "contentTrack": "go",
+    "subtopic": null,
+    "question": "How do you prevent resilience wrappers from hiding timeout, retry, and fallback behavior?",
+    "testing": "State the boundary, ownership, failure behavior, and adoption path.",
+    "outline": [
+      "Keep domain contracts independent of transport and infrastructure.",
+      "Make lifecycle, transaction, retry, and configuration behavior explicit.",
+      "Prefer a paved road of small modules and templates over an opaque framework."
+    ],
+    "answer": "Go service architecture should be explicit and composable: wire dependencies at the edge, keep handlers thin, pass context through blocking work, and expose operational policy through clear contracts. Standardize outcomes rather than reproducing Spring-style indirection.",
+    "example": "Use Java/Spring as a comparison point for the concern, not as an implementation template.",
+    "staffSignal": "Creates reusable operational leverage while retaining readable ownership and migration paths.",
+    "followUps": [
+      "Where does this dependency belong?",
+      "What failure behavior is hidden today?",
+      "How would teams adopt this incrementally?"
+    ]
+  },
+  {
+    "id": 289,
+    "topic": "Go APIs & Services",
+    "contentTrack": "go",
+    "subtopic": null,
+    "question": "How should a Go HTTP server configure read, header, write, idle, and shutdown timeouts?",
+    "testing": "State the contract, failure mode, ownership, and operational evidence.",
+    "outline": [
+      "Use the language's idiomatic primitive without hiding its lifecycle.",
+      "Name the boundary condition that causes production failure.",
+      "Prove the behavior with a focused test, profile, or load signal."
+    ],
+    "answer": "A strong Staff answer connects the language mechanism to a stable service contract: bounded resources, explicit ownership, observable failure, and a safe evolution path. Avoid translating another language's abstraction when the local idiom communicates the invariant more directly.",
+    "example": "Show the smallest idiomatic implementation, then explain its production trade-off.",
+    "staffSignal": "Uses language fluency to improve reliability and interview communication.",
+    "followUps": [
+      "What is the likely production failure?",
+      "What test would catch it?",
+      "What capacity limit constrains it?"
+    ]
+  },
+  {
+    "id": 290,
+    "topic": "Go APIs & Services",
+    "contentTrack": "go",
+    "subtopic": null,
+    "question": "Why should Go handlers bound and drain request bodies before reusing HTTP connections?",
+    "testing": "State the contract, failure mode, ownership, and operational evidence.",
+    "outline": [
+      "Use the language's idiomatic primitive without hiding its lifecycle.",
+      "Name the boundary condition that causes production failure.",
+      "Prove the behavior with a focused test, profile, or load signal."
+    ],
+    "answer": "A strong Staff answer connects the language mechanism to a stable service contract: bounded resources, explicit ownership, observable failure, and a safe evolution path. Avoid translating another language's abstraction when the local idiom communicates the invariant more directly.",
+    "example": "Show the smallest idiomatic implementation, then explain its production trade-off.",
+    "staffSignal": "Uses language fluency to improve reliability and interview communication.",
+    "followUps": [
+      "What is the likely production failure?",
+      "What test would catch it?",
+      "What capacity limit constrains it?"
+    ]
+  },
+  {
+    "id": 291,
+    "topic": "Go APIs & Services",
+    "contentTrack": "go",
+    "subtopic": null,
+    "question": "How should a Go gRPC service use interceptors for auth, deadlines, errors, and OpenTelemetry?",
+    "testing": "State the contract, failure mode, ownership, and operational evidence.",
+    "outline": [
+      "Use the language's idiomatic primitive without hiding its lifecycle.",
+      "Name the boundary condition that causes production failure.",
+      "Prove the behavior with a focused test, profile, or load signal."
+    ],
+    "answer": "A strong Staff answer connects the language mechanism to a stable service contract: bounded resources, explicit ownership, observable failure, and a safe evolution path. Avoid translating another language's abstraction when the local idiom communicates the invariant more directly.",
+    "example": "Show the smallest idiomatic implementation, then explain its production trade-off.",
+    "staffSignal": "Uses language fluency to improve reliability and interview communication.",
+    "followUps": [
+      "What is the likely production failure?",
+      "What test would catch it?",
+      "What capacity limit constrains it?"
+    ]
+  },
+  {
+    "id": 292,
+    "topic": "Go APIs & Services",
+    "contentTrack": "go",
+    "subtopic": null,
+    "question": "How do Rows.Close, Scan errors, and context cancellation affect database/sql connection reuse?",
+    "testing": "State the contract, failure mode, ownership, and operational evidence.",
+    "outline": [
+      "Use the language's idiomatic primitive without hiding its lifecycle.",
+      "Name the boundary condition that causes production failure.",
+      "Prove the behavior with a focused test, profile, or load signal."
+    ],
+    "answer": "A strong Staff answer connects the language mechanism to a stable service contract: bounded resources, explicit ownership, observable failure, and a safe evolution path. Avoid translating another language's abstraction when the local idiom communicates the invariant more directly.",
+    "example": "Show the smallest idiomatic implementation, then explain its production trade-off.",
+    "staffSignal": "Uses language fluency to improve reliability and interview communication.",
+    "followUps": [
+      "What is the likely production failure?",
+      "What test would catch it?",
+      "What capacity limit constrains it?"
+    ]
+  },
+  {
+    "id": 293,
+    "topic": "Databases",
+    "contentTrack": "java",
+    "subtopic": null,
+    "question": "How do JPA entity lifecycle and detachment create hidden persistence bugs?",
+    "testing": "State the contract, failure mode, ownership, and operational evidence.",
+    "outline": [
+      "Use the language's idiomatic primitive without hiding its lifecycle.",
+      "Name the boundary condition that causes production failure.",
+      "Prove the behavior with a focused test, profile, or load signal."
+    ],
+    "answer": "A strong Staff answer connects the language mechanism to a stable service contract: bounded resources, explicit ownership, observable failure, and a safe evolution path. Avoid translating another language's abstraction when the local idiom communicates the invariant more directly.",
+    "example": "Show the smallest idiomatic implementation, then explain its production trade-off.",
+    "staffSignal": "Uses language fluency to improve reliability and interview communication.",
+    "followUps": [
+      "What is the likely production failure?",
+      "What test would catch it?",
+      "What capacity limit constrains it?"
+    ]
+  },
+  {
+    "id": 294,
+    "topic": "Databases",
+    "contentTrack": "java",
+    "subtopic": null,
+    "question": "How do you identify and prevent N+1 queries without hiding query cost?",
+    "testing": "State the contract, failure mode, ownership, and operational evidence.",
+    "outline": [
+      "Use the language's idiomatic primitive without hiding its lifecycle.",
+      "Name the boundary condition that causes production failure.",
+      "Prove the behavior with a focused test, profile, or load signal."
+    ],
+    "answer": "A strong Staff answer connects the language mechanism to a stable service contract: bounded resources, explicit ownership, observable failure, and a safe evolution path. Avoid translating another language's abstraction when the local idiom communicates the invariant more directly.",
+    "example": "Show the smallest idiomatic implementation, then explain its production trade-off.",
+    "staffSignal": "Uses language fluency to improve reliability and interview communication.",
+    "followUps": [
+      "What is the likely production failure?",
+      "What test would catch it?",
+      "What capacity limit constrains it?"
+    ]
+  },
+  {
+    "id": 295,
+    "topic": "Databases",
+    "contentTrack": "java",
+    "subtopic": null,
+    "question": "How do flush timing, batching, and transaction scope affect Java database throughput?",
+    "testing": "State the contract, failure mode, ownership, and operational evidence.",
+    "outline": [
+      "Use the language's idiomatic primitive without hiding its lifecycle.",
+      "Name the boundary condition that causes production failure.",
+      "Prove the behavior with a focused test, profile, or load signal."
+    ],
+    "answer": "A strong Staff answer connects the language mechanism to a stable service contract: bounded resources, explicit ownership, observable failure, and a safe evolution path. Avoid translating another language's abstraction when the local idiom communicates the invariant more directly.",
+    "example": "Show the smallest idiomatic implementation, then explain its production trade-off.",
+    "staffSignal": "Uses language fluency to improve reliability and interview communication.",
+    "followUps": [
+      "What is the likely production failure?",
+      "What test would catch it?",
+      "What capacity limit constrains it?"
+    ]
+  },
+  {
+    "id": 296,
+    "topic": "Databases",
+    "contentTrack": "java",
+    "subtopic": null,
+    "question": "How should a Java service handle optimistic-lock conflicts and retries?",
+    "testing": "State the contract, failure mode, ownership, and operational evidence.",
+    "outline": [
+      "Use the language's idiomatic primitive without hiding its lifecycle.",
+      "Name the boundary condition that causes production failure.",
+      "Prove the behavior with a focused test, profile, or load signal."
+    ],
+    "answer": "A strong Staff answer connects the language mechanism to a stable service contract: bounded resources, explicit ownership, observable failure, and a safe evolution path. Avoid translating another language's abstraction when the local idiom communicates the invariant more directly.",
+    "example": "Show the smallest idiomatic implementation, then explain its production trade-off.",
+    "staffSignal": "Uses language fluency to improve reliability and interview communication.",
+    "followUps": [
+      "What is the likely production failure?",
+      "What test would catch it?",
+      "What capacity limit constrains it?"
+    ]
+  },
+  {
+    "id": 297,
+    "topic": "DSA",
+    "contentTrack": "go",
+    "subtopic": null,
+    "question": "How should a Go candidate implement a priority queue with container/heap and state its invariants?",
+    "testing": "State the contract, failure mode, ownership, and operational evidence.",
+    "outline": [
+      "Use the language's idiomatic primitive without hiding its lifecycle.",
+      "Name the boundary condition that causes production failure.",
+      "Prove the behavior with a focused test, profile, or load signal."
+    ],
+    "answer": "A strong Staff answer connects the language mechanism to a stable service contract: bounded resources, explicit ownership, observable failure, and a safe evolution path. Avoid translating another language's abstraction when the local idiom communicates the invariant more directly.",
+    "example": "Show the smallest idiomatic implementation, then explain its production trade-off.",
+    "staffSignal": "Uses language fluency to improve reliability and interview communication.",
+    "followUps": [
+      "What is the likely production failure?",
+      "What test would catch it?",
+      "What capacity limit constrains it?"
+    ]
+  },
+  {
+    "id": 298,
+    "topic": "DSA",
+    "contentTrack": "go",
+    "subtopic": null,
+    "question": "How should a Go candidate implement a queue or deque without accidental slice retention?",
+    "testing": "State the contract, failure mode, ownership, and operational evidence.",
+    "outline": [
+      "Use the language's idiomatic primitive without hiding its lifecycle.",
+      "Name the boundary condition that causes production failure.",
+      "Prove the behavior with a focused test, profile, or load signal."
+    ],
+    "answer": "A strong Staff answer connects the language mechanism to a stable service contract: bounded resources, explicit ownership, observable failure, and a safe evolution path. Avoid translating another language's abstraction when the local idiom communicates the invariant more directly.",
+    "example": "Show the smallest idiomatic implementation, then explain its production trade-off.",
+    "staffSignal": "Uses language fluency to improve reliability and interview communication.",
+    "followUps": [
+      "What is the likely production failure?",
+      "What test would catch it?",
+      "What capacity limit constrains it?"
+    ]
+  },
+  {
+    "id": 299,
+    "topic": "DSA",
+    "contentTrack": "go",
+    "subtopic": null,
+    "question": "How should a Go candidate use maps for counting while explaining iteration and zero-value behavior?",
+    "testing": "State the contract, failure mode, ownership, and operational evidence.",
+    "outline": [
+      "Use the language's idiomatic primitive without hiding its lifecycle.",
+      "Name the boundary condition that causes production failure.",
+      "Prove the behavior with a focused test, profile, or load signal."
+    ],
+    "answer": "A strong Staff answer connects the language mechanism to a stable service contract: bounded resources, explicit ownership, observable failure, and a safe evolution path. Avoid translating another language's abstraction when the local idiom communicates the invariant more directly.",
+    "example": "Show the smallest idiomatic implementation, then explain its production trade-off.",
+    "staffSignal": "Uses language fluency to improve reliability and interview communication.",
+    "followUps": [
+      "What is the likely production failure?",
+      "What test would catch it?",
+      "What capacity limit constrains it?"
+    ]
+  },
+  {
+    "id": 300,
+    "topic": "DSA",
+    "contentTrack": "go",
+    "subtopic": null,
+    "question": "How should a Go candidate structure fast input, output, and ownership in a coding interview?",
+    "testing": "State the contract, failure mode, ownership, and operational evidence.",
+    "outline": [
+      "Use the language's idiomatic primitive without hiding its lifecycle.",
+      "Name the boundary condition that causes production failure.",
+      "Prove the behavior with a focused test, profile, or load signal."
+    ],
+    "answer": "A strong Staff answer connects the language mechanism to a stable service contract: bounded resources, explicit ownership, observable failure, and a safe evolution path. Avoid translating another language's abstraction when the local idiom communicates the invariant more directly.",
+    "example": "Show the smallest idiomatic implementation, then explain its production trade-off.",
+    "staffSignal": "Uses language fluency to improve reliability and interview communication.",
+    "followUps": [
+      "What is the likely production failure?",
+      "What test would catch it?",
+      "What capacity limit constrains it?"
+    ]
+  }
+]

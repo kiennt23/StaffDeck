@@ -1,0 +1,738 @@
+[
+  {
+    "id": "go-1",
+    "kind": "General",
+    "contentTrack": "go",
+    "topic": "Go Foundations and Services",
+    "week": 1,
+    "number": 1,
+    "title": "Coding: context-aware fan-out",
+    "prompt": "Implement a Go fan-out coordinator that accepts context.Context, bounds concurrent work, cancels remaining work after a fatal error, and returns partial-result semantics explicitly.",
+    "artifact": "Go implementation, cancellation tests, race-focused tests, and a two-minute explanation of capacity limits.",
+    "followUps": [
+      "Which operational signal would falsify your design?",
+      "What would change if the downstream database became the bottleneck?",
+      "How would you explain this choice to a Java-oriented team?"
+    ],
+    "completion": "State the goroutine ownership and shutdown contract before recording completion.",
+    "guide": null,
+    "modelAnswer": [
+      "Define results by input index and distinguish fatal coordinator errors from per-item failures so partial completion is explicit.",
+      "Use errgroup.WithContext plus a bounded semaphore; acquire capacity before starting work and have every send and dependency call select on cancellation.",
+      "Test parent cancellation, first-fatal-error cancellation, stable partial results, the concurrency ceiling, and the implementation under the race detector."
+    ]
+  },
+  {
+    "id": "go-2",
+    "kind": "General",
+    "contentTrack": "go",
+    "topic": "Go Foundations and Services",
+    "week": 1,
+    "number": 2,
+    "title": "Debug: Go pod OOM with a small heap",
+    "prompt": "Given container RSS growth, a heap profile, goroutine profile, and allocation metrics, build a hypothesis tree for a Go service repeatedly OOM-killed in Kubernetes.",
+    "artifact": "Evidence order, discriminating pprof commands or profile types, immediate containment, durable fix, and verification signal.",
+    "followUps": [
+      "Which operational signal would falsify your design?",
+      "What would change if the downstream database became the bottleneck?",
+      "How would you explain this choice to a Java-oriented team?"
+    ],
+    "completion": "Separate heap, stack, native, and retained-memory explanations before recording completion.",
+    "guide": null,
+    "modelAnswer": [
+      "Reconcile container RSS with Go heap, stack, goroutine, allocation, cgo, mmap, and page-retention evidence before blaming the garbage collector.",
+      "Compare healthy and failing pods, then inspect heap and goroutine profiles, runtime metrics, cgroup memory events, and allocation rate in that order.",
+      "Contain with traffic or concurrency reduction; fix the retaining or allocating path and verify RSS, restart rate, and SLO recovery under representative load."
+    ]
+  },
+  {
+    "id": "go-3",
+    "kind": "General",
+    "contentTrack": "go",
+    "topic": "Go Foundations and Services",
+    "week": 1,
+    "number": 3,
+    "title": "Design: reliable Go job worker",
+    "prompt": "Design a Go worker for tenant-scoped asynchronous jobs with deadlines, idempotency, bounded concurrency, retries, fair scheduling, and database-pool protection.",
+    "artifact": "Requirements table, state machine, queue and worker design, failure walkthrough, capacity estimate, and operational metrics.",
+    "followUps": [
+      "Which operational signal would falsify your design?",
+      "What would change if the downstream database became the bottleneck?",
+      "How would you explain this choice to a Java-oriented team?"
+    ],
+    "completion": "Make tenant fairness, cancellation, and recovery behavior explicit before recording completion.",
+    "guide": null,
+    "modelAnswer": [
+      "Model queued, leased, completed, retryable, and terminal states with an idempotency key and an atomic claim or outbox boundary.",
+      "Bound global and per-tenant concurrency before database acquisition, propagate deadlines, and retry only classified transient failures with jitter and attempt limits.",
+      "Measure queue age, tenant fairness, lease expiry, duplicate suppression, pool wait, attempts, and end-to-end completion SLOs."
+    ]
+  },
+  {
+    "id": "go-4",
+    "kind": "General",
+    "contentTrack": "go",
+    "topic": "Go Foundations and Services",
+    "week": 1,
+    "number": 4,
+    "title": "Staff communication: standardize Go service operations",
+    "prompt": "Prepare a five-minute proposal for a paved road that standardizes context propagation, OpenTelemetry, health checks, timeouts, structured logs, and progressive delivery across fifty Go services.",
+    "artifact": "Decision memo, adoption sequence, exception path, ownership model, success metrics, and recorded presentation.",
+    "followUps": [
+      "Which operational signal would falsify your design?",
+      "What would change if the downstream database became the bottleneck?",
+      "How would you explain this choice to a Java-oriented team?"
+    ],
+    "completion": "Show organizational leverage and a measured adoption plan before recording completion.",
+    "guide": null,
+    "modelAnswer": [
+      "Define a minimum production contract: context propagation, stable telemetry fields, bounded timeouts, meaningful health checks, and reversible delivery defaults.",
+      "Ship it as small shared modules, templates, CI checks, migration examples, and an explicit exception path rather than a mandatory opaque framework.",
+      "Sequence adoption by service risk and leverage; report adoption, incident detection, rollback time, and SLO outcomes instead of repository count alone."
+    ]
+  },
+  {
+    "id": "go-5",
+    "kind": "General",
+    "contentTrack": "go",
+    "topic": "Go Concurrency and Ownership",
+    "week": 2,
+    "number": 1,
+    "title": "Coding: ownership-safe API result",
+    "prompt": "Implement a Go API method that returns nested slice and map data without allowing callers to mutate cached state. Define nil, empty, and copy semantics.",
+    "artifact": "Go implementation, aliasing tests, concurrent access reasoning, and a short ownership contract.",
+    "followUps": [
+      "Which operational signal would falsify your design?",
+      "What would change if the downstream database became the bottleneck?",
+      "How would you explain this choice to a Java-oriented team?"
+    ],
+    "completion": "Demonstrate that caller mutation cannot corrupt retained state before recording completion.",
+    "guide": null,
+    "modelAnswer": [
+      "Specify whether nil and empty are observably different, and state that returned maps and slices are caller-owned snapshots.",
+      "Clone every mutable level at the cache boundary; a shallow copy is insufficient when map values or slice elements contain mutable collections.",
+      "Tests mutate nested returned data, request a second snapshot, and prove cached state is unchanged, including nil and empty cases."
+    ]
+  },
+  {
+    "id": "go-6",
+    "kind": "General",
+    "contentTrack": "go",
+    "topic": "Go Concurrency and Ownership",
+    "week": 2,
+    "number": 2,
+    "title": "Design: error taxonomy across Go services",
+    "prompt": "Design a shared Go error strategy for validation, authorization, conflicts, dependency failure, timeout, and retryable asynchronous work.",
+    "artifact": "Error taxonomy, wrapping rules, HTTP or gRPC mapping, observability fields, and migration plan.",
+    "followUps": [
+      "Which operational signal would falsify your design?",
+      "What would change if the downstream database became the bottleneck?",
+      "How would you explain this choice to a Java-oriented team?"
+    ],
+    "completion": "Preserve causal errors while exposing stable caller contracts before recording completion.",
+    "guide": null,
+    "modelAnswer": [
+      "Use stable domain error classes for invalid input, forbidden access, conflict, missing data, transient dependency failure, timeout, and permanent failure.",
+      "Wrap causes with %w, classify with errors.Is or errors.As, and translate once at HTTP, gRPC, or worker boundaries without exposing internal details.",
+      "Define retryability separately from status mapping; verify causal chains, transport mappings, log ownership, metrics, and asynchronous retry decisions."
+    ]
+  },
+  {
+    "id": "go-7",
+    "kind": "General",
+    "contentTrack": "go",
+    "topic": "Go Concurrency and Ownership",
+    "week": 2,
+    "number": 3,
+    "title": "Debug: leaked goroutines after client disconnects",
+    "prompt": "Investigate a Go API whose goroutine count grows after clients cancel requests. Build the evidence plan and propose a safe fix.",
+    "artifact": "Goroutine profile interpretation, ownership diagram, cancellation-aware code sketch, regression test, and production metric.",
+    "followUps": [
+      "Which operational signal would falsify your design?",
+      "What would change if the downstream database became the bottleneck?",
+      "How would you explain this choice to a Java-oriented team?"
+    ],
+    "completion": "Show which blocked operation owns each goroutine and how cancellation releases it before recording completion.",
+    "guide": null,
+    "modelAnswer": [
+      "Start with goroutine growth by stack signature and correlate it with canceled requests, blocked sends, dependency calls, timers, and shutdown paths.",
+      "Give every goroutine an owner and bounded lifetime; propagate request context and guard result sends with cancellation or sufficient structured buffering.",
+      "Reproduce with a blocked dependency and client disconnect, then assert completion with goleak-style checks and verify production goroutine profiles flatten."
+    ]
+  },
+  {
+    "id": "go-8",
+    "kind": "General",
+    "contentTrack": "go",
+    "topic": "Go Concurrency and Ownership",
+    "week": 2,
+    "number": 4,
+    "title": "Coding: tenant-aware admission control",
+    "prompt": "Implement the core of a tenant-aware Go admission controller with per-tenant concurrency, global capacity, context cancellation, and overload responses.",
+    "artifact": "Go implementation, deterministic concurrency tests, fairness assumptions, and overload behavior.",
+    "followUps": [
+      "Which operational signal would falsify your design?",
+      "What would change if the downstream database became the bottleneck?",
+      "How would you explain this choice to a Java-oriented team?"
+    ],
+    "completion": "State the fairness invariant and failure behavior before recording completion.",
+    "guide": null,
+    "modelAnswer": [
+      "Acquire both tenant and global permits before work begins, define ordering to avoid deadlock, and reject or queue with an explicit bounded policy.",
+      "Represent permits with cancellation-aware semaphores and release exactly once on every completion, error, panic-recovery, and canceled-wait path.",
+      "Test tenant isolation, global saturation, canceled waiters, permit recovery, fairness under skew, and the maximum observed concurrency."
+    ]
+  },
+  {
+    "id": "go-9",
+    "kind": "General",
+    "contentTrack": "go",
+    "topic": "Go Production Operations and Staff Practice",
+    "week": 3,
+    "number": 1,
+    "title": "Design: Go service dependency client",
+    "prompt": "Design a reusable Go dependency client with deadlines, bounded retries, idempotency, connection-pool behavior, metrics, and safe request-body handling.",
+    "artifact": "Client contract, retry decision table, timeout budget, instrumentation plan, and failure walkthrough.",
+    "followUps": [
+      "Which operational signal would falsify your design?",
+      "What would change if the downstream database became the bottleneck?",
+      "How would you explain this choice to a Java-oriented team?"
+    ],
+    "completion": "Explain why retries cannot compensate for an unbounded downstream dependency before recording completion.",
+    "guide": null,
+    "modelAnswer": [
+      "Allocate one caller deadline across connect, headers, body, and retries; never replace a shorter caller deadline or retry non-idempotent work blindly.",
+      "Reuse a tuned Transport, close and conditionally drain bodies, cap response size, classify errors, and bound attempts with backoff and jitter.",
+      "Expose attempt count, phase latency, pool wait, outcome class, and deadline exhaustion; test with an HTTP peer that fails at each wire phase."
+    ]
+  },
+  {
+    "id": "go-10",
+    "kind": "General",
+    "contentTrack": "go",
+    "topic": "Go Production Operations and Staff Practice",
+    "week": 3,
+    "number": 2,
+    "title": "Debug: p99 regression with normal CPU",
+    "prompt": "Use traces and Go CPU, block, mutex, heap, and goroutine profiles to investigate high tail latency with normal average CPU.",
+    "artifact": "Hypothesis tree, evidence order, profile comparison plan, mitigation, and validation SLO.",
+    "followUps": [
+      "Which operational signal would falsify your design?",
+      "What would change if the downstream database became the bottleneck?",
+      "How would you explain this choice to a Java-oriented team?"
+    ],
+    "completion": "Distinguish blocking, contention, queueing, allocation, and downstream latency before recording completion.",
+    "guide": null,
+    "modelAnswer": [
+      "Low average CPU shifts the first hypotheses toward downstream waiting, lock or channel contention, queueing, pool saturation, and a small hot shard.",
+      "Use traces to locate latency, then compare block, mutex, goroutine, CPU, and heap profiles from healthy and degraded windows under the same workload.",
+      "Contain by reducing admitted work or isolating the dependency; verify the chosen fix with p99, queue age, contention, and error-budget burn."
+    ]
+  },
+  {
+    "id": "go-11",
+    "kind": "General",
+    "contentTrack": "go",
+    "topic": "Go Production Operations and Staff Practice",
+    "week": 3,
+    "number": 3,
+    "title": "Design: progressive delivery for Go workloads",
+    "prompt": "Design a safe progressive rollout for a Go service with schema compatibility, readiness, rollback, feature flags, and runtime profiling gates.",
+    "artifact": "Rollout state machine, compatibility matrix, promotion gates, rollback limits, and operational dashboard.",
+    "followUps": [
+      "Which operational signal would falsify your design?",
+      "What would change if the downstream database became the bottleneck?",
+      "How would you explain this choice to a Java-oriented team?"
+    ],
+    "completion": "Name the irreversible step and the evidence required before crossing it.",
+    "guide": null,
+    "modelAnswer": [
+      "Require backward-compatible schema and API behavior, a bounded canary cohort, stable readiness semantics, and a rollback that does not require reversing data.",
+      "Gate expansion on errors, latency, saturation, memory, goroutines, and profile comparisons; keep feature activation separate from binary deployment.",
+      "Practice rollback, define ownership for every gate, and stop automatically when SLO or compatibility thresholds are crossed."
+    ]
+  },
+  {
+    "id": "go-12",
+    "kind": "General",
+    "contentTrack": "go",
+    "topic": "Go Production Operations and Staff Practice",
+    "week": 3,
+    "number": 4,
+    "title": "Staff communication: Java-to-Go service migration",
+    "prompt": "Present a migration strategy from a Java service to Go without treating a rewrite as the goal. Address contracts, observability, team adoption, risk, and measurable outcomes.",
+    "artifact": "Five-minute recorded proposal, phased migration plan, risk register, decision criteria, and success measures.",
+    "followUps": [
+      "Which operational signal would falsify your design?",
+      "What would change if the downstream database became the bottleneck?",
+      "How would you explain this choice to a Java-oriented team?"
+    ],
+    "completion": "Defend why each increment has independent value and a safe stopping point before recording completion.",
+    "guide": null,
+    "modelAnswer": [
+      "Lead with the business or operational problem, then preserve external contracts, data ownership, SLOs, and rollback before discussing language choice.",
+      "Migrate one bounded slice with dual-run or shadow evidence, shared contract tests, equivalent telemetry, and training for the operating team.",
+      "Measure reliability, delivery lead time, cost, and team ownership; stop if the rewrite does not outperform incremental improvement."
+    ]
+  },
+  {
+    "id": "java-testing-dependencies",
+    "kind": "General",
+    "contentTrack": "java",
+    "topic": "Staff Scenarios",
+    "week": 4,
+    "number": 4,
+    "title": "Java: reliable dependency and test pipeline",
+    "prompt": "Design a Java service quality pipeline covering Gradle or Maven dependency locking, SBOM and vulnerability response, JUnit 5, Testcontainers, contract tests, and JMH performance gates.",
+    "artifact": "Policy, CI stages, risk-based test matrix, flaky-test containment, and evidence for a production release.",
+    "followUps": [
+      "Which gate gives the highest confidence for its cost?",
+      "How will you detect and remove flaky feedback?",
+      "What evidence would justify an exception?"
+    ],
+    "completion": "Make the risk trade-offs, ownership, and measurable outcomes explicit before recording completion.",
+    "guide": null,
+    "modelAnswer": [
+      "Lock direct and transitive dependencies, review resolution changes, publish an SBOM, and give critical vulnerability exceptions an owner and expiry.",
+      "Use JUnit for local behavior, Testcontainers for infrastructure semantics, contracts for independent releases, and JMH only for isolated performance hypotheses.",
+      "Tier gates by change risk and track flake rate, feedback time, escaped defects, vulnerable exposure time, and benchmark-to-production correlation."
+    ]
+  },
+  {
+    "id": "go-testing-dependencies",
+    "kind": "General",
+    "contentTrack": "go",
+    "topic": "Staff Scenarios",
+    "week": 4,
+    "number": 4,
+    "title": "Go: reliable dependency and test pipeline",
+    "prompt": "Design a Go service quality pipeline covering module and go.sum review, checksum and vulnerability controls, table tests, disposable integration dependencies, fuzzing, race detection, and benchmark gates.",
+    "artifact": "Policy, CI stages, risk-based test matrix, flaky-test containment, and evidence for a production release.",
+    "followUps": [
+      "Which gate gives the highest confidence for its cost?",
+      "How will you detect and remove flaky feedback?",
+      "What evidence would justify an exception?"
+    ],
+    "completion": "Make the risk trade-offs, ownership, and measurable outcomes explicit before recording completion.",
+    "guide": null,
+    "modelAnswer": [
+      "Review go.mod and go.sum together, prohibit hidden production replace directives, verify checksums, and assign ownership for vulnerability response.",
+      "Combine table tests, disposable real dependencies, contract tests, fuzzing, race detection, and benchmarks according to the failure each can prove.",
+      "Keep fast deterministic gates on every change and run expensive race, integration, vulnerability, and performance checks at risk-appropriate stages."
+    ]
+  },
+  {
+    "id": "staff-quality-gates",
+    "kind": "General",
+    "contentTrack": null,
+    "topic": "Staff Scenarios",
+    "week": 4,
+    "number": 4,
+    "title": "Staff scenario: quality gates that preserve delivery speed",
+    "prompt": "Propose a cross-language quality strategy that improves supply-chain control and production confidence without imposing slow, uniform gates.",
+    "artifact": "Decision memo, paved-road design, exception process, adoption metrics, and rollout plan.",
+    "followUps": [
+      "Which gate gives the highest confidence for its cost?",
+      "How will you detect and remove flaky feedback?",
+      "What evidence would justify an exception?"
+    ],
+    "completion": "Make the risk trade-offs, ownership, and measurable outcomes explicit before recording completion.",
+    "guide": null,
+    "modelAnswer": [
+      "Define a small universal floor for reproducibility, secrets, tests, and artifact provenance, then add risk-based gates by component criticality and change type.",
+      "Provide paved-road automation, parallel execution, cached dependencies, explicit exception ownership, and deadlines for retiring temporary waivers.",
+      "Measure feedback time, flake rate, bypass rate, escaped defects, vulnerability exposure, and deployment outcomes; remove gates that do not change decisions."
+    ]
+  },
+  {
+    "id": "java-runtime-diagnostics",
+    "kind": "General",
+    "contentTrack": "java",
+    "topic": "Staff Scenarios",
+    "week": 4,
+    "number": 4,
+    "title": "Java: investigate tail latency with low CPU",
+    "prompt": "Investigate a Java service with rising p99 latency, low CPU, and growing request queues. Use traces, JFR or thread dumps, executor and connection-pool metrics to propose containment and a durable fix.",
+    "artifact": "Hypothesis tree, evidence order, safe mitigation, and validation SLO.",
+    "followUps": [
+      "Which gate gives the highest confidence for its cost?",
+      "How will you detect and remove flaky feedback?",
+      "What evidence would justify an exception?"
+    ],
+    "completion": "Make the risk trade-offs, ownership, and measurable outcomes explicit before recording completion.",
+    "guide": null,
+    "modelAnswer": [
+      "Low CPU plus rising queues suggests blocking, executor starvation, connection-pool wait, lock contention, downstream latency, or virtual-thread pinning.",
+      "Correlate traces with JFR or thread dumps, executor queues, pool acquisition time, GC, cgroup throttling, and dependency saturation before changing capacity.",
+      "Contain admitted work or isolate the dependency; verify the durable fix with p99, queue age, blocked time, pool wait, and error-budget recovery."
+    ]
+  },
+  {
+    "id": "go-runtime-diagnostics",
+    "kind": "General",
+    "contentTrack": "go",
+    "topic": "Staff Scenarios",
+    "week": 4,
+    "number": 4,
+    "title": "Go: investigate tail latency with low CPU",
+    "prompt": "Investigate a Go service with rising p99 latency, low CPU, and growing request queues. Use traces, pprof profiles, goroutine lifecycle evidence, and dependency metrics to propose containment and a durable fix.",
+    "artifact": "Hypothesis tree, evidence order, safe mitigation, and validation SLO.",
+    "followUps": [
+      "Which gate gives the highest confidence for its cost?",
+      "How will you detect and remove flaky feedback?",
+      "What evidence would justify an exception?"
+    ],
+    "completion": "Make the risk trade-offs, ownership, and measurable outcomes explicit before recording completion.",
+    "guide": null,
+    "modelAnswer": [
+      "Low CPU plus rising queues suggests blocked goroutines, dependency wait, pool saturation, mutex or channel contention, or unbounded admission.",
+      "Correlate traces with goroutine, block, mutex, CPU, and heap profiles plus runtime, pool, and downstream metrics from the same interval.",
+      "Contain admitted work first; verify the fix with p99, queue age, goroutine states, contention, pool wait, and error-budget recovery."
+    ]
+  },
+  {
+    "id": "staff-runtime-incident",
+    "kind": "General",
+    "contentTrack": null,
+    "topic": "Staff Scenarios",
+    "week": 4,
+    "number": 4,
+    "title": "Staff scenario: mixed-language runtime incident",
+    "prompt": "Lead an incident affecting services written in multiple languages. Align teams on shared evidence, capacity limits, reversible containment, ownership, and prevention.",
+    "artifact": "Incident plan, communications update, decision log, and post-incident prevention proposal.",
+    "followUps": [
+      "Which gate gives the highest confidence for its cost?",
+      "How will you detect and remove flaky feedback?",
+      "What evidence would justify an exception?"
+    ],
+    "completion": "Make the risk trade-offs, ownership, and measurable outcomes explicit before recording completion.",
+    "guide": null,
+    "modelAnswer": [
+      "Create one cross-language timeline around customer impact, request paths, saturation points, capacity limits, and SLO burn rather than tool-specific theories.",
+      "Assign reversible containment by boundary: shed work, isolate a dependency, pause rollout, or restore capacity while Java and Go teams gather native evidence.",
+      "Converge on shared invariants, owners, prevention, and verification; preserve JFR, pprof, traces, and configuration evidence for the review."
+    ]
+  },
+  {
+    "id": "java-client-practice",
+    "kind": "General",
+    "contentTrack": "java",
+    "topic": "Staff Scenarios",
+    "week": 4,
+    "number": 4,
+    "title": "Design: Java dependency client",
+    "prompt": "Design a Java dependency client with timeout budgets, retry and idempotency rules, connection-pool limits, error mapping, and observability.",
+    "artifact": "Client contract, retry decision table, failure walkthrough, and validation plan.",
+    "followUps": [
+      "Which gate gives the highest confidence for its cost?",
+      "How will you detect and remove flaky feedback?",
+      "What evidence would justify an exception?"
+    ],
+    "completion": "Make the risk trade-offs, ownership, and measurable outcomes explicit before recording completion.",
+    "guide": null,
+    "modelAnswer": [
+      "Budget one end-to-end deadline across connection, request, response, and retries; retry only idempotent operations and classified transient failures.",
+      "Tune and bound connection pools, close response resources, map internal failures to stable domain errors, and prevent retry amplification.",
+      "Test with a wire-level fake for slow connect, partial response, reset, overload, and recovery; expose phase latency, attempts, pool wait, and outcome class."
+    ]
+  },
+  {
+    "id": "go-client-practice",
+    "kind": "General",
+    "contentTrack": "go",
+    "topic": "Staff Scenarios",
+    "week": 4,
+    "number": 4,
+    "title": "Design: Go dependency client",
+    "prompt": "Design a Go dependency client with context deadlines, retry and idempotency rules, connection-pool limits, error mapping, and observability.",
+    "artifact": "Client contract, retry decision table, failure walkthrough, and validation plan.",
+    "followUps": [
+      "Which gate gives the highest confidence for its cost?",
+      "How will you detect and remove flaky feedback?",
+      "What evidence would justify an exception?"
+    ],
+    "completion": "Make the risk trade-offs, ownership, and measurable outcomes explicit before recording completion.",
+    "guide": null,
+    "modelAnswer": [
+      "Propagate caller context and divide its deadline across attempts without extending it; require idempotency before retrying mutating operations.",
+      "Reuse a tuned Transport, close and conditionally drain bodies, cap payloads, classify errors, and bound retries with jitter.",
+      "Use an HTTP test server to exercise slow headers, partial bodies, resets, cancellation, and overload while asserting metrics and connection reuse."
+    ]
+  },
+  {
+    "id": "java-database-practice",
+    "kind": "General",
+    "contentTrack": "java",
+    "topic": "Staff Scenarios",
+    "week": 4,
+    "number": 4,
+    "title": "Debug: Java migration and transaction incident",
+    "prompt": "Investigate a Java service after a schema migration causes transaction timeouts and connection-pool exhaustion. Use evidence to contain, repair, and prevent recurrence.",
+    "artifact": "Hypothesis tree, JPA/JDBC boundary analysis, safe mitigation, and verification SLO.",
+    "followUps": [
+      "Which gate gives the highest confidence for its cost?",
+      "How will you detect and remove flaky feedback?",
+      "What evidence would justify an exception?"
+    ],
+    "completion": "Make the risk trade-offs, ownership, and measurable outcomes explicit before recording completion.",
+    "guide": null,
+    "modelAnswer": [
+      "Correlate migration timing with query plans, lock waits, transaction duration, pool acquisition, active connections, and rollback or retry behavior.",
+      "Contain by pausing rollout or expensive traffic and applying the safest compatible schema or query change; do not increase the pool into a saturated database.",
+      "Prevent recurrence with expand-contract migrations, bounded transactions, statement timeouts, plan checks, canaries, and pool-saturation alerts."
+    ]
+  },
+  {
+    "id": "go-database-practice",
+    "kind": "General",
+    "contentTrack": "go",
+    "topic": "Staff Scenarios",
+    "week": 4,
+    "number": 4,
+    "title": "Debug: Go migration and transaction incident",
+    "prompt": "Investigate a Go service after a schema migration causes transaction timeouts and database/sql pool exhaustion. Use evidence to contain, repair, and prevent recurrence.",
+    "artifact": "Hypothesis tree, query and pool analysis, safe mitigation, and verification SLO.",
+    "followUps": [
+      "Which gate gives the highest confidence for its cost?",
+      "How will you detect and remove flaky feedback?",
+      "What evidence would justify an exception?"
+    ],
+    "completion": "Make the risk trade-offs, ownership, and measurable outcomes explicit before recording completion.",
+    "guide": null,
+    "modelAnswer": [
+      "Correlate migration timing with query plans, lock waits, context deadlines, transaction duration, pool wait, open rows, and connection reuse.",
+      "Contain by pausing rollout or expensive traffic and applying a compatible schema or query fix; ensure Rows and transactions close on every path.",
+      "Prevent recurrence with expand-contract migrations, bounded contexts, pool metrics, plan checks, canaries, and regression tests against a real database."
+    ]
+  },
+  {
+    "id": "java-security-practice",
+    "kind": "General",
+    "contentTrack": "java",
+    "topic": "Staff Scenarios",
+    "week": 4,
+    "number": 4,
+    "title": "Design: Java authorization boundary review",
+    "prompt": "Review a Java service for authentication, authorization, tenant isolation, audit events, SSRF exposure, and secure rollout risks.",
+    "artifact": "Threat model, authorization matrix, abuse cases, rollout controls, and test plan.",
+    "followUps": [
+      "Which gate gives the highest confidence for its cost?",
+      "How will you detect and remove flaky feedback?",
+      "What evidence would justify an exception?"
+    ],
+    "completion": "Make the risk trade-offs, ownership, and measurable outcomes explicit before recording completion.",
+    "guide": null,
+    "modelAnswer": [
+      "Trace identity from trusted authentication through Spring Security to an explicit action, resource, and tenant authorization decision.",
+      "Review object-level authorization, tenant-scoped queries, audit events, outbound URL allowlists, secret handling, and denial behavior without logging sensitive data.",
+      "Roll out policy changes in report-only mode where possible, test confused-deputy and SSRF cases, and monitor denials, tenant anomalies, and exceptions."
+    ]
+  },
+  {
+    "id": "go-security-practice",
+    "kind": "General",
+    "contentTrack": "go",
+    "topic": "Staff Scenarios",
+    "week": 4,
+    "number": 4,
+    "title": "Design: Go authorization boundary review",
+    "prompt": "Review a Go service for middleware identity propagation, authorization, tenant isolation, audit events, SSRF exposure, and secure rollout risks.",
+    "artifact": "Threat model, authorization matrix, abuse cases, rollout controls, and test plan.",
+    "followUps": [
+      "Which gate gives the highest confidence for its cost?",
+      "How will you detect and remove flaky feedback?",
+      "What evidence would justify an exception?"
+    ],
+    "completion": "Make the risk trade-offs, ownership, and measurable outcomes explicit before recording completion.",
+    "guide": null,
+    "modelAnswer": [
+      "Verify identity once in middleware, store only trusted typed claims in context, and authorize an explicit action, resource, and tenant at the domain boundary.",
+      "Review tenant-scoped queries, audit events, outbound URL validation and DNS behavior, secret handling, and denial responses for data exposure.",
+      "Use adversarial tests for forged headers, object-level access, tenant confusion, redirects, and SSRF; stage rollout with observable denials and exceptions."
+    ]
+  },
+  {
+    "id": "java-platform-practice",
+    "kind": "General",
+    "contentTrack": "java",
+    "topic": "Staff Scenarios",
+    "week": 4,
+    "number": 4,
+    "title": "Debug: Java Kubernetes latency incident",
+    "prompt": "Investigate a Java workload with CPU throttling, rising p99 latency, and container-memory pressure during a rollout.",
+    "artifact": "Evidence order, JFR and cgroup analysis, containment, and rollout decision.",
+    "followUps": [
+      "Which gate gives the highest confidence for its cost?",
+      "How will you detect and remove flaky feedback?",
+      "What evidence would justify an exception?"
+    ],
+    "completion": "Make the risk trade-offs, ownership, and measurable outcomes explicit before recording completion.",
+    "guide": null,
+    "modelAnswer": [
+      "Compare rollout cohorts for cgroup throttling, JVM CPU, heap and native memory, GC, thread states, probes, and downstream latency.",
+      "Contain by stopping the rollout, restoring known resource settings, or shedding work; avoid treating a larger heap or pool as proof of repair.",
+      "Align requests, limits, MaxRAMPercentage, probes, and concurrency with measured capacity, then verify p99, throttling, RSS, and restart behavior."
+    ]
+  },
+  {
+    "id": "go-platform-practice",
+    "kind": "General",
+    "contentTrack": "go",
+    "topic": "Staff Scenarios",
+    "week": 4,
+    "number": 4,
+    "title": "Debug: Go Kubernetes latency incident",
+    "prompt": "Investigate a Go workload with CPU throttling, rising p99 latency, and goroutine or container-memory pressure during a rollout.",
+    "artifact": "Evidence order, pprof and cgroup analysis, containment, and rollout decision.",
+    "followUps": [
+      "Which gate gives the highest confidence for its cost?",
+      "How will you detect and remove flaky feedback?",
+      "What evidence would justify an exception?"
+    ],
+    "completion": "Make the risk trade-offs, ownership, and measurable outcomes explicit before recording completion.",
+    "guide": null,
+    "modelAnswer": [
+      "Compare rollout cohorts for cgroup throttling, Go memory classes, goroutine states, GC pacing, probes, and downstream latency.",
+      "Contain by stopping the rollout, restoring known resource settings, or shedding work; use pprof and runtime metrics to separate allocation from blocking.",
+      "Align requests, limits, GOMEMLIMIT, probes, and admission with measured capacity, then verify p99, throttling, RSS, goroutines, and restarts."
+    ]
+  },
+  {
+    "id": "java-overload-practice",
+    "kind": "General",
+    "contentTrack": "java",
+    "topic": "Staff Scenarios",
+    "week": 4,
+    "number": 4,
+    "title": "Design: Java overload protection",
+    "prompt": "Design overload protection for a Java API: admission control, executor and pool limits, queueing, load shedding, and graceful degradation.",
+    "artifact": "Capacity model, overload contract, metrics, failure walkthrough, and load-test plan.",
+    "followUps": [
+      "Which gate gives the highest confidence for its cost?",
+      "How will you detect and remove flaky feedback?",
+      "What evidence would justify an exception?"
+    ],
+    "completion": "Make the risk trade-offs, ownership, and measurable outcomes explicit before recording completion.",
+    "guide": null,
+    "modelAnswer": [
+      "Derive admission from dependency and executor capacity, bound every queue, and separate interactive from batch work before saturation.",
+      "Reject early with a stable overload response, propagate cancellation, reserve recovery capacity, and degrade optional work before core correctness.",
+      "Load-test beyond capacity and verify queue age, rejections, executor saturation, pool wait, p99, recovery time, and tenant fairness."
+    ]
+  },
+  {
+    "id": "go-overload-practice",
+    "kind": "General",
+    "contentTrack": "go",
+    "topic": "Staff Scenarios",
+    "week": 4,
+    "number": 4,
+    "title": "Design: Go overload protection",
+    "prompt": "Design overload protection for a Go API: admission control, goroutine and pool limits, queueing, load shedding, and graceful degradation.",
+    "artifact": "Capacity model, overload contract, metrics, failure walkthrough, and load-test plan.",
+    "followUps": [
+      "Which gate gives the highest confidence for its cost?",
+      "How will you detect and remove flaky feedback?",
+      "What evidence would justify an exception?"
+    ],
+    "completion": "Make the risk trade-offs, ownership, and measurable outcomes explicit before recording completion.",
+    "guide": null,
+    "modelAnswer": [
+      "Derive admission from dependency capacity, not goroutine cost; bound global and tenant work before spawning or acquiring scarce connections.",
+      "Use cancellation-aware semaphores or bounded queues, reject early with a stable response, and shed optional work while preserving recovery capacity.",
+      "Load-test beyond capacity and verify goroutines, queue age, rejections, pool wait, p99, recovery time, and tenant fairness."
+    ]
+  },
+  {
+    "id": "staff-language-transfer",
+    "kind": "General",
+    "contentTrack": null,
+    "topic": "Staff Scenarios",
+    "week": 4,
+    "number": 4,
+    "title": "Staff exercise: transfer a service contract between Java and Go",
+    "prompt": "Translate one dependency client, database boundary, or secure API from Java to Go. Separate language-specific idioms from the externally observable contract and explain the migration decision to a mixed-language team.",
+    "artifact": "Invariant table, Java and Go design sketches, risk register, shared test matrix, and five-minute decision memo.",
+    "followUps": [
+      "Which gate gives the highest confidence for its cost?",
+      "How will you detect and remove flaky feedback?",
+      "What evidence would justify an exception?"
+    ],
+    "completion": "Make the risk trade-offs, ownership, and measurable outcomes explicit before recording completion.",
+    "guide": null,
+    "modelAnswer": [
+      "Freeze the external contract first: inputs, outputs, errors, deadlines, idempotency, auth, telemetry, data ownership, and rollout behavior.",
+      "Implement Java and Go sides idiomatically behind the same contract, then run shared contract, failure, load, and security tests against both.",
+      "Migrate incrementally with shadow or canary evidence, explain intentional implementation differences, and keep rollback independent of data reversal."
+    ]
+  },
+  {
+    "id": "go-architecture-composition",
+    "kind": "General",
+    "contentTrack": "go",
+    "topic": "Staff Scenarios",
+    "week": 4,
+    "number": 4,
+    "title": "Design: Go service composition",
+    "prompt": "Design a Go service package layout, constructors, middleware chain, configuration boundary, and dependency wiring for a production API.",
+    "artifact": "Package diagram, constructor contracts, middleware order, configuration validation, and adoption plan.",
+    "followUps": [
+      "Which gate gives the highest confidence for its cost?",
+      "How will you detect and remove flaky feedback?",
+      "What evidence would justify an exception?"
+    ],
+    "completion": "Make the risk trade-offs, ownership, and measurable outcomes explicit before recording completion.",
+    "guide": null,
+    "modelAnswer": [
+      "Keep transport, domain, persistence, and operational adapters in explicit packages with dependencies pointing inward toward stable domain contracts.",
+      "Construct concrete dependencies at the application edge, validate configuration once, and order middleware for limits, identity, tracing, recovery, and error mapping.",
+      "Test domain logic directly and adapters at real boundaries; document shutdown ownership, transaction scope, and the package-level adoption path."
+    ]
+  },
+  {
+    "id": "go-architecture-migration",
+    "kind": "General",
+    "contentTrack": "go",
+    "topic": "Staff Scenarios",
+    "week": 4,
+    "number": 4,
+    "title": "Design: migrate a Go modular monolith",
+    "prompt": "Plan a safe migration of a large Go service into clearer modules without prematurely splitting it into microservices.",
+    "artifact": "Dependency graph, incremental seams, compatibility plan, rollback path, and success measures.",
+    "followUps": [
+      "Which gate gives the highest confidence for its cost?",
+      "How will you detect and remove flaky feedback?",
+      "What evidence would justify an exception?"
+    ],
+    "completion": "Make the risk trade-offs, ownership, and measurable outcomes explicit before recording completion.",
+    "guide": null,
+    "modelAnswer": [
+      "Map imports, ownership, data boundaries, and release pain; choose seams that reduce coupling without changing deployment topology first.",
+      "Move one dependency direction at a time behind explicit contracts, preserve behavior with characterization and contract tests, and prohibit cycles in CI.",
+      "Split a service only when independent ownership, scaling, reliability, or release needs outweigh distributed-system cost; keep each step reversible."
+    ]
+  },
+  {
+    "id": "go-architecture-operations",
+    "kind": "General",
+    "contentTrack": "go",
+    "topic": "Staff Scenarios",
+    "week": 4,
+    "number": 4,
+    "title": "Debug: Go operational boundary failure",
+    "prompt": "Investigate a Go service whose readiness checks, retries, and admin endpoints amplify a downstream outage.",
+    "artifact": "Evidence plan, containment, boundary redesign, regression tests, and rollout gates.",
+    "followUps": [
+      "Which gate gives the highest confidence for its cost?",
+      "How will you detect and remove flaky feedback?",
+      "What evidence would justify an exception?"
+    ],
+    "completion": "Make the risk trade-offs, ownership, and measurable outcomes explicit before recording completion.",
+    "guide": null,
+    "modelAnswer": [
+      "Reconstruct the amplification loop across readiness failures, retry rates, admin traffic, queueing, and downstream saturation using one incident timeline.",
+      "Contain by stopping rollout, reducing retries, shedding optional work, and keeping readiness tied only to the ability to serve safely.",
+      "Redesign with bounded retries, jitter, separate liveness, protected diagnostic endpoints, and tests that simulate dependency failure and recovery."
+    ]
+  }
+]
