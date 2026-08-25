@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "topic": "Java Fundamentals",
+    "subtopic": "Language Semantics",
+    "question": "What is a value?",
+    "answer": "A stable answer."
+  },
+  {
+    "id": 3,
+    "topic": "Java Fundamentals",
+    "subtopic": "Language Semantics",
+    "question": "What is an object?",
+    "answer": "An addition answer."
+  },
+  {
+    "id": 2,
+    "topic": "Systems",
+    "subtopic": "Capacity",
+    "question": "How is work bounded?",
+    "answer": "The concise override."
+  },
+  {
+    "id": 4,
+    "topic": "Go Fundamentals",
+    "subtopic": "Types",
+    "question": "What is a Go value?",
+    "answer": "A Go answer."
+  }
+]
