@@ -80,77 +80,100 @@ struct FlashcardsView: View {
     }
 
     var body: some View {
+        lifecycleObservedContent
+    }
+
+    private var flashcardsHeader: some View {
+        HStack(alignment: .bottom) {
+            SectionHeader(
+                eyebrow: topic.group.rawValue,
+                title: topic.rawValue,
+                subtitle: topic == .javaFundamentals
+                    ? "Recall the rule first, then verify the mechanism, example, and interview note."
+                    : "Answer first, then inspect the worked reasoning, Staff signal, and follow-ups."
+            )
+            Spacer()
+            VStack(alignment: .trailing) {
+                Text("\(dueCount)")
+                    .font(.system(size: 38, weight: .semibold, design: .serif))
+                Text("cards due")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var activeCardContent: some View {
+        if let current {
+            card(current)
+            navigation
+        } else {
+            EmptyState(
+                title: mode == "Review due" ? "Review queue complete" : "No cards found",
+                message: mode == "Review due"
+                    ? "Switch to Explore all or return when your next cards are due."
+                    : "Try another topic or search."
+            )
+            .frame(minHeight: 360)
+        }
+    }
+
+    private var pageContent: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 22) {
-                HStack(alignment: .bottom) {
-                    SectionHeader(
-                        eyebrow: topic.group.rawValue,
-                        title: topic.rawValue,
-                        subtitle: topic == .javaFundamentals
-                            ? "Recall the rule first, then verify the mechanism, example, and interview note."
-                            : "Answer first, then inspect the worked reasoning, Staff signal, and follow-ups."
-                    )
-                    Spacer()
-                    VStack(alignment: .trailing) {
-                        Text("\(dueCount)")
-                            .font(.system(size: 38, weight: .semibold, design: .serif))
-                        Text("cards due")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-
+                flashcardsHeader
                 controls
-
-                if let current {
-                    card(current)
-                    navigation
-                } else {
-                    EmptyState(
-                        title: mode == "Review due" ? "Review queue complete" : "No cards found",
-                        message: mode == "Review due"
-                            ? "Switch to Explore all or return when your next cards are due."
-                            : "Try another topic or search."
-                    )
-                    .frame(minHeight: 360)
-                }
+                activeCardContent
             }
             .padding(28)
             .frame(maxWidth: 1_100)
             .frame(maxWidth: .infinity)
         }
         .navigationTitle(topic.rawValue)
-        .onChange(of: query) { _, _ in resetPosition() }
-        .onChange(of: mode) { _, _ in resetPosition() }
-        .onChange(of: fundamentalTopic) { _, _ in resetPosition() }
-        .onChange(of: goFundamentalTopic) { _, _ in resetPosition() }
-        .onChange(of: concurrencySubtopic) { _, _ in resetPosition() }
-        .onChange(of: serviceSubtopic) { _, _ in resetPosition() }
-        .onChange(of: databaseSubtopic) { _, _ in resetPosition() }
-        .onChange(of: securitySubtopic) { _, _ in resetPosition() }
-        .onChange(of: reliabilitySubtopic) { _, _ in resetPosition() }
-        .onChange(of: platformSubtopic) { _, _ in resetPosition() }
-        .onChange(of: history) { _, _ in resetPosition() }
-        .onChange(of: current?.id) { _, cardID in
-            saveDraft()
-            loadDraft(for: cardID)
-        }
-        .onAppear {
-            if let targetID = initialCardID {
-                if let targetIdx = filtered.firstIndex(where: { $0.id == targetID }) {
-                    index = targetIdx
-                } else {
-                    mode = "Explore all"
-                    if let exploreIdx = model.flashcards.filter({ $0.topic == topic.rawValue && $0.isAvailable(in: track) }).firstIndex(where: { $0.id == targetID }) {
-                        index = exploreIdx
+    }
+
+    private var primaryFilterObservedContent: some View {
+        pageContent
+            .onChange(of: query) { _, _ in resetPosition() }
+            .onChange(of: mode) { _, _ in resetPosition() }
+            .onChange(of: fundamentalTopic) { _, _ in resetPosition() }
+            .onChange(of: goFundamentalTopic) { _, _ in resetPosition() }
+            .onChange(of: concurrencySubtopic) { _, _ in resetPosition() }
+            .onChange(of: serviceSubtopic) { _, _ in resetPosition() }
+    }
+
+    private var secondaryFilterObservedContent: some View {
+        primaryFilterObservedContent
+            .onChange(of: databaseSubtopic) { _, _ in resetPosition() }
+            .onChange(of: securitySubtopic) { _, _ in resetPosition() }
+            .onChange(of: reliabilitySubtopic) { _, _ in resetPosition() }
+            .onChange(of: platformSubtopic) { _, _ in resetPosition() }
+            .onChange(of: history) { _, _ in resetPosition() }
+    }
+
+    private var lifecycleObservedContent: some View {
+        secondaryFilterObservedContent
+            .onChange(of: current?.id) { _, cardID in
+                saveDraft()
+                loadDraft(for: cardID)
+            }
+            .onAppear {
+                if let targetID = initialCardID {
+                    if let targetIdx = filtered.firstIndex(where: { $0.id == targetID }) {
+                        index = targetIdx
+                    } else {
+                        mode = "Explore all"
+                        if let exploreIdx = model.flashcards.filter({ $0.topic == topic.rawValue && $0.isAvailable(in: track) }).firstIndex(where: { $0.id == targetID }) {
+                            index = exploreIdx
+                        }
                     }
                 }
+                loadDraft(for: current?.id)
             }
-            loadDraft(for: current?.id)
-        }
-        .onDisappear {
-            saveDraft()
-        }
+            .onDisappear {
+                saveDraft()
+            }
     }
 
     private var controls: some View {
