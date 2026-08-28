@@ -4,7 +4,7 @@ import Foundation
 @MainActor
 final class AppModel: ObservableObject {
     @Published private(set) var flashcards: [Flashcard] = []
-    @Published var practices: [PracticeItem] = []
+    @Published private(set) var practices: [PracticeItem] = []
     @Published var reviews: [Int: ReviewRecord] = [:]
     @Published var flashcardWork: [Int: FlashcardWork] = [:]
     @Published var practiceRecords: [String: PracticeRecord] = [:]
@@ -26,11 +26,15 @@ final class AppModel: ObservableObject {
         self.init(dependencies: .live)
     }
 
-    init(dependencies: AppDependencies) {
+    init(dependencies: AppDependencies, practiceCatalog: [PracticeItem]? = nil) {
         self.dependencies = dependencies
         do {
             flashcards = try ContentRepository.load([Flashcard].self, resource: "flashcards")
-            practices = try ContentRepository.load([PracticeItem].self, resource: "practices")
+            if let practiceCatalog {
+                practices = practiceCatalog
+            } else {
+                practices = try ContentRepository.load([PracticeItem].self, resource: "practices")
+            }
         } catch {
             syncState = .offline("Bundled study content could not be loaded: \(error.localizedDescription)")
         }

@@ -304,7 +304,6 @@ final class SyncSubsystemTests: XCTestCase {
     }
 
     func testMultiCriteriaDerivesAttemptedAndCompletedStatus() throws {
-        let harness = try makeHarness()
         let customItem = PracticeItem(
             id: "multi-criteria-test-item",
             kind: "General",
@@ -321,8 +320,8 @@ final class SyncSubsystemTests: XCTestCase {
             ]
         )
 
-        // Inject into bundled practices in harness model for testing
-        harness.model.practices = [customItem] + harness.model.practices
+        let harness = try makeHarness(practiceCatalog: [customItem])
+        XCTAssertEqual(harness.model.practices, [customItem])
 
         // 1. Partial criteria -> derived .attempted
         let partialAttempt = try harness.model.submitPracticeAttempt(
@@ -626,7 +625,8 @@ final class SyncSubsystemTests: XCTestCase {
         rows: [SyncEnvelope]? = nil,
         cache: MemoryStateCache? = nil,
         clock: FixedDateSource? = nil,
-        credential: TursoCredentials? = nil
+        credential: TursoCredentials? = nil,
+        practiceCatalog: [PracticeItem]? = nil
     ) throws -> Harness {
         let cache = cache ?? MemoryStateCache()
         let clock = clock ?? FixedDateSource(Date(timeIntervalSince1970: 1_000))
@@ -637,7 +637,7 @@ final class SyncSubsystemTests: XCTestCase {
             syncStore: store, cache: cache, credentials: MemoryCredentialsStore(credential),
             dateSource: clock, calendar: Calendar(identifier: .gregorian), retrySleeper: sleeper
         )
-        return Harness(model: AppModel(dependencies: dependencies), store: store, cache: cache, sleeper: sleeper)
+        return Harness(model: AppModel(dependencies: dependencies, practiceCatalog: practiceCatalog), store: store, cache: cache, sleeper: sleeper)
     }
 
     private func baselineRows() throws -> [SyncEnvelope] {
