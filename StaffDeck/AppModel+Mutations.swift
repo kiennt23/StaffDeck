@@ -12,23 +12,20 @@ extension AppModel {
             current: reviews[cardID]?.updatedAt,
             candidate: now
         )
-        let previous = reviews[cardID]?.intervalDays ?? 1
-        let interval: Int
-        switch rating {
-        case .again: interval = 0
-        case .hard: interval = max(1, Int((Double(previous) * 1.4).rounded()))
-        case .good: interval = max(2, Int((Double(previous) * 2.3).rounded()))
-        case .easy: interval = max(4, Int((Double(previous) * 3.5).rounded()))
-        }
-        let dueAt = rating == .again
-            ? now.addingTimeInterval(600)
-            : Calendar.current.date(byAdding: .day, value: interval, to: now) ?? now
+        let scheduled = AdaptiveScheduler.schedule(
+            rating: rating,
+            currentRecord: reviews[cardID],
+            now: now,
+            calendar: dependencies.calendar
+        )
         let record = ReviewRecord(
             cardID: cardID,
-            dueAt: dueAt,
-            intervalDays: interval,
+            dueAt: scheduled.dueAt,
+            intervalDays: scheduled.intervalDays,
             rating: rating,
-            reviews: (reviews[cardID]?.reviews ?? 0) + 1,
+            reviews: scheduled.reviews,
+            ease: scheduled.ease,
+            lapses: scheduled.lapses,
             updatedAt: Self.date(milliseconds)
         )
         reviews[cardID] = record
@@ -75,20 +72,43 @@ extension AppModel {
         let key = SyncKey(collection: .practice, recordID: itemID)
         let now = dependencies.dateSource.now()
         let milliseconds = nextMilliseconds(key: key, current: previous?.updatedAt, candidate: now)
-        let reviewDays = status == .completed && (score ?? 0) >= 3 ? 14 : 2
+        let attemptsCount = (previous?.attempts ?? 0) + (incrementAttempt ? 1 : 0)
+        let nextReview = AdaptiveScheduler.schedulePractice(
+            status: status,
+            score: score,
+            attempts: attemptsCount,
+            now: now,
+            calendar: dependencies.calendar
+        )
         let record = PracticeRecord(
             practiceID: itemID,
             status: status,
             score: score,
             notes: notes,
-            attempts: (previous?.attempts ?? 0) + (incrementAttempt ? 1 : 0),
-            nextReviewAt: status == .notStarted
-                ? nil
-                : Calendar.current.date(byAdding: .day, value: reviewDays, to: now),
+            attempts: attemptsCount,
+            nextReviewAt: nextReview,
             updatedAt: Self.date(milliseconds)
         )
         practiceRecords[itemID] = record
         enqueue(record, key: key, milliseconds: milliseconds)
+
+        if status != .notStarted || incrementAttempt || !notes.isEmpty || score != nil {
+            let attemptID = UUID().uuidString
+            let attemptKey = SyncKey(collection: .practiceAttempts, recordID: attemptID)
+            let attempt = PracticeAttempt(
+                id: attemptID,
+                practiceID: itemID,
+                status: status,
+                score: score,
+                notes: notes,
+                completedAt: now,
+                updatedAt: Self.date(milliseconds)
+            )
+            var existingAttempts = practiceAttempts[itemID] ?? []
+            existingAttempts.append(attempt)
+            practiceAttempts[itemID] = existingAttempts
+            enqueue(attempt, key: attemptKey, milliseconds: milliseconds)
+        }
     }
 
     func saveProfile(_ next: CareerProfile) {

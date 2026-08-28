@@ -15,7 +15,7 @@ final class SyncSubsystemTests: XCTestCase {
         harness.model.savePractice(itemID: "one", status: .attempted, score: nil, notes: "second")
 
         XCTAssertEqual(AppModel.milliseconds(try XCTUnwrap(harness.model.practiceRecords["one"]?.updatedAt)), 100_124)
-        XCTAssertEqual(harness.model.pendingMutationCount, 1)
+        XCTAssertEqual(harness.model.pendingMutationCount, 3)
     }
 
     func testLegacyCacheWithoutOutboxRestores() throws {
@@ -34,6 +34,24 @@ final class SyncSubsystemTests: XCTestCase {
 
         XCTAssertEqual(harness.model.reviews[7], record)
         XCTAssertTrue(harness.model.flashcardWork.isEmpty)
+        XCTAssertTrue(harness.model.practiceAttempts.isEmpty)
+        XCTAssertEqual(harness.model.pendingMutationCount, 0)
+    }
+
+    func testSavePracticeRecordsImmutableAttemptAndEnqueuesOutbox() async throws {
+        let harness = try makeHarness(credential: credentials)
+        harness.model.savePractice(itemID: "general-1.1", status: .completed, score: 4, notes: "great attempt", incrementAttempt: true)
+
+        let attempts = try XCTUnwrap(harness.model.practiceAttempts["general-1.1"])
+        XCTAssertEqual(attempts.count, 1)
+        XCTAssertEqual(attempts[0].score, 4)
+        XCTAssertEqual(attempts[0].status, .completed)
+        XCTAssertEqual(attempts[0].notes, "great attempt")
+        XCTAssertEqual(harness.model.practiceRecords["general-1.1"]?.attempts, 1)
+
+        // Both the latest summary record and the immutable attempt are enqueued
+        XCTAssertEqual(harness.model.pendingMutationCount, 2)
+        await harness.model.syncNow()
         XCTAssertEqual(harness.model.pendingMutationCount, 0)
     }
 
@@ -174,7 +192,7 @@ final class SyncSubsystemTests: XCTestCase {
         let sleeper = RecordingSleeper()
         let dependencies = AppDependencies(
             syncStore: store, cache: cache, credentials: MemoryCredentialsStore(credential),
-            dateSource: clock, retrySleeper: sleeper
+            dateSource: clock, calendar: Calendar(identifier: .gregorian), retrySleeper: sleeper
         )
         return Harness(model: AppModel(dependencies: dependencies), store: store, cache: cache, sleeper: sleeper)
     }

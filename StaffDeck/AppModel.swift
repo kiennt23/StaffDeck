@@ -8,6 +8,7 @@ final class AppModel: ObservableObject {
     @Published var reviews: [Int: ReviewRecord] = [:]
     @Published var flashcardWork: [Int: FlashcardWork] = [:]
     @Published var practiceRecords: [String: PracticeRecord] = [:]
+    @Published var practiceAttempts: [String: [PracticeAttempt]] = [:]
     @Published var profile: CareerProfile = Defaults.profile
     @Published var stories: [StaffStory] = Defaults.stories
     @Published var companies: [TargetCompany] = []
@@ -47,6 +48,7 @@ final class AppModel: ObservableObject {
             reviews: reviews,
             flashcardWork: flashcardWork,
             practice: practiceRecords,
+            practiceAttempts: practiceAttempts,
             profile: profile,
             stories: stories,
             companies: companies,
@@ -70,6 +72,7 @@ final class AppModel: ObservableObject {
         reviews = state.reviews
         flashcardWork = state.flashcardWork
         practiceRecords = state.practice
+        practiceAttempts = state.practiceAttempts
         profile = state.profile
         stories = state.stories
         companies = state.companies
