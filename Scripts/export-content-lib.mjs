@@ -122,6 +122,7 @@ export function buildContent(inputs, rules = PRODUCTION_RULES) {
     answerOverrides,
     webPractices,
     goPractices,
+    practiceMetadata,
   } = inputs;
 
   if (webFlashcards.length < rules.minimumWebFlashcards) {
@@ -141,7 +142,7 @@ export function buildContent(inputs, rules = PRODUCTION_RULES) {
   const baseFlashcards = [...webFundamentals, ...additions, ...webOtherTopics].map((card) => {
     const subtopic = subtopicByID.get(card.id);
     if (!subtopic) return card;
-    const { id, topic, ...content } = card;
+    const { id, topic, subtopic: _snapshotSubtopic, ...content } = card;
     return { id, topic, subtopic, ...content };
   });
 
@@ -175,13 +176,57 @@ export function buildContent(inputs, rules = PRODUCTION_RULES) {
     );
   }
 
-  const practices = [...webPractices, ...goPractices];
-  const practiceIDs = new Set(practices.map((practice) => practice.id));
-  if (practices.length !== rules.expectedPractices || practiceIDs.size !== practices.length) {
+  const rawPractices = [...webPractices, ...goPractices];
+  const practiceIDs = new Set(rawPractices.map((practice) => String(practice.id)));
+  if (rawPractices.length !== rules.expectedPractices || practiceIDs.size !== rawPractices.length) {
     throw new Error(
       `Expected ${rules.expectedPractices} practices with unique IDs after merging Go content`,
     );
   }
+
+  const practices = practiceMetadata
+    ? rawPractices.map((practice) => {
+        const meta = practiceMetadata[String(practice.id)];
+        if (!meta) return practice;
+        const {
+          id,
+          kind,
+          contentTrack,
+          competencyTopics: _oldTopics,
+          rubricKind: _oldRubric,
+          topic,
+          week,
+          number,
+          title,
+          prompt,
+          artifact,
+          followUps,
+          completion,
+          guide,
+          modelAnswer,
+          ...rest
+        } = practice;
+        return {
+          id,
+          kind,
+          contentTrack,
+          competencyTopics: meta.competencyTopics ?? [topic],
+          rubricKind: meta.rubricKind ?? null,
+          topic,
+          week,
+          number,
+          title,
+          prompt,
+          artifact,
+          followUps,
+          completion,
+          guide,
+          modelAnswer,
+          ...rest,
+        };
+      })
+    : rawPractices;
+
   return { flashcards, practices };
 }
 

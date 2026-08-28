@@ -1,0 +1,1694 @@
+{
+  "general-1.1": {
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Spring",
+      "Java Fundamentals",
+      "System Design"
+    ],
+    "rubricKind": "coding"
+  },
+  "general-1.2": {
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Spring",
+      "Java Fundamentals",
+      "Java & API",
+      "Cloud & Platform",
+      "Reliability",
+      "System Design"
+    ],
+    "rubricKind": "design"
+  },
+  "general-1.3": {
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Spring",
+      "Java Fundamentals",
+      "Java & API",
+      "Reliability"
+    ],
+    "rubricKind": "coding"
+  },
+  "general-1.4": {
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Spring",
+      "Java Fundamentals",
+      "Leadership",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "communication"
+  },
+  "general-2.1": {
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Spring",
+      "Java Fundamentals",
+      "Java & API"
+    ],
+    "rubricKind": "coding"
+  },
+  "general-2.2": {
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Spring",
+      "Java Fundamentals",
+      "Java & API",
+      "Security",
+      "Reliability"
+    ],
+    "rubricKind": "design"
+  },
+  "general-2.3": {
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Spring",
+      "Java Fundamentals",
+      "Databases"
+    ],
+    "rubricKind": "coding"
+  },
+  "general-2.4": {
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Spring",
+      "Java Fundamentals",
+      "Java & API",
+      "Reliability",
+      "Leadership",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "communication"
+  },
+  "general-3.1": {
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Spring",
+      "Java Fundamentals"
+    ],
+    "rubricKind": "coding"
+  },
+  "general-3.2": {
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Spring",
+      "Java Fundamentals"
+    ],
+    "rubricKind": "design"
+  },
+  "general-3.3": {
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Spring",
+      "Java Fundamentals"
+    ],
+    "rubricKind": "debug"
+  },
+  "general-3.4": {
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Spring",
+      "Java Fundamentals",
+      "Leadership"
+    ],
+    "rubricKind": "communication"
+  },
+  "general-4.1": {
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Spring",
+      "Java Fundamentals"
+    ],
+    "rubricKind": "coding"
+  },
+  "general-4.2": {
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Spring",
+      "Java Fundamentals",
+      "Java & API",
+      "Cloud & Platform"
+    ],
+    "rubricKind": "design"
+  },
+  "general-4.3": {
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Spring",
+      "Java Fundamentals",
+      "Cloud & Platform"
+    ],
+    "rubricKind": "debug"
+  },
+  "general-4.4": {
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Spring",
+      "Java Fundamentals",
+      "Reliability",
+      "Leadership",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "communication"
+  },
+  "general-5.1": {
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Spring",
+      "Java Fundamentals",
+      "Databases"
+    ],
+    "rubricKind": "coding"
+  },
+  "general-5.2": {
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Spring",
+      "Java Fundamentals",
+      "Java & API",
+      "Leadership"
+    ],
+    "rubricKind": "design"
+  },
+  "general-5.3": {
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Spring",
+      "Java Fundamentals"
+    ],
+    "rubricKind": "debug"
+  },
+  "general-5.4": {
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Spring",
+      "Java Fundamentals",
+      "Databases",
+      "Leadership"
+    ],
+    "rubricKind": "communication"
+  },
+  "general-6.1": {
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Java Fundamentals",
+      "Security"
+    ],
+    "rubricKind": "coding"
+  },
+  "general-6.2": {
+    "competencyTopics": [
+      "Security",
+      "Cloud & Platform"
+    ],
+    "rubricKind": "design"
+  },
+  "general-6.3": {
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Security",
+      "System Design"
+    ],
+    "rubricKind": "debug"
+  },
+  "general-6.4": {
+    "competencyTopics": [
+      "Security",
+      "Leadership",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "communication"
+  },
+  "general-18.1": {
+    "competencyTopics": [
+      "Java Fundamentals",
+      "Security"
+    ],
+    "rubricKind": "coding"
+  },
+  "general-18.2": {
+    "competencyTopics": [
+      "Java & API",
+      "Security"
+    ],
+    "rubricKind": "design"
+  },
+  "general-18.3": {
+    "competencyTopics": [
+      "Security",
+      "Cloud & Platform"
+    ],
+    "rubricKind": "debug"
+  },
+  "general-18.4": {
+    "competencyTopics": [
+      "Security",
+      "Leadership",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "communication"
+  },
+  "general-7.1": {
+    "competencyTopics": [
+      "Databases",
+      "System Design"
+    ],
+    "rubricKind": "coding"
+  },
+  "general-7.2": {
+    "competencyTopics": [
+      "Databases",
+      "Security",
+      "Reliability",
+      "System Design"
+    ],
+    "rubricKind": "design"
+  },
+  "general-7.3": {
+    "competencyTopics": [
+      "Databases",
+      "Security",
+      "Reliability",
+      "System Design"
+    ],
+    "rubricKind": "debug"
+  },
+  "general-7.4": {
+    "competencyTopics": [
+      "Databases",
+      "System Design",
+      "Leadership"
+    ],
+    "rubricKind": "communication"
+  },
+  "general-8.1": {
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Databases",
+      "System Design"
+    ],
+    "rubricKind": "coding"
+  },
+  "general-8.2": {
+    "competencyTopics": [
+      "Databases",
+      "System Design"
+    ],
+    "rubricKind": "design"
+  },
+  "general-8.3": {
+    "competencyTopics": [
+      "Java & API",
+      "Databases",
+      "System Design"
+    ],
+    "rubricKind": "debug"
+  },
+  "general-8.4": {
+    "competencyTopics": [
+      "Databases",
+      "System Design",
+      "Leadership"
+    ],
+    "rubricKind": "communication"
+  },
+  "general-9.1": {
+    "competencyTopics": [
+      "Databases",
+      "System Design"
+    ],
+    "rubricKind": "coding"
+  },
+  "general-9.2": {
+    "competencyTopics": [
+      "Java & API",
+      "Databases",
+      "System Design"
+    ],
+    "rubricKind": "design"
+  },
+  "general-9.3": {
+    "competencyTopics": [
+      "Databases",
+      "Security",
+      "System Design"
+    ],
+    "rubricKind": "debug"
+  },
+  "general-9.4": {
+    "competencyTopics": [
+      "Java & API",
+      "Databases",
+      "System Design",
+      "Leadership",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "communication"
+  },
+  "general-10.1": {
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Databases",
+      "System Design",
+      "Leadership"
+    ],
+    "rubricKind": "coding"
+  },
+  "general-10.2": {
+    "competencyTopics": [
+      "Databases",
+      "System Design"
+    ],
+    "rubricKind": "design"
+  },
+  "general-10.3": {
+    "competencyTopics": [
+      "Databases",
+      "System Design"
+    ],
+    "rubricKind": "debug"
+  },
+  "general-10.4": {
+    "competencyTopics": [
+      "Databases",
+      "System Design",
+      "Leadership"
+    ],
+    "rubricKind": "communication"
+  },
+  "general-11.1": {
+    "competencyTopics": [
+      "Java Fundamentals",
+      "Reliability",
+      "System Design"
+    ],
+    "rubricKind": "coding"
+  },
+  "general-11.2": {
+    "competencyTopics": [
+      "Security",
+      "Reliability",
+      "System Design"
+    ],
+    "rubricKind": "design"
+  },
+  "general-11.3": {
+    "competencyTopics": [
+      "Databases",
+      "Reliability",
+      "System Design"
+    ],
+    "rubricKind": "debug"
+  },
+  "general-11.4": {
+    "competencyTopics": [
+      "System Design",
+      "Leadership",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "communication"
+  },
+  "general-21.1": {
+    "competencyTopics": [
+      "Java Fundamentals",
+      "Java & API",
+      "Reliability",
+      "System Design"
+    ],
+    "rubricKind": "coding"
+  },
+  "general-21.2": {
+    "competencyTopics": [
+      "Java Fundamentals",
+      "Security",
+      "Cloud & Platform",
+      "System Design"
+    ],
+    "rubricKind": "design"
+  },
+  "general-21.3": {
+    "competencyTopics": [
+      "Java Fundamentals",
+      "System Design"
+    ],
+    "rubricKind": "debug"
+  },
+  "general-21.4": {
+    "competencyTopics": [
+      "Java & API",
+      "System Design",
+      "Leadership"
+    ],
+    "rubricKind": "communication"
+  },
+  "general-22.1": {
+    "competencyTopics": [
+      "Databases",
+      "Security",
+      "System Design"
+    ],
+    "rubricKind": "coding"
+  },
+  "general-22.2": {
+    "competencyTopics": [
+      "Databases",
+      "Security",
+      "Reliability",
+      "System Design"
+    ],
+    "rubricKind": "design"
+  },
+  "general-22.3": {
+    "competencyTopics": [
+      "Cloud & Platform",
+      "Reliability",
+      "System Design"
+    ],
+    "rubricKind": "debug"
+  },
+  "general-22.4": {
+    "competencyTopics": [
+      "Databases",
+      "System Design",
+      "Leadership",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "communication"
+  },
+  "general-24.2": {
+    "competencyTopics": [
+      "System Design"
+    ],
+    "rubricKind": "design"
+  },
+  "general-25.2": {
+    "competencyTopics": [
+      "Java & API",
+      "System Design",
+      "Leadership"
+    ],
+    "rubricKind": "design"
+  },
+  "general-26.2": {
+    "competencyTopics": [
+      "System Design"
+    ],
+    "rubricKind": "design"
+  },
+  "general-13.1": {
+    "competencyTopics": [
+      "Java Fundamentals",
+      "Java & API",
+      "Security",
+      "Cloud & Platform"
+    ],
+    "rubricKind": "coding"
+  },
+  "general-13.2": {
+    "competencyTopics": [
+      "Cloud & Platform"
+    ],
+    "rubricKind": "design"
+  },
+  "general-13.3": {
+    "competencyTopics": [
+      "Databases",
+      "Security",
+      "Cloud & Platform"
+    ],
+    "rubricKind": "debug"
+  },
+  "general-13.4": {
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Cloud & Platform",
+      "Leadership"
+    ],
+    "rubricKind": "communication"
+  },
+  "general-14.1": {
+    "competencyTopics": [
+      "Java Fundamentals",
+      "Cloud & Platform"
+    ],
+    "rubricKind": "coding"
+  },
+  "general-14.2": {
+    "competencyTopics": [
+      "Spring",
+      "Java Fundamentals",
+      "Java & API",
+      "Security",
+      "Cloud & Platform"
+    ],
+    "rubricKind": "design"
+  },
+  "general-14.3": {
+    "competencyTopics": [
+      "Cloud & Platform"
+    ],
+    "rubricKind": "debug"
+  },
+  "general-14.4": {
+    "competencyTopics": [
+      "Cloud & Platform",
+      "Leadership"
+    ],
+    "rubricKind": "communication"
+  },
+  "general-15.1": {
+    "competencyTopics": [
+      "Cloud & Platform",
+      "System Design"
+    ],
+    "rubricKind": "coding"
+  },
+  "general-15.2": {
+    "competencyTopics": [
+      "Java Fundamentals",
+      "Cloud & Platform",
+      "Reliability"
+    ],
+    "rubricKind": "design"
+  },
+  "general-15.3": {
+    "competencyTopics": [
+      "Security",
+      "Cloud & Platform"
+    ],
+    "rubricKind": "debug"
+  },
+  "general-15.4": {
+    "competencyTopics": [
+      "Cloud & Platform",
+      "Leadership"
+    ],
+    "rubricKind": "communication"
+  },
+  "general-16.1": {
+    "competencyTopics": [
+      "Java Fundamentals",
+      "Cloud & Platform",
+      "Reliability"
+    ],
+    "rubricKind": "coding"
+  },
+  "general-16.2": {
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Cloud & Platform",
+      "Leadership"
+    ],
+    "rubricKind": "design"
+  },
+  "general-16.3": {
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Databases",
+      "Cloud & Platform"
+    ],
+    "rubricKind": "debug"
+  },
+  "general-16.4": {
+    "competencyTopics": [
+      "Cloud & Platform",
+      "Leadership"
+    ],
+    "rubricKind": "communication"
+  },
+  "general-25.3": {
+    "competencyTopics": [
+      "Cloud & Platform",
+      "Reliability"
+    ],
+    "rubricKind": "design"
+  },
+  "general-17.1": {
+    "competencyTopics": [
+      "Java Fundamentals",
+      "Reliability"
+    ],
+    "rubricKind": "coding"
+  },
+  "general-17.2": {
+    "competencyTopics": [
+      "Java & API",
+      "Reliability"
+    ],
+    "rubricKind": "design"
+  },
+  "general-17.3": {
+    "competencyTopics": [
+      "Databases",
+      "Reliability",
+      "System Design"
+    ],
+    "rubricKind": "debug"
+  },
+  "general-17.4": {
+    "competencyTopics": [
+      "Reliability",
+      "Leadership"
+    ],
+    "rubricKind": "communication"
+  },
+  "general-19.1": {
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Java & API",
+      "Security",
+      "Reliability"
+    ],
+    "rubricKind": "coding"
+  },
+  "general-19.2": {
+    "competencyTopics": [
+      "Java Fundamentals",
+      "Java & API",
+      "Databases",
+      "Cloud & Platform",
+      "Reliability"
+    ],
+    "rubricKind": "design"
+  },
+  "general-19.3": {
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Java & API",
+      "Reliability"
+    ],
+    "rubricKind": "debug"
+  },
+  "general-19.4": {
+    "competencyTopics": [
+      "Reliability",
+      "Leadership"
+    ],
+    "rubricKind": "debug"
+  },
+  "general-24.3": {
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Databases",
+      "Security",
+      "Cloud & Platform",
+      "Reliability",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "debug"
+  },
+  "general-26.3": {
+    "competencyTopics": [
+      "Databases",
+      "Reliability",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "debug"
+  },
+  "general-12.1": {
+    "competencyTopics": [
+      "Java Fundamentals"
+    ],
+    "rubricKind": "coding"
+  },
+  "general-20.1": {
+    "competencyTopics": [
+      "System Design"
+    ],
+    "rubricKind": "coding"
+  },
+  "general-20.2": {
+    "competencyTopics": [
+      "Java Fundamentals",
+      "Security"
+    ],
+    "rubricKind": "design"
+  },
+  "general-20.3": {
+    "competencyTopics": [
+      "System Design"
+    ],
+    "rubricKind": "debug"
+  },
+  "general-20.4": {
+    "competencyTopics": [
+      "Leadership"
+    ],
+    "rubricKind": "communication"
+  },
+  "general-24.1": {
+    "competencyTopics": [
+      "System Design"
+    ],
+    "rubricKind": "coding"
+  },
+  "general-25.1": {
+    "competencyTopics": [
+      "Java Fundamentals"
+    ],
+    "rubricKind": "coding"
+  },
+  "general-26.1": {
+    "competencyTopics": [
+      "System Design"
+    ],
+    "rubricKind": "coding"
+  },
+  "general-12.2": {
+    "competencyTopics": [
+      "Leadership"
+    ],
+    "rubricKind": "design"
+  },
+  "general-12.3": {
+    "competencyTopics": [
+      "Java Fundamentals",
+      "Databases",
+      "Cloud & Platform",
+      "Reliability",
+      "Leadership"
+    ],
+    "rubricKind": "debug"
+  },
+  "general-12.4": {
+    "competencyTopics": [
+      "Leadership",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "communication"
+  },
+  "general-23.1": {
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Java Fundamentals",
+      "Databases",
+      "Security",
+      "Reliability",
+      "Leadership"
+    ],
+    "rubricKind": "coding"
+  },
+  "general-23.2": {
+    "competencyTopics": [
+      "Reliability",
+      "System Design",
+      "Leadership"
+    ],
+    "rubricKind": "design"
+  },
+  "general-23.3": {
+    "competencyTopics": [
+      "Java & API",
+      "Leadership",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "debug"
+  },
+  "general-23.4": {
+    "competencyTopics": [
+      "System Design",
+      "Leadership",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "communication"
+  },
+  "general-24.4": {
+    "competencyTopics": [
+      "Leadership",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "communication"
+  },
+  "general-25.4": {
+    "competencyTopics": [
+      "System Design",
+      "Leadership"
+    ],
+    "rubricKind": "communication"
+  },
+  "general-26.4": {
+    "competencyTopics": [
+      "Leadership"
+    ],
+    "rubricKind": "communication"
+  },
+  "dsa-1.1": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-1.2": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-1.3": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-1.4": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-2.1": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-2.2": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-2.3": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-2.4": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-3.1": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-3.2": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-3.3": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-3.4": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-4.1": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-4.2": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-4.3": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-4.4": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-5.1": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-5.2": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-5.3": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-5.4": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-6.1": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-6.2": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-6.3": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-6.4": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-7.1": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-7.2": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-7.3": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-7.4": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-8.1": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-8.2": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-8.3": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-8.4": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-9.1": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-9.2": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-9.3": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-9.4": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-10.1": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-10.2": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-10.3": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-10.4": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-11.1": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-11.2": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-11.3": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-11.4": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-12.1": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-12.2": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-12.3": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-12.4": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-13.1": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-13.2": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-13.3": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-13.4": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-14.1": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-14.2": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-14.3": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-14.4": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-15.1": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-15.2": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-15.3": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-15.4": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-16.1": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-16.2": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-16.3": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-16.4": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-17.1": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-17.2": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-17.3": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-17.4": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-18.1": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-18.2": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-18.3": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-18.4": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-19.1": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-19.2": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-19.3": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-19.4": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-20.1": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-20.2": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-20.3": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-20.4": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-21.1": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-21.2": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-21.3": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-21.4": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-22.1": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-22.2": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-22.3": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-22.4": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-23.1": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-23.2": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-23.3": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-23.4": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-24.1": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-24.2": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-24.3": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-24.4": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-25.1": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-25.2": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-25.3": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-25.4": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-26.1": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-26.2": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-26.3": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "dsa-26.4": {
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null
+  },
+  "go-1": {
+    "competencyTopics": [
+      "Go Fundamentals",
+      "Go APIs & Services"
+    ],
+    "rubricKind": "coding"
+  },
+  "go-2": {
+    "competencyTopics": [
+      "Go Concurrency & Runtime"
+    ],
+    "rubricKind": "debug"
+  },
+  "go-3": {
+    "competencyTopics": [
+      "Go Concurrency & Runtime"
+    ],
+    "rubricKind": "design"
+  },
+  "go-4": {
+    "competencyTopics": [
+      "Go Service Architecture",
+      "Go Fundamentals"
+    ],
+    "rubricKind": "communication"
+  },
+  "go-5": {
+    "competencyTopics": [
+      "Go Concurrency & Runtime",
+      "Go APIs & Services",
+      "Go Fundamentals"
+    ],
+    "rubricKind": "coding"
+  },
+  "go-6": {
+    "competencyTopics": [
+      "Go Concurrency & Runtime"
+    ],
+    "rubricKind": "design"
+  },
+  "go-7": {
+    "competencyTopics": [
+      "Go Concurrency & Runtime",
+      "Go APIs & Services"
+    ],
+    "rubricKind": "debug"
+  },
+  "go-8": {
+    "competencyTopics": [
+      "Go Concurrency & Runtime"
+    ],
+    "rubricKind": "coding"
+  },
+  "go-9": {
+    "competencyTopics": [
+      "Go Fundamentals",
+      "Go APIs & Services"
+    ],
+    "rubricKind": "design"
+  },
+  "go-10": {
+    "competencyTopics": [
+      "Go Concurrency & Runtime"
+    ],
+    "rubricKind": "debug"
+  },
+  "go-11": {
+    "competencyTopics": [
+      "Go Fundamentals",
+      "Go APIs & Services"
+    ],
+    "rubricKind": "design"
+  },
+  "go-12": {
+    "competencyTopics": [
+      "Go Fundamentals",
+      "Go APIs & Services"
+    ],
+    "rubricKind": "communication"
+  },
+  "java-testing-dependencies": {
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Java Fundamentals",
+      "Java & API",
+      "Cloud & Platform",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "coding"
+  },
+  "go-testing-dependencies": {
+    "competencyTopics": [
+      "Go Fundamentals"
+    ],
+    "rubricKind": "coding"
+  },
+  "staff-quality-gates": {
+    "competencyTopics": [
+      "Reliability",
+      "Leadership",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "communication"
+  },
+  "java-runtime-diagnostics": {
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Java Fundamentals",
+      "Reliability",
+      "System Design",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "coding"
+  },
+  "go-runtime-diagnostics": {
+    "competencyTopics": [
+      "Go Concurrency & Runtime"
+    ],
+    "rubricKind": "coding"
+  },
+  "staff-runtime-incident": {
+    "competencyTopics": [
+      "Reliability",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "debug"
+  },
+  "java-client-practice": {
+    "competencyTopics": [
+      "Java Fundamentals",
+      "Java & API",
+      "Reliability",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "design"
+  },
+  "go-client-practice": {
+    "competencyTopics": [
+      "Go Fundamentals"
+    ],
+    "rubricKind": "design"
+  },
+  "java-database-practice": {
+    "competencyTopics": [
+      "Java Fundamentals",
+      "Databases",
+      "Reliability",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "debug"
+  },
+  "go-database-practice": {
+    "competencyTopics": [
+      "Go Fundamentals",
+      "Go APIs & Services"
+    ],
+    "rubricKind": "debug"
+  },
+  "java-security-practice": {
+    "competencyTopics": [
+      "Java Fundamentals",
+      "Security",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "design"
+  },
+  "go-security-practice": {
+    "competencyTopics": [
+      "Go Service Architecture"
+    ],
+    "rubricKind": "design"
+  },
+  "java-platform-practice": {
+    "competencyTopics": [
+      "Java Fundamentals",
+      "Cloud & Platform",
+      "Reliability",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "debug"
+  },
+  "go-platform-practice": {
+    "competencyTopics": [
+      "Go Concurrency & Runtime"
+    ],
+    "rubricKind": "debug"
+  },
+  "java-overload-practice": {
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Java Fundamentals",
+      "Java & API",
+      "System Design",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "design"
+  },
+  "go-overload-practice": {
+    "competencyTopics": [
+      "Go Concurrency & Runtime",
+      "Go APIs & Services"
+    ],
+    "rubricKind": "design"
+  },
+  "staff-language-transfer": {
+    "competencyTopics": [
+      "Java Fundamentals",
+      "Java & API",
+      "Databases",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "communication"
+  },
+  "go-architecture-composition": {
+    "competencyTopics": [
+      "Go Service Architecture",
+      "Go APIs & Services",
+      "Go Fundamentals"
+    ],
+    "rubricKind": "design"
+  },
+  "go-architecture-migration": {
+    "competencyTopics": [
+      "Go Service Architecture",
+      "Go Fundamentals"
+    ],
+    "rubricKind": "design"
+  },
+  "go-architecture-operations": {
+    "competencyTopics": [
+      "Go APIs & Services"
+    ],
+    "rubricKind": "debug"
+  }
+}
