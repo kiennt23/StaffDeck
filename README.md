@@ -24,15 +24,33 @@ xcodegen generate
 open StaffDeck.xcodeproj
 ```
 
-To refresh the bundled study content, the exporter reads generated content from
-the Staff Deck web project and checks the expected counts before writing the app
-resources. It merges the maintained Java fundamentals, Go track, subtopic, and
-concise-answer overrides under `Content/` before exporting. Point it at the web
-project explicitly:
+To refresh the bundled study content, the exporter starts from the committed
+base snapshots under `Content/`, then merges the maintained Java fundamentals,
+Go track, subtopic, and concise-answer overrides. It validates IDs and expected
+counts before writing the app resources:
+
+```bash
+node Scripts/export-content.mjs
+```
+
+Use the read-only check locally or in automation to verify that the bundled
+resources match every maintained input:
+
+```bash
+node Scripts/export-content.mjs --check
+```
+
+If the original Staff Deck web project is available, point the exporter at it
+to refresh both base snapshots and bundled resources from that explicit source:
 
 ```bash
 STAFF_DECK_WEB_ROOT=/path/to/flashcards-app node Scripts/export-content.mjs
 ```
+
+`Scripts/derive-content-snapshots.mjs` can reconstruct the base snapshots from
+the current known-good resources by excluding the locally maintained Java and
+Go additions. The derivation aborts unless the reconstructed deck is
+byte-identical to the tracked resources.
 
 ## Create the Turso database
 
