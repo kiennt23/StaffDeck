@@ -88,7 +88,7 @@ export function deriveWebSnapshots(inputs, rules = SNAPSHOT_RULES) {
   const webPractices = generatedPractices
     .filter((practice) => !goPracticeIDs.has(String(practice.id)))
     .map((practice) => {
-      const { competencyTopics, rubricKind, ...rest } = practice;
+      const { competencyTopics, rubricKind, completionCriteria, ...rest } = practice;
       return rest;
     });
   if (webPractices.length + goPractices.length !== generatedPractices.length) {

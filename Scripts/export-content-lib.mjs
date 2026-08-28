@@ -113,6 +113,98 @@ function validateBaseFlashcards(baseFlashcards, subtopicByID, rules) {
   }
 }
 
+export function normalizeProse(value) {
+  if (typeof value !== "string") return "";
+  return value.toLowerCase().replaceAll(/[^a-z0-9]+/g, " ").trim();
+}
+
+export function validatePracticeMetadata(rawPractices, practiceMetadata) {
+  if (!practiceMetadata || typeof practiceMetadata !== "object" || Array.isArray(practiceMetadata)) {
+    throw new Error("Practice metadata must be an object");
+  }
+
+  const practiceIDs = new Set(rawPractices.map((practice) => String(practice.id)));
+  const metaKeys = Object.keys(practiceMetadata);
+  const missing = [...practiceIDs].filter((id) => !(id in practiceMetadata));
+  if (missing.length > 0) {
+    throw new Error(`Practice metadata missing entries for: ${missing.join(", ")}`);
+  }
+  const unknown = metaKeys.filter((id) => !practiceIDs.has(id));
+  if (unknown.length > 0) {
+    throw new Error(`Practice metadata references unknown practices: ${unknown.join(", ")}`);
+  }
+
+  const seenSignatures = new Map();
+
+  for (const practice of rawPractices) {
+    const practiceId = String(practice.id);
+    const meta = practiceMetadata[practiceId];
+    if (!meta || typeof meta !== "object") {
+      throw new Error(`Practice ${practiceId} metadata must be an object`);
+    }
+    if (!Array.isArray(meta.completionCriteria)) {
+      throw new Error(`Practice ${practiceId} must declare completionCriteria array`);
+    }
+    if (meta.completionCriteria.length < 2 || meta.completionCriteria.length > 5) {
+      throw new Error(
+        `Practice ${practiceId} completionCriteria must contain 2 to 5 criteria, found ${meta.completionCriteria.length}`,
+      );
+    }
+
+    const seenCriterionIDs = new Set();
+    const seenRequirements = new Set();
+
+    for (const criterion of meta.completionCriteria) {
+      if (!criterion || typeof criterion !== "object" || Array.isArray(criterion)) {
+        throw new Error(`Practice ${practiceId} contains invalid criterion object`);
+      }
+      if (typeof criterion.id !== "string" || criterion.id.trim().length === 0) {
+        throw new Error(`Practice ${practiceId} criterion missing non-empty id`);
+      }
+      if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(criterion.id)) {
+        throw new Error(
+          `Practice ${practiceId} criterion ID "${criterion.id}" must be lowercase kebab-case`,
+        );
+      }
+      if (seenCriterionIDs.has(criterion.id)) {
+        throw new Error(`Practice ${practiceId} contains duplicate criterion ID: ${criterion.id}`);
+      }
+      seenCriterionIDs.add(criterion.id);
+
+      if (typeof criterion.requirement !== "string" || criterion.requirement.trim().length === 0) {
+        throw new Error(`Practice ${practiceId} criterion "${criterion.id}" missing non-empty requirement`);
+      }
+      const normalizedReq = normalizeProse(criterion.requirement);
+      if (seenRequirements.has(normalizedReq)) {
+        throw new Error(
+          `Practice ${practiceId} contains duplicate normalized criterion requirement: "${criterion.requirement}"`,
+        );
+      }
+      seenRequirements.add(normalizedReq);
+
+      if (
+        typeof criterion.evidencePrompt !== "string" ||
+        criterion.evidencePrompt.trim().length === 0
+      ) {
+        throw new Error(
+          `Practice ${practiceId} criterion "${criterion.id}" missing non-empty evidencePrompt`,
+        );
+      }
+    }
+
+    const setSignature = meta.completionCriteria
+      .map((c) => `${normalizeProse(c.requirement)}::${normalizeProse(c.evidencePrompt)}`)
+      .sort()
+      .join(" || ");
+    if (seenSignatures.has(setSignature)) {
+      throw new Error(
+        `Duplicate normalized criterion set between practice "${practiceId}" and practice "${seenSignatures.get(setSignature)}"`,
+      );
+    }
+    seenSignatures.set(setSignature, practiceId);
+  }
+}
+
 export function buildContent(inputs, rules = PRODUCTION_RULES) {
   const {
     webFlashcards,
@@ -184,16 +276,20 @@ export function buildContent(inputs, rules = PRODUCTION_RULES) {
     );
   }
 
+  if (practiceMetadata) {
+    validatePracticeMetadata(rawPractices, practiceMetadata);
+  }
+
   const practices = practiceMetadata
     ? rawPractices.map((practice) => {
         const meta = practiceMetadata[String(practice.id)];
-        if (!meta) return practice;
         const {
           id,
           kind,
           contentTrack,
           competencyTopics: _oldTopics,
           rubricKind: _oldRubric,
+          completionCriteria: _oldCriteria,
           topic,
           week,
           number,
@@ -212,6 +308,7 @@ export function buildContent(inputs, rules = PRODUCTION_RULES) {
           contentTrack,
           competencyTopics: meta.competencyTopics ?? [topic],
           rubricKind: meta.rubricKind ?? null,
+          completionCriteria: meta.completionCriteria,
           topic,
           week,
           number,
