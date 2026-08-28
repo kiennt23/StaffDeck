@@ -24,9 +24,11 @@
 		50549DE90C2CF58E2763883C /* SyncTestDoubles.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8E50114CCAAB620AFB13A19 /* SyncTestDoubles.swift */; };
 		5657E17F1ED1EDAF5099AEAA /* AppModel+Flush.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0982C8E2FAF5ABFAFAD9A68 /* AppModel+Flush.swift */; };
 		59381D6DD25D173EE2205C3D /* AppModel+Outbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEC046FACFFEED7CEFCD0864 /* AppModel+Outbox.swift */; };
+		65F3A0F2F13E0D3E5F47B791 /* MasteryMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5801924A4958454DEA811B37 /* MasteryMetrics.swift */; };
 		698CE1726E0525AA8FC0D4E4 /* PracticeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE747436222B3D4895C5379B /* PracticeView.swift */; };
 		6EF2CEF73368EFACE9968FAD /* CachedState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42A34ADD5E5567A11DB2CB78 /* CachedState.swift */; };
 		80692F2C4800F81F6FA48934 /* CareerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2EEEB8D094B58B4D2E16D5B /* CareerView.swift */; };
+		8248E61A2BD9DECAC597767D /* AdaptiveScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E9D60A18907E92F299229F9 /* AdaptiveScheduler.swift */; };
 		8EC20376D65C6FF8A7EBF448 /* practices.json in Resources */ = {isa = PBXBuildFile; fileRef = 94B3C4E48EB78A1FD52CC21B /* practices.json */; };
 		99E17DCA03D129F06BA940C2 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B520041EF534356A66FDBA /* Models.swift */; };
 		9CB4259D09F7E88EBEF2F0BA /* StaffDeckApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12A2BAC19C7959628EB98A45 /* StaffDeckApp.swift */; };
@@ -34,6 +36,7 @@
 		A460B9FA9C55F8B0ECCB17C2 /* AppDependencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 373740F746690D8CD37E557E /* AppDependencies.swift */; };
 		C09A7DDE23C36CB3BC768E21 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10F50B8DE77580F4286A678E /* AppModel.swift */; };
 		C161B2ABA3296AFC391D2233 /* TodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 749626250162B0A41BE8414B /* TodayView.swift */; };
+		D07AEC983C373CC737F2D8A8 /* TodayRecommendations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068EE87F10E216415E7E8693 /* TodayRecommendations.swift */; };
 		D7CDA1FCEE56423DBD00DD8F /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D937946145DE462AC6660FD7 /* RootView.swift */; };
 		D7ECE2BD2B9FC70D6A0DC247 /* TursoStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5851ABAD0023D5D4DEF4E6D0 /* TursoStore.swift */; };
 		DDC19CC83B51D02C38E22640 /* AppModel+Mutations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4671EA73DB487A9826F98F82 /* AppModel+Mutations.swift */; };
@@ -52,6 +55,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		068EE87F10E216415E7E8693 /* TodayRecommendations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayRecommendations.swift; sourceTree = "<group>"; };
 		099C1215029DDB2B833EDF8C /* flashcards.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = flashcards.json; sourceTree = "<group>"; };
 		10F50B8DE77580F4286A678E /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
 		12A2BAC19C7959628EB98A45 /* StaffDeckApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StaffDeckApp.swift; sourceTree = "<group>"; };
@@ -59,11 +63,13 @@
 		15DA691437C9FA6AB1176700 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		16C86273C2F59AA617457373 /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
 		373740F746690D8CD37E557E /* AppDependencies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDependencies.swift; sourceTree = "<group>"; };
+		3E9D60A18907E92F299229F9 /* AdaptiveScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveScheduler.swift; sourceTree = "<group>"; };
 		42A34ADD5E5567A11DB2CB78 /* CachedState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CachedState.swift; sourceTree = "<group>"; };
 		4671EA73DB487A9826F98F82 /* AppModel+Mutations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppModel+Mutations.swift"; sourceTree = "<group>"; };
 		4C60C0FD537FA78E188B0943 /* StaffDeck.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = StaffDeck.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		52FA9ABF2BF842A2AC01DABD /* LanguageComparisonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageComparisonView.swift; sourceTree = "<group>"; };
 		53C2DC4E3218528AC9614B04 /* ContentRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentRepository.swift; sourceTree = "<group>"; };
+		5801924A4958454DEA811B37 /* MasteryMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasteryMetrics.swift; sourceTree = "<group>"; };
 		5851ABAD0023D5D4DEF4E6D0 /* TursoStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TursoStore.swift; sourceTree = "<group>"; };
 		65670A82FE9472405C884E80 /* StaffDeckTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StaffDeckTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6C6754228DECECBD20E016DD /* ProgressMetricsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressMetricsTests.swift; sourceTree = "<group>"; };
@@ -155,6 +161,7 @@
 		C485002BF747E6F562050115 /* StaffDeck */ = {
 			isa = PBXGroup;
 			children = (
+				3E9D60A18907E92F299229F9 /* AdaptiveScheduler.swift */,
 				373740F746690D8CD37E557E /* AppDependencies.swift */,
 				10F50B8DE77580F4286A678E /* AppModel.swift */,
 				C35E472EDCA3ABEF2F2CBBBE /* AppModel+Connection.swift */,
@@ -166,10 +173,12 @@
 				42A34ADD5E5567A11DB2CB78 /* CachedState.swift */,
 				53C2DC4E3218528AC9614B04 /* ContentRepository.swift */,
 				16C86273C2F59AA617457373 /* KeychainStore.swift */,
+				5801924A4958454DEA811B37 /* MasteryMetrics.swift */,
 				B9B520041EF534356A66FDBA /* Models.swift */,
 				D937946145DE462AC6660FD7 /* RootView.swift */,
 				12A2BAC19C7959628EB98A45 /* StaffDeckApp.swift */,
 				90CAB0168A2E27B220D6DE11 /* SyncTypes.swift */,
+				068EE87F10E216415E7E8693 /* TodayRecommendations.swift */,
 				5851ABAD0023D5D4DEF4E6D0 /* TursoStore.swift */,
 				CAD91A7A7FDFE78A7347FE4A /* Resources */,
 				614415C3BBC6FCE790D188CE /* Views */,
@@ -296,6 +305,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8248E61A2BD9DECAC597767D /* AdaptiveScheduler.swift in Sources */,
 				A460B9FA9C55F8B0ECCB17C2 /* AppDependencies.swift in Sources */,
 				17A00F32713FF131F6B7FFC8 /* AppModel+Connection.swift in Sources */,
 				5657E17F1ED1EDAF5099AEAA /* AppModel+Flush.swift in Sources */,
@@ -309,6 +319,7 @@
 				2F69749BEFE9DE40C26400F2 /* FlashcardsView.swift in Sources */,
 				40FF5B78764647ECC76D5075 /* KeychainStore.swift in Sources */,
 				34F16630200CFC5FEDF27DC3 /* LanguageComparisonView.swift in Sources */,
+				65F3A0F2F13E0D3E5F47B791 /* MasteryMetrics.swift in Sources */,
 				99E17DCA03D129F06BA940C2 /* Models.swift in Sources */,
 				698CE1726E0525AA8FC0D4E4 /* PracticeView.swift in Sources */,
 				E587ED50AA159AB3CE337747 /* ProgressView.swift in Sources */,
@@ -316,6 +327,7 @@
 				3DE9105866EFD5C3F080BC83 /* SettingsView.swift in Sources */,
 				9CB4259D09F7E88EBEF2F0BA /* StaffDeckApp.swift in Sources */,
 				4E5427FDB70E3A5559E25E98 /* SyncTypes.swift in Sources */,
+				D07AEC983C373CC737F2D8A8 /* TodayRecommendations.swift in Sources */,
 				C161B2ABA3296AFC391D2233 /* TodayView.swift in Sources */,
 				D7ECE2BD2B9FC70D6A0DC247 /* TursoStore.swift in Sources */,
 			);
