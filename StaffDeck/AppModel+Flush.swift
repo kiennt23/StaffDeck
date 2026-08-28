@@ -74,6 +74,7 @@ extension AppModel {
             var value = try envelope.decode(PracticeRecord.self)
             value.updatedAt = Self.date(envelope.updatedAtMilliseconds)
             practiceRecords[value.practiceID] = value
+            normalizePracticeState()
         case .practiceAttempts:
             var value = try envelope.decode(PracticeAttempt.self)
             value.updatedAt = Self.date(envelope.updatedAtMilliseconds)
@@ -84,6 +85,7 @@ extension AppModel {
                 list.append(value)
             }
             practiceAttempts[value.practiceID] = list
+            normalizePracticeState()
         case .profile:
             var value = try envelope.decode(CareerProfile.self)
             value.updatedAt = Self.date(envelope.updatedAtMilliseconds)

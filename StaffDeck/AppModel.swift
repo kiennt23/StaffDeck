@@ -4,7 +4,7 @@ import Foundation
 @MainActor
 final class AppModel: ObservableObject {
     @Published private(set) var flashcards: [Flashcard] = []
-    @Published private(set) var practices: [PracticeItem] = []
+    @Published var practices: [PracticeItem] = []
     @Published var reviews: [Int: ReviewRecord] = [:]
     @Published var flashcardWork: [Int: FlashcardWork] = [:]
     @Published var practiceRecords: [String: PracticeRecord] = [:]
@@ -83,6 +83,33 @@ final class AppModel: ObservableObject {
             if let previous = pendingMutations[mutation.key],
                previous.updatedAtMilliseconds > mutation.updatedAtMilliseconds { continue }
             pendingMutations[mutation.key] = mutation
+        }
+        normalizePracticeState()
+    }
+
+    func hasSubmittedEvidence(for practiceID: String) -> Bool {
+        let attempts = practiceAttempts[practiceID] ?? []
+        return attempts.contains { attempt in
+            guard let submission = attempt.submission else { return false }
+            return !submission.artifact.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                && !submission.satisfiedCriterionIDs.isEmpty
+        }
+    }
+
+    func normalizePracticeState() {
+        for (practiceID, var record) in practiceRecords {
+            let attemptsList = practiceAttempts[practiceID] ?? []
+            let validEvidenceCount = attemptsList.filter { attempt in
+                guard let submission = attempt.submission else { return false }
+                return !submission.artifact.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                    && !submission.satisfiedCriterionIDs.isEmpty
+            }.count
+            let baseline = record.legacyAttemptBaseline
+            let expectedAttempts = baseline + validEvidenceCount
+            if record.attempts != expectedAttempts {
+                record.attempts = expectedAttempts
+                practiceRecords[practiceID] = record
+            }
         }
     }
 

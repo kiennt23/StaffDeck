@@ -19,6 +19,7 @@ extension AppModel {
             collection: .practiceAttempts, id: \.id, updatedAt: \.updatedAt
         )
         practiceAttempts = Dictionary(grouping: allAttempts, by: \.practiceID)
+        normalizePracticeState()
         profile = try reconcile(
             local: [profile], remote: remote[.profile], collection: .profile,
             id: { _ in "default" }, updatedAt: \.updatedAt
