@@ -2,6 +2,13 @@
   {
     "id": "general-1.1",
     "kind": "General",
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Spring",
+      "Java Fundamentals",
+      "System Design"
+    ],
+    "rubricKind": "coding",
     "topic": "Foundations, Java, JVM, and Spring",
     "week": 1,
     "number": 1,
@@ -24,6 +31,16 @@
   {
     "id": "general-1.2",
     "kind": "General",
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Spring",
+      "Java Fundamentals",
+      "Java & API",
+      "Cloud & Platform",
+      "Reliability",
+      "System Design"
+    ],
+    "rubricKind": "design",
     "topic": "Foundations, Java, JVM, and Spring",
     "week": 1,
     "number": 2,
@@ -46,6 +63,14 @@
   {
     "id": "general-1.3",
     "kind": "General",
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Spring",
+      "Java Fundamentals",
+      "Java & API",
+      "Reliability"
+    ],
+    "rubricKind": "coding",
     "topic": "Foundations, Java, JVM, and Spring",
     "week": 1,
     "number": 3,
@@ -68,6 +93,14 @@
   {
     "id": "general-1.4",
     "kind": "General",
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Spring",
+      "Java Fundamentals",
+      "Leadership",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "communication",
     "topic": "Foundations, Java, JVM, and Spring",
     "week": 1,
     "number": 4,
@@ -90,6 +123,13 @@
   {
     "id": "general-2.1",
     "kind": "General",
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Spring",
+      "Java Fundamentals",
+      "Java & API"
+    ],
+    "rubricKind": "coding",
     "topic": "Foundations, Java, JVM, and Spring",
     "week": 2,
     "number": 1,
@@ -112,6 +152,15 @@
   {
     "id": "general-2.2",
     "kind": "General",
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Spring",
+      "Java Fundamentals",
+      "Java & API",
+      "Security",
+      "Reliability"
+    ],
+    "rubricKind": "design",
     "topic": "Foundations, Java, JVM, and Spring",
     "week": 2,
     "number": 2,
@@ -134,6 +183,13 @@
   {
     "id": "general-2.3",
     "kind": "General",
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Spring",
+      "Java Fundamentals",
+      "Databases"
+    ],
+    "rubricKind": "coding",
     "topic": "Foundations, Java, JVM, and Spring",
     "week": 2,
     "number": 3,
@@ -156,6 +212,16 @@
   {
     "id": "general-2.4",
     "kind": "General",
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Spring",
+      "Java Fundamentals",
+      "Java & API",
+      "Reliability",
+      "Leadership",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "communication",
     "topic": "Foundations, Java, JVM, and Spring",
     "week": 2,
     "number": 4,
@@ -178,6 +244,12 @@
   {
     "id": "general-3.1",
     "kind": "General",
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Spring",
+      "Java Fundamentals"
+    ],
+    "rubricKind": "coding",
     "topic": "Foundations, Java, JVM, and Spring",
     "week": 3,
     "number": 1,
@@ -200,6 +272,12 @@
   {
     "id": "general-3.2",
     "kind": "General",
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Spring",
+      "Java Fundamentals"
+    ],
+    "rubricKind": "design",
     "topic": "Foundations, Java, JVM, and Spring",
     "week": 3,
     "number": 2,
@@ -222,6 +300,12 @@
   {
     "id": "general-3.3",
     "kind": "General",
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Spring",
+      "Java Fundamentals"
+    ],
+    "rubricKind": "debug",
     "topic": "Foundations, Java, JVM, and Spring",
     "week": 3,
     "number": 3,
@@ -244,6 +328,13 @@
   {
     "id": "general-3.4",
     "kind": "General",
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Spring",
+      "Java Fundamentals",
+      "Leadership"
+    ],
+    "rubricKind": "communication",
     "topic": "Foundations, Java, JVM, and Spring",
     "week": 3,
     "number": 4,
@@ -266,6 +357,12 @@
   {
     "id": "general-4.1",
     "kind": "General",
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Spring",
+      "Java Fundamentals"
+    ],
+    "rubricKind": "coding",
     "topic": "Foundations, Java, JVM, and Spring",
     "week": 4,
     "number": 1,
@@ -288,6 +385,14 @@
   {
     "id": "general-4.2",
     "kind": "General",
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Spring",
+      "Java Fundamentals",
+      "Java & API",
+      "Cloud & Platform"
+    ],
+    "rubricKind": "design",
     "topic": "Foundations, Java, JVM, and Spring",
     "week": 4,
     "number": 2,
@@ -310,6 +415,13 @@
   {
     "id": "general-4.3",
     "kind": "General",
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Spring",
+      "Java Fundamentals",
+      "Cloud & Platform"
+    ],
+    "rubricKind": "debug",
     "topic": "Foundations, Java, JVM, and Spring",
     "week": 4,
     "number": 3,
@@ -332,6 +444,15 @@
   {
     "id": "general-4.4",
     "kind": "General",
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Spring",
+      "Java Fundamentals",
+      "Reliability",
+      "Leadership",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "communication",
     "topic": "Foundations, Java, JVM, and Spring",
     "week": 4,
     "number": 4,
@@ -354,6 +475,13 @@
   {
     "id": "general-5.1",
     "kind": "General",
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Spring",
+      "Java Fundamentals",
+      "Databases"
+    ],
+    "rubricKind": "coding",
     "topic": "Foundations, Java, JVM, and Spring",
     "week": 5,
     "number": 1,
@@ -376,6 +504,14 @@
   {
     "id": "general-5.2",
     "kind": "General",
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Spring",
+      "Java Fundamentals",
+      "Java & API",
+      "Leadership"
+    ],
+    "rubricKind": "design",
     "topic": "Foundations, Java, JVM, and Spring",
     "week": 5,
     "number": 2,
@@ -398,6 +534,12 @@
   {
     "id": "general-5.3",
     "kind": "General",
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Spring",
+      "Java Fundamentals"
+    ],
+    "rubricKind": "debug",
     "topic": "Foundations, Java, JVM, and Spring",
     "week": 5,
     "number": 3,
@@ -420,6 +562,14 @@
   {
     "id": "general-5.4",
     "kind": "General",
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Spring",
+      "Java Fundamentals",
+      "Databases",
+      "Leadership"
+    ],
+    "rubricKind": "communication",
     "topic": "Foundations, Java, JVM, and Spring",
     "week": 5,
     "number": 4,
@@ -442,6 +592,12 @@
   {
     "id": "general-6.1",
     "kind": "General",
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Java Fundamentals",
+      "Security"
+    ],
+    "rubricKind": "coding",
     "topic": "Security, Identity, and Software Supply Chain",
     "week": 6,
     "number": 1,
@@ -464,6 +620,11 @@
   {
     "id": "general-6.2",
     "kind": "General",
+    "competencyTopics": [
+      "Security",
+      "Cloud & Platform"
+    ],
+    "rubricKind": "design",
     "topic": "Security, Identity, and Software Supply Chain",
     "week": 6,
     "number": 2,
@@ -486,6 +647,12 @@
   {
     "id": "general-6.3",
     "kind": "General",
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Security",
+      "System Design"
+    ],
+    "rubricKind": "debug",
     "topic": "Security, Identity, and Software Supply Chain",
     "week": 6,
     "number": 3,
@@ -508,6 +675,12 @@
   {
     "id": "general-6.4",
     "kind": "General",
+    "competencyTopics": [
+      "Security",
+      "Leadership",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "communication",
     "topic": "Security, Identity, and Software Supply Chain",
     "week": 6,
     "number": 4,
@@ -530,6 +703,11 @@
   {
     "id": "general-18.1",
     "kind": "General",
+    "competencyTopics": [
+      "Java Fundamentals",
+      "Security"
+    ],
+    "rubricKind": "coding",
     "topic": "Security, Identity, and Software Supply Chain",
     "week": 18,
     "number": 1,
@@ -552,6 +730,11 @@
   {
     "id": "general-18.2",
     "kind": "General",
+    "competencyTopics": [
+      "Java & API",
+      "Security"
+    ],
+    "rubricKind": "design",
     "topic": "Security, Identity, and Software Supply Chain",
     "week": 18,
     "number": 2,
@@ -574,6 +757,11 @@
   {
     "id": "general-18.3",
     "kind": "General",
+    "competencyTopics": [
+      "Security",
+      "Cloud & Platform"
+    ],
+    "rubricKind": "debug",
     "topic": "Security, Identity, and Software Supply Chain",
     "week": 18,
     "number": 3,
@@ -596,6 +784,12 @@
   {
     "id": "general-18.4",
     "kind": "General",
+    "competencyTopics": [
+      "Security",
+      "Leadership",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "communication",
     "topic": "Security, Identity, and Software Supply Chain",
     "week": 18,
     "number": 4,
@@ -618,6 +812,11 @@
   {
     "id": "general-7.1",
     "kind": "General",
+    "competencyTopics": [
+      "Databases",
+      "System Design"
+    ],
+    "rubricKind": "coding",
     "topic": "Databases, Messaging, and Distributed Systems",
     "week": 7,
     "number": 1,
@@ -640,6 +839,13 @@
   {
     "id": "general-7.2",
     "kind": "General",
+    "competencyTopics": [
+      "Databases",
+      "Security",
+      "Reliability",
+      "System Design"
+    ],
+    "rubricKind": "design",
     "topic": "Databases, Messaging, and Distributed Systems",
     "week": 7,
     "number": 2,
@@ -662,6 +868,13 @@
   {
     "id": "general-7.3",
     "kind": "General",
+    "competencyTopics": [
+      "Databases",
+      "Security",
+      "Reliability",
+      "System Design"
+    ],
+    "rubricKind": "debug",
     "topic": "Databases, Messaging, and Distributed Systems",
     "week": 7,
     "number": 3,
@@ -684,6 +897,12 @@
   {
     "id": "general-7.4",
     "kind": "General",
+    "competencyTopics": [
+      "Databases",
+      "System Design",
+      "Leadership"
+    ],
+    "rubricKind": "communication",
     "topic": "Databases, Messaging, and Distributed Systems",
     "week": 7,
     "number": 4,
@@ -706,6 +925,12 @@
   {
     "id": "general-8.1",
     "kind": "General",
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Databases",
+      "System Design"
+    ],
+    "rubricKind": "coding",
     "topic": "Databases, Messaging, and Distributed Systems",
     "week": 8,
     "number": 1,
@@ -728,6 +953,11 @@
   {
     "id": "general-8.2",
     "kind": "General",
+    "competencyTopics": [
+      "Databases",
+      "System Design"
+    ],
+    "rubricKind": "design",
     "topic": "Databases, Messaging, and Distributed Systems",
     "week": 8,
     "number": 2,
@@ -750,6 +980,12 @@
   {
     "id": "general-8.3",
     "kind": "General",
+    "competencyTopics": [
+      "Java & API",
+      "Databases",
+      "System Design"
+    ],
+    "rubricKind": "debug",
     "topic": "Databases, Messaging, and Distributed Systems",
     "week": 8,
     "number": 3,
@@ -772,6 +1008,12 @@
   {
     "id": "general-8.4",
     "kind": "General",
+    "competencyTopics": [
+      "Databases",
+      "System Design",
+      "Leadership"
+    ],
+    "rubricKind": "communication",
     "topic": "Databases, Messaging, and Distributed Systems",
     "week": 8,
     "number": 4,
@@ -794,6 +1036,11 @@
   {
     "id": "general-9.1",
     "kind": "General",
+    "competencyTopics": [
+      "Databases",
+      "System Design"
+    ],
+    "rubricKind": "coding",
     "topic": "Databases, Messaging, and Distributed Systems",
     "week": 9,
     "number": 1,
@@ -816,6 +1063,12 @@
   {
     "id": "general-9.2",
     "kind": "General",
+    "competencyTopics": [
+      "Java & API",
+      "Databases",
+      "System Design"
+    ],
+    "rubricKind": "design",
     "topic": "Databases, Messaging, and Distributed Systems",
     "week": 9,
     "number": 2,
@@ -838,6 +1091,12 @@
   {
     "id": "general-9.3",
     "kind": "General",
+    "competencyTopics": [
+      "Databases",
+      "Security",
+      "System Design"
+    ],
+    "rubricKind": "debug",
     "topic": "Databases, Messaging, and Distributed Systems",
     "week": 9,
     "number": 3,
@@ -860,6 +1119,14 @@
   {
     "id": "general-9.4",
     "kind": "General",
+    "competencyTopics": [
+      "Java & API",
+      "Databases",
+      "System Design",
+      "Leadership",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "communication",
     "topic": "Databases, Messaging, and Distributed Systems",
     "week": 9,
     "number": 4,
@@ -882,6 +1149,13 @@
   {
     "id": "general-10.1",
     "kind": "General",
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Databases",
+      "System Design",
+      "Leadership"
+    ],
+    "rubricKind": "coding",
     "topic": "Databases, Messaging, and Distributed Systems",
     "week": 10,
     "number": 1,
@@ -904,6 +1178,11 @@
   {
     "id": "general-10.2",
     "kind": "General",
+    "competencyTopics": [
+      "Databases",
+      "System Design"
+    ],
+    "rubricKind": "design",
     "topic": "Databases, Messaging, and Distributed Systems",
     "week": 10,
     "number": 2,
@@ -926,6 +1205,11 @@
   {
     "id": "general-10.3",
     "kind": "General",
+    "competencyTopics": [
+      "Databases",
+      "System Design"
+    ],
+    "rubricKind": "debug",
     "topic": "Databases, Messaging, and Distributed Systems",
     "week": 10,
     "number": 3,
@@ -948,6 +1232,12 @@
   {
     "id": "general-10.4",
     "kind": "General",
+    "competencyTopics": [
+      "Databases",
+      "System Design",
+      "Leadership"
+    ],
+    "rubricKind": "communication",
     "topic": "Databases, Messaging, and Distributed Systems",
     "week": 10,
     "number": 4,
@@ -970,6 +1260,12 @@
   {
     "id": "general-11.1",
     "kind": "General",
+    "competencyTopics": [
+      "Java Fundamentals",
+      "Reliability",
+      "System Design"
+    ],
+    "rubricKind": "coding",
     "topic": "System Design, Platform Architecture, and Economics",
     "week": 11,
     "number": 1,
@@ -992,6 +1288,12 @@
   {
     "id": "general-11.2",
     "kind": "General",
+    "competencyTopics": [
+      "Security",
+      "Reliability",
+      "System Design"
+    ],
+    "rubricKind": "design",
     "topic": "System Design, Platform Architecture, and Economics",
     "week": 11,
     "number": 2,
@@ -1014,6 +1316,12 @@
   {
     "id": "general-11.3",
     "kind": "General",
+    "competencyTopics": [
+      "Databases",
+      "Reliability",
+      "System Design"
+    ],
+    "rubricKind": "debug",
     "topic": "System Design, Platform Architecture, and Economics",
     "week": 11,
     "number": 3,
@@ -1036,6 +1344,12 @@
   {
     "id": "general-11.4",
     "kind": "General",
+    "competencyTopics": [
+      "System Design",
+      "Leadership",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "communication",
     "topic": "System Design, Platform Architecture, and Economics",
     "week": 11,
     "number": 4,
@@ -1058,6 +1372,13 @@
   {
     "id": "general-21.1",
     "kind": "General",
+    "competencyTopics": [
+      "Java Fundamentals",
+      "Java & API",
+      "Reliability",
+      "System Design"
+    ],
+    "rubricKind": "coding",
     "topic": "System Design, Platform Architecture, and Economics",
     "week": 21,
     "number": 1,
@@ -1080,6 +1401,13 @@
   {
     "id": "general-21.2",
     "kind": "General",
+    "competencyTopics": [
+      "Java Fundamentals",
+      "Security",
+      "Cloud & Platform",
+      "System Design"
+    ],
+    "rubricKind": "design",
     "topic": "System Design, Platform Architecture, and Economics",
     "week": 21,
     "number": 2,
@@ -1102,6 +1430,11 @@
   {
     "id": "general-21.3",
     "kind": "General",
+    "competencyTopics": [
+      "Java Fundamentals",
+      "System Design"
+    ],
+    "rubricKind": "debug",
     "topic": "System Design, Platform Architecture, and Economics",
     "week": 21,
     "number": 3,
@@ -1124,6 +1457,12 @@
   {
     "id": "general-21.4",
     "kind": "General",
+    "competencyTopics": [
+      "Java & API",
+      "System Design",
+      "Leadership"
+    ],
+    "rubricKind": "communication",
     "topic": "System Design, Platform Architecture, and Economics",
     "week": 21,
     "number": 4,
@@ -1146,6 +1485,12 @@
   {
     "id": "general-22.1",
     "kind": "General",
+    "competencyTopics": [
+      "Databases",
+      "Security",
+      "System Design"
+    ],
+    "rubricKind": "coding",
     "topic": "System Design, Platform Architecture, and Economics",
     "week": 22,
     "number": 1,
@@ -1168,6 +1513,13 @@
   {
     "id": "general-22.2",
     "kind": "General",
+    "competencyTopics": [
+      "Databases",
+      "Security",
+      "Reliability",
+      "System Design"
+    ],
+    "rubricKind": "design",
     "topic": "System Design, Platform Architecture, and Economics",
     "week": 22,
     "number": 2,
@@ -1190,6 +1542,12 @@
   {
     "id": "general-22.3",
     "kind": "General",
+    "competencyTopics": [
+      "Cloud & Platform",
+      "Reliability",
+      "System Design"
+    ],
+    "rubricKind": "debug",
     "topic": "System Design, Platform Architecture, and Economics",
     "week": 22,
     "number": 3,
@@ -1212,6 +1570,13 @@
   {
     "id": "general-22.4",
     "kind": "General",
+    "competencyTopics": [
+      "Databases",
+      "System Design",
+      "Leadership",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "communication",
     "topic": "System Design, Platform Architecture, and Economics",
     "week": 22,
     "number": 4,
@@ -1234,6 +1599,10 @@
   {
     "id": "general-24.2",
     "kind": "General",
+    "competencyTopics": [
+      "System Design"
+    ],
+    "rubricKind": "design",
     "topic": "System Design, Platform Architecture, and Economics",
     "week": 24,
     "number": 2,
@@ -1256,6 +1625,12 @@
   {
     "id": "general-25.2",
     "kind": "General",
+    "competencyTopics": [
+      "Java & API",
+      "System Design",
+      "Leadership"
+    ],
+    "rubricKind": "design",
     "topic": "System Design, Platform Architecture, and Economics",
     "week": 25,
     "number": 2,
@@ -1278,6 +1653,10 @@
   {
     "id": "general-26.2",
     "kind": "General",
+    "competencyTopics": [
+      "System Design"
+    ],
+    "rubricKind": "design",
     "topic": "System Design, Platform Architecture, and Economics",
     "week": 26,
     "number": 2,
@@ -1300,6 +1679,13 @@
   {
     "id": "general-13.1",
     "kind": "General",
+    "competencyTopics": [
+      "Java Fundamentals",
+      "Java & API",
+      "Security",
+      "Cloud & Platform"
+    ],
+    "rubricKind": "coding",
     "topic": "Cloud Infrastructure, Kubernetes, and Terraform",
     "week": 13,
     "number": 1,
@@ -1322,6 +1708,10 @@
   {
     "id": "general-13.2",
     "kind": "General",
+    "competencyTopics": [
+      "Cloud & Platform"
+    ],
+    "rubricKind": "design",
     "topic": "Cloud Infrastructure, Kubernetes, and Terraform",
     "week": 13,
     "number": 2,
@@ -1344,6 +1734,12 @@
   {
     "id": "general-13.3",
     "kind": "General",
+    "competencyTopics": [
+      "Databases",
+      "Security",
+      "Cloud & Platform"
+    ],
+    "rubricKind": "debug",
     "topic": "Cloud Infrastructure, Kubernetes, and Terraform",
     "week": 13,
     "number": 3,
@@ -1366,6 +1762,12 @@
   {
     "id": "general-13.4",
     "kind": "General",
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Cloud & Platform",
+      "Leadership"
+    ],
+    "rubricKind": "communication",
     "topic": "Cloud Infrastructure, Kubernetes, and Terraform",
     "week": 13,
     "number": 4,
@@ -1388,6 +1790,11 @@
   {
     "id": "general-14.1",
     "kind": "General",
+    "competencyTopics": [
+      "Java Fundamentals",
+      "Cloud & Platform"
+    ],
+    "rubricKind": "coding",
     "topic": "Cloud Infrastructure, Kubernetes, and Terraform",
     "week": 14,
     "number": 1,
@@ -1410,6 +1817,14 @@
   {
     "id": "general-14.2",
     "kind": "General",
+    "competencyTopics": [
+      "Spring",
+      "Java Fundamentals",
+      "Java & API",
+      "Security",
+      "Cloud & Platform"
+    ],
+    "rubricKind": "design",
     "topic": "Cloud Infrastructure, Kubernetes, and Terraform",
     "week": 14,
     "number": 2,
@@ -1432,6 +1847,10 @@
   {
     "id": "general-14.3",
     "kind": "General",
+    "competencyTopics": [
+      "Cloud & Platform"
+    ],
+    "rubricKind": "debug",
     "topic": "Cloud Infrastructure, Kubernetes, and Terraform",
     "week": 14,
     "number": 3,
@@ -1454,6 +1873,11 @@
   {
     "id": "general-14.4",
     "kind": "General",
+    "competencyTopics": [
+      "Cloud & Platform",
+      "Leadership"
+    ],
+    "rubricKind": "communication",
     "topic": "Cloud Infrastructure, Kubernetes, and Terraform",
     "week": 14,
     "number": 4,
@@ -1476,6 +1900,11 @@
   {
     "id": "general-15.1",
     "kind": "General",
+    "competencyTopics": [
+      "Cloud & Platform",
+      "System Design"
+    ],
+    "rubricKind": "coding",
     "topic": "Cloud Infrastructure, Kubernetes, and Terraform",
     "week": 15,
     "number": 1,
@@ -1498,6 +1927,12 @@
   {
     "id": "general-15.2",
     "kind": "General",
+    "competencyTopics": [
+      "Java Fundamentals",
+      "Cloud & Platform",
+      "Reliability"
+    ],
+    "rubricKind": "design",
     "topic": "Cloud Infrastructure, Kubernetes, and Terraform",
     "week": 15,
     "number": 2,
@@ -1520,6 +1955,11 @@
   {
     "id": "general-15.3",
     "kind": "General",
+    "competencyTopics": [
+      "Security",
+      "Cloud & Platform"
+    ],
+    "rubricKind": "debug",
     "topic": "Cloud Infrastructure, Kubernetes, and Terraform",
     "week": 15,
     "number": 3,
@@ -1542,6 +1982,11 @@
   {
     "id": "general-15.4",
     "kind": "General",
+    "competencyTopics": [
+      "Cloud & Platform",
+      "Leadership"
+    ],
+    "rubricKind": "communication",
     "topic": "Cloud Infrastructure, Kubernetes, and Terraform",
     "week": 15,
     "number": 4,
@@ -1564,6 +2009,12 @@
   {
     "id": "general-16.1",
     "kind": "General",
+    "competencyTopics": [
+      "Java Fundamentals",
+      "Cloud & Platform",
+      "Reliability"
+    ],
+    "rubricKind": "coding",
     "topic": "Cloud Infrastructure, Kubernetes, and Terraform",
     "week": 16,
     "number": 1,
@@ -1586,6 +2037,12 @@
   {
     "id": "general-16.2",
     "kind": "General",
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Cloud & Platform",
+      "Leadership"
+    ],
+    "rubricKind": "design",
     "topic": "Cloud Infrastructure, Kubernetes, and Terraform",
     "week": 16,
     "number": 2,
@@ -1608,6 +2065,12 @@
   {
     "id": "general-16.3",
     "kind": "General",
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Databases",
+      "Cloud & Platform"
+    ],
+    "rubricKind": "debug",
     "topic": "Cloud Infrastructure, Kubernetes, and Terraform",
     "week": 16,
     "number": 3,
@@ -1630,6 +2093,11 @@
   {
     "id": "general-16.4",
     "kind": "General",
+    "competencyTopics": [
+      "Cloud & Platform",
+      "Leadership"
+    ],
+    "rubricKind": "communication",
     "topic": "Cloud Infrastructure, Kubernetes, and Terraform",
     "week": 16,
     "number": 4,
@@ -1652,6 +2120,11 @@
   {
     "id": "general-25.3",
     "kind": "General",
+    "competencyTopics": [
+      "Cloud & Platform",
+      "Reliability"
+    ],
+    "rubricKind": "design",
     "topic": "Cloud Infrastructure, Kubernetes, and Terraform",
     "week": 25,
     "number": 3,
@@ -1674,6 +2147,11 @@
   {
     "id": "general-17.1",
     "kind": "General",
+    "competencyTopics": [
+      "Java Fundamentals",
+      "Reliability"
+    ],
+    "rubricKind": "coding",
     "topic": "Reliability, Observability, and Incident Response",
     "week": 17,
     "number": 1,
@@ -1696,6 +2174,11 @@
   {
     "id": "general-17.2",
     "kind": "General",
+    "competencyTopics": [
+      "Java & API",
+      "Reliability"
+    ],
+    "rubricKind": "design",
     "topic": "Reliability, Observability, and Incident Response",
     "week": 17,
     "number": 2,
@@ -1718,6 +2201,12 @@
   {
     "id": "general-17.3",
     "kind": "General",
+    "competencyTopics": [
+      "Databases",
+      "Reliability",
+      "System Design"
+    ],
+    "rubricKind": "debug",
     "topic": "Reliability, Observability, and Incident Response",
     "week": 17,
     "number": 3,
@@ -1740,6 +2229,11 @@
   {
     "id": "general-17.4",
     "kind": "General",
+    "competencyTopics": [
+      "Reliability",
+      "Leadership"
+    ],
+    "rubricKind": "communication",
     "topic": "Reliability, Observability, and Incident Response",
     "week": 17,
     "number": 4,
@@ -1762,6 +2256,13 @@
   {
     "id": "general-19.1",
     "kind": "General",
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Java & API",
+      "Security",
+      "Reliability"
+    ],
+    "rubricKind": "coding",
     "topic": "Reliability, Observability, and Incident Response",
     "week": 19,
     "number": 1,
@@ -1784,6 +2285,14 @@
   {
     "id": "general-19.2",
     "kind": "General",
+    "competencyTopics": [
+      "Java Fundamentals",
+      "Java & API",
+      "Databases",
+      "Cloud & Platform",
+      "Reliability"
+    ],
+    "rubricKind": "design",
     "topic": "Reliability, Observability, and Incident Response",
     "week": 19,
     "number": 2,
@@ -1806,6 +2315,12 @@
   {
     "id": "general-19.3",
     "kind": "General",
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Java & API",
+      "Reliability"
+    ],
+    "rubricKind": "debug",
     "topic": "Reliability, Observability, and Incident Response",
     "week": 19,
     "number": 3,
@@ -1828,6 +2343,11 @@
   {
     "id": "general-19.4",
     "kind": "General",
+    "competencyTopics": [
+      "Reliability",
+      "Leadership"
+    ],
+    "rubricKind": "debug",
     "topic": "Reliability, Observability, and Incident Response",
     "week": 19,
     "number": 4,
@@ -1850,6 +2370,15 @@
   {
     "id": "general-24.3",
     "kind": "General",
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Databases",
+      "Security",
+      "Cloud & Platform",
+      "Reliability",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "debug",
     "topic": "Reliability, Observability, and Incident Response",
     "week": 24,
     "number": 3,
@@ -1872,6 +2401,12 @@
   {
     "id": "general-26.3",
     "kind": "General",
+    "competencyTopics": [
+      "Databases",
+      "Reliability",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "debug",
     "topic": "Reliability, Observability, and Incident Response",
     "week": 26,
     "number": 3,
@@ -1894,6 +2429,10 @@
   {
     "id": "general-12.1",
     "kind": "General",
+    "competencyTopics": [
+      "Java Fundamentals"
+    ],
+    "rubricKind": "coding",
     "topic": "DSA and Coding Interviews",
     "week": 12,
     "number": 1,
@@ -1916,6 +2455,10 @@
   {
     "id": "general-20.1",
     "kind": "General",
+    "competencyTopics": [
+      "System Design"
+    ],
+    "rubricKind": "coding",
     "topic": "DSA and Coding Interviews",
     "week": 20,
     "number": 1,
@@ -1938,6 +2481,11 @@
   {
     "id": "general-20.2",
     "kind": "General",
+    "competencyTopics": [
+      "Java Fundamentals",
+      "Security"
+    ],
+    "rubricKind": "design",
     "topic": "DSA and Coding Interviews",
     "week": 20,
     "number": 2,
@@ -1960,6 +2508,10 @@
   {
     "id": "general-20.3",
     "kind": "General",
+    "competencyTopics": [
+      "System Design"
+    ],
+    "rubricKind": "debug",
     "topic": "DSA and Coding Interviews",
     "week": 20,
     "number": 3,
@@ -1982,6 +2534,10 @@
   {
     "id": "general-20.4",
     "kind": "General",
+    "competencyTopics": [
+      "Leadership"
+    ],
+    "rubricKind": "communication",
     "topic": "DSA and Coding Interviews",
     "week": 20,
     "number": 4,
@@ -2004,6 +2560,10 @@
   {
     "id": "general-24.1",
     "kind": "General",
+    "competencyTopics": [
+      "System Design"
+    ],
+    "rubricKind": "coding",
     "topic": "DSA and Coding Interviews",
     "week": 24,
     "number": 1,
@@ -2026,6 +2586,10 @@
   {
     "id": "general-25.1",
     "kind": "General",
+    "competencyTopics": [
+      "Java Fundamentals"
+    ],
+    "rubricKind": "coding",
     "topic": "DSA and Coding Interviews",
     "week": 25,
     "number": 1,
@@ -2048,6 +2612,10 @@
   {
     "id": "general-26.1",
     "kind": "General",
+    "competencyTopics": [
+      "System Design"
+    ],
+    "rubricKind": "coding",
     "topic": "DSA and Coding Interviews",
     "week": 26,
     "number": 1,
@@ -2070,6 +2638,10 @@
   {
     "id": "general-12.2",
     "kind": "General",
+    "competencyTopics": [
+      "Leadership"
+    ],
+    "rubricKind": "design",
     "topic": "Staff Leadership and Mock Interview Loops",
     "week": 12,
     "number": 2,
@@ -2092,6 +2664,14 @@
   {
     "id": "general-12.3",
     "kind": "General",
+    "competencyTopics": [
+      "Java Fundamentals",
+      "Databases",
+      "Cloud & Platform",
+      "Reliability",
+      "Leadership"
+    ],
+    "rubricKind": "debug",
     "topic": "Staff Leadership and Mock Interview Loops",
     "week": 12,
     "number": 3,
@@ -2114,6 +2694,11 @@
   {
     "id": "general-12.4",
     "kind": "General",
+    "competencyTopics": [
+      "Leadership",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "communication",
     "topic": "Staff Leadership and Mock Interview Loops",
     "week": 12,
     "number": 4,
@@ -2136,6 +2721,15 @@
   {
     "id": "general-23.1",
     "kind": "General",
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Java Fundamentals",
+      "Databases",
+      "Security",
+      "Reliability",
+      "Leadership"
+    ],
+    "rubricKind": "coding",
     "topic": "Staff Leadership and Mock Interview Loops",
     "week": 23,
     "number": 1,
@@ -2158,6 +2752,12 @@
   {
     "id": "general-23.2",
     "kind": "General",
+    "competencyTopics": [
+      "Reliability",
+      "System Design",
+      "Leadership"
+    ],
+    "rubricKind": "design",
     "topic": "Staff Leadership and Mock Interview Loops",
     "week": 23,
     "number": 2,
@@ -2180,6 +2780,12 @@
   {
     "id": "general-23.3",
     "kind": "General",
+    "competencyTopics": [
+      "Java & API",
+      "Leadership",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "debug",
     "topic": "Staff Leadership and Mock Interview Loops",
     "week": 23,
     "number": 3,
@@ -2202,6 +2808,12 @@
   {
     "id": "general-23.4",
     "kind": "General",
+    "competencyTopics": [
+      "System Design",
+      "Leadership",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "communication",
     "topic": "Staff Leadership and Mock Interview Loops",
     "week": 23,
     "number": 4,
@@ -2224,6 +2836,11 @@
   {
     "id": "general-24.4",
     "kind": "General",
+    "competencyTopics": [
+      "Leadership",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "communication",
     "topic": "Staff Leadership and Mock Interview Loops",
     "week": 24,
     "number": 4,
@@ -2246,6 +2863,11 @@
   {
     "id": "general-25.4",
     "kind": "General",
+    "competencyTopics": [
+      "System Design",
+      "Leadership"
+    ],
+    "rubricKind": "communication",
     "topic": "Staff Leadership and Mock Interview Loops",
     "week": 25,
     "number": 4,
@@ -2268,6 +2890,10 @@
   {
     "id": "general-26.4",
     "kind": "General",
+    "competencyTopics": [
+      "Leadership"
+    ],
+    "rubricKind": "communication",
     "topic": "Staff Leadership and Mock Interview Loops",
     "week": 26,
     "number": 4,
@@ -2290,6 +2916,10 @@
   {
     "id": "dsa-1.1",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Arrays, Hashing, Prefix Sums, and Windows",
     "week": 1,
     "number": 1,
@@ -2322,6 +2952,10 @@
   {
     "id": "dsa-1.2",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Arrays, Hashing, Prefix Sums, and Windows",
     "week": 1,
     "number": 2,
@@ -2354,6 +2988,10 @@
   {
     "id": "dsa-1.3",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Arrays, Hashing, Prefix Sums, and Windows",
     "week": 1,
     "number": 3,
@@ -2386,6 +3024,10 @@
   {
     "id": "dsa-1.4",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Arrays, Hashing, Prefix Sums, and Windows",
     "week": 1,
     "number": 4,
@@ -2413,6 +3055,10 @@
   {
     "id": "dsa-2.1",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Arrays, Hashing, Prefix Sums, and Windows",
     "week": 2,
     "number": 1,
@@ -2445,6 +3091,10 @@
   {
     "id": "dsa-2.2",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Arrays, Hashing, Prefix Sums, and Windows",
     "week": 2,
     "number": 2,
@@ -2477,6 +3127,10 @@
   {
     "id": "dsa-2.3",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Arrays, Hashing, Prefix Sums, and Windows",
     "week": 2,
     "number": 3,
@@ -2509,6 +3163,10 @@
   {
     "id": "dsa-2.4",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Arrays, Hashing, Prefix Sums, and Windows",
     "week": 2,
     "number": 4,
@@ -2536,6 +3194,10 @@
   {
     "id": "dsa-3.1",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Arrays, Hashing, Prefix Sums, and Windows",
     "week": 3,
     "number": 1,
@@ -2568,6 +3230,10 @@
   {
     "id": "dsa-3.2",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Arrays, Hashing, Prefix Sums, and Windows",
     "week": 3,
     "number": 2,
@@ -2600,6 +3266,10 @@
   {
     "id": "dsa-3.3",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Arrays, Hashing, Prefix Sums, and Windows",
     "week": 3,
     "number": 3,
@@ -2632,6 +3302,10 @@
   {
     "id": "dsa-3.4",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Arrays, Hashing, Prefix Sums, and Windows",
     "week": 3,
     "number": 4,
@@ -2659,6 +3333,10 @@
   {
     "id": "dsa-4.1",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Arrays, Hashing, Prefix Sums, and Windows",
     "week": 4,
     "number": 1,
@@ -2691,6 +3369,10 @@
   {
     "id": "dsa-4.2",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Arrays, Hashing, Prefix Sums, and Windows",
     "week": 4,
     "number": 2,
@@ -2723,6 +3405,10 @@
   {
     "id": "dsa-4.3",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Arrays, Hashing, Prefix Sums, and Windows",
     "week": 4,
     "number": 3,
@@ -2755,6 +3441,10 @@
   {
     "id": "dsa-4.4",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Arrays, Hashing, Prefix Sums, and Windows",
     "week": 4,
     "number": 4,
@@ -2782,6 +3472,10 @@
   {
     "id": "dsa-5.1",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Linear Structures, Search, Intervals, Heaps, and Sorting",
     "week": 5,
     "number": 1,
@@ -2814,6 +3508,10 @@
   {
     "id": "dsa-5.2",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Linear Structures, Search, Intervals, Heaps, and Sorting",
     "week": 5,
     "number": 2,
@@ -2846,6 +3544,10 @@
   {
     "id": "dsa-5.3",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Linear Structures, Search, Intervals, Heaps, and Sorting",
     "week": 5,
     "number": 3,
@@ -2878,6 +3580,10 @@
   {
     "id": "dsa-5.4",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Linear Structures, Search, Intervals, Heaps, and Sorting",
     "week": 5,
     "number": 4,
@@ -2905,6 +3611,10 @@
   {
     "id": "dsa-6.1",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Linear Structures, Search, Intervals, Heaps, and Sorting",
     "week": 6,
     "number": 1,
@@ -2937,6 +3647,10 @@
   {
     "id": "dsa-6.2",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Linear Structures, Search, Intervals, Heaps, and Sorting",
     "week": 6,
     "number": 2,
@@ -2969,6 +3683,10 @@
   {
     "id": "dsa-6.3",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Linear Structures, Search, Intervals, Heaps, and Sorting",
     "week": 6,
     "number": 3,
@@ -3001,6 +3719,10 @@
   {
     "id": "dsa-6.4",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Linear Structures, Search, Intervals, Heaps, and Sorting",
     "week": 6,
     "number": 4,
@@ -3028,6 +3750,10 @@
   {
     "id": "dsa-7.1",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Linear Structures, Search, Intervals, Heaps, and Sorting",
     "week": 7,
     "number": 1,
@@ -3060,6 +3786,10 @@
   {
     "id": "dsa-7.2",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Linear Structures, Search, Intervals, Heaps, and Sorting",
     "week": 7,
     "number": 2,
@@ -3092,6 +3822,10 @@
   {
     "id": "dsa-7.3",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Linear Structures, Search, Intervals, Heaps, and Sorting",
     "week": 7,
     "number": 3,
@@ -3124,6 +3858,10 @@
   {
     "id": "dsa-7.4",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Linear Structures, Search, Intervals, Heaps, and Sorting",
     "week": 7,
     "number": 4,
@@ -3151,6 +3889,10 @@
   {
     "id": "dsa-8.1",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Linear Structures, Search, Intervals, Heaps, and Sorting",
     "week": 8,
     "number": 1,
@@ -3183,6 +3925,10 @@
   {
     "id": "dsa-8.2",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Linear Structures, Search, Intervals, Heaps, and Sorting",
     "week": 8,
     "number": 2,
@@ -3215,6 +3961,10 @@
   {
     "id": "dsa-8.3",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Linear Structures, Search, Intervals, Heaps, and Sorting",
     "week": 8,
     "number": 3,
@@ -3247,6 +3997,10 @@
   {
     "id": "dsa-8.4",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Linear Structures, Search, Intervals, Heaps, and Sorting",
     "week": 8,
     "number": 4,
@@ -3279,6 +4033,10 @@
   {
     "id": "dsa-9.1",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Linear Structures, Search, Intervals, Heaps, and Sorting",
     "week": 9,
     "number": 1,
@@ -3311,6 +4069,10 @@
   {
     "id": "dsa-9.2",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Linear Structures, Search, Intervals, Heaps, and Sorting",
     "week": 9,
     "number": 2,
@@ -3343,6 +4105,10 @@
   {
     "id": "dsa-9.3",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Linear Structures, Search, Intervals, Heaps, and Sorting",
     "week": 9,
     "number": 3,
@@ -3375,6 +4141,10 @@
   {
     "id": "dsa-9.4",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Linear Structures, Search, Intervals, Heaps, and Sorting",
     "week": 9,
     "number": 4,
@@ -3402,6 +4172,10 @@
   {
     "id": "dsa-10.1",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Linear Structures, Search, Intervals, Heaps, and Sorting",
     "week": 10,
     "number": 1,
@@ -3434,6 +4208,10 @@
   {
     "id": "dsa-10.2",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Linear Structures, Search, Intervals, Heaps, and Sorting",
     "week": 10,
     "number": 2,
@@ -3466,6 +4244,10 @@
   {
     "id": "dsa-10.3",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Linear Structures, Search, Intervals, Heaps, and Sorting",
     "week": 10,
     "number": 3,
@@ -3498,6 +4280,10 @@
   {
     "id": "dsa-10.4",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Linear Structures, Search, Intervals, Heaps, and Sorting",
     "week": 10,
     "number": 4,
@@ -3530,6 +4316,10 @@
   {
     "id": "dsa-11.1",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Trees, BSTs, and Tries",
     "week": 11,
     "number": 1,
@@ -3562,6 +4352,10 @@
   {
     "id": "dsa-11.2",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Trees, BSTs, and Tries",
     "week": 11,
     "number": 2,
@@ -3594,6 +4388,10 @@
   {
     "id": "dsa-11.3",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Trees, BSTs, and Tries",
     "week": 11,
     "number": 3,
@@ -3626,6 +4424,10 @@
   {
     "id": "dsa-11.4",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Trees, BSTs, and Tries",
     "week": 11,
     "number": 4,
@@ -3653,6 +4455,10 @@
   {
     "id": "dsa-12.1",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Trees, BSTs, and Tries",
     "week": 12,
     "number": 1,
@@ -3685,6 +4491,10 @@
   {
     "id": "dsa-12.2",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Trees, BSTs, and Tries",
     "week": 12,
     "number": 2,
@@ -3717,6 +4527,10 @@
   {
     "id": "dsa-12.3",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Trees, BSTs, and Tries",
     "week": 12,
     "number": 3,
@@ -3749,6 +4563,10 @@
   {
     "id": "dsa-12.4",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Trees, BSTs, and Tries",
     "week": 12,
     "number": 4,
@@ -3781,6 +4599,10 @@
   {
     "id": "dsa-13.1",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Trees, BSTs, and Tries",
     "week": 13,
     "number": 1,
@@ -3813,6 +4635,10 @@
   {
     "id": "dsa-13.2",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Trees, BSTs, and Tries",
     "week": 13,
     "number": 2,
@@ -3845,6 +4671,10 @@
   {
     "id": "dsa-13.3",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Trees, BSTs, and Tries",
     "week": 13,
     "number": 3,
@@ -3877,6 +4707,10 @@
   {
     "id": "dsa-13.4",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Trees, BSTs, and Tries",
     "week": 13,
     "number": 4,
@@ -3904,6 +4738,10 @@
   {
     "id": "dsa-14.1",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Graphs, Connectivity, and Shortest Paths",
     "week": 14,
     "number": 1,
@@ -3936,6 +4774,10 @@
   {
     "id": "dsa-14.2",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Graphs, Connectivity, and Shortest Paths",
     "week": 14,
     "number": 2,
@@ -3968,6 +4810,10 @@
   {
     "id": "dsa-14.3",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Graphs, Connectivity, and Shortest Paths",
     "week": 14,
     "number": 3,
@@ -4000,6 +4846,10 @@
   {
     "id": "dsa-14.4",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Graphs, Connectivity, and Shortest Paths",
     "week": 14,
     "number": 4,
@@ -4027,6 +4877,10 @@
   {
     "id": "dsa-15.1",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Graphs, Connectivity, and Shortest Paths",
     "week": 15,
     "number": 1,
@@ -4059,6 +4913,10 @@
   {
     "id": "dsa-15.2",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Graphs, Connectivity, and Shortest Paths",
     "week": 15,
     "number": 2,
@@ -4091,6 +4949,10 @@
   {
     "id": "dsa-15.3",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Graphs, Connectivity, and Shortest Paths",
     "week": 15,
     "number": 3,
@@ -4123,6 +4985,10 @@
   {
     "id": "dsa-15.4",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Graphs, Connectivity, and Shortest Paths",
     "week": 15,
     "number": 4,
@@ -4156,6 +5022,10 @@
   {
     "id": "dsa-16.1",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Graphs, Connectivity, and Shortest Paths",
     "week": 16,
     "number": 1,
@@ -4188,6 +5058,10 @@
   {
     "id": "dsa-16.2",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Graphs, Connectivity, and Shortest Paths",
     "week": 16,
     "number": 2,
@@ -4220,6 +5094,10 @@
   {
     "id": "dsa-16.3",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Graphs, Connectivity, and Shortest Paths",
     "week": 16,
     "number": 3,
@@ -4252,6 +5130,10 @@
   {
     "id": "dsa-16.4",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Graphs, Connectivity, and Shortest Paths",
     "week": 16,
     "number": 4,
@@ -4284,6 +5166,10 @@
   {
     "id": "dsa-17.1",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Graphs, Connectivity, and Shortest Paths",
     "week": 17,
     "number": 1,
@@ -4316,6 +5202,10 @@
   {
     "id": "dsa-17.2",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Graphs, Connectivity, and Shortest Paths",
     "week": 17,
     "number": 2,
@@ -4348,6 +5238,10 @@
   {
     "id": "dsa-17.3",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Graphs, Connectivity, and Shortest Paths",
     "week": 17,
     "number": 3,
@@ -4380,6 +5274,10 @@
   {
     "id": "dsa-17.4",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Graphs, Connectivity, and Shortest Paths",
     "week": 17,
     "number": 4,
@@ -4413,6 +5311,10 @@
   {
     "id": "dsa-18.1",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Backtracking and Dynamic Programming",
     "week": 18,
     "number": 1,
@@ -4445,6 +5347,10 @@
   {
     "id": "dsa-18.2",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Backtracking and Dynamic Programming",
     "week": 18,
     "number": 2,
@@ -4477,6 +5383,10 @@
   {
     "id": "dsa-18.3",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Backtracking and Dynamic Programming",
     "week": 18,
     "number": 3,
@@ -4509,6 +5419,10 @@
   {
     "id": "dsa-18.4",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Backtracking and Dynamic Programming",
     "week": 18,
     "number": 4,
@@ -4541,6 +5455,10 @@
   {
     "id": "dsa-19.1",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Backtracking and Dynamic Programming",
     "week": 19,
     "number": 1,
@@ -4573,6 +5491,10 @@
   {
     "id": "dsa-19.2",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Backtracking and Dynamic Programming",
     "week": 19,
     "number": 2,
@@ -4605,6 +5527,10 @@
   {
     "id": "dsa-19.3",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Backtracking and Dynamic Programming",
     "week": 19,
     "number": 3,
@@ -4637,6 +5563,10 @@
   {
     "id": "dsa-19.4",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Backtracking and Dynamic Programming",
     "week": 19,
     "number": 4,
@@ -4670,6 +5600,10 @@
   {
     "id": "dsa-20.1",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Backtracking and Dynamic Programming",
     "week": 20,
     "number": 1,
@@ -4702,6 +5636,10 @@
   {
     "id": "dsa-20.2",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Backtracking and Dynamic Programming",
     "week": 20,
     "number": 2,
@@ -4734,6 +5672,10 @@
   {
     "id": "dsa-20.3",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Backtracking and Dynamic Programming",
     "week": 20,
     "number": 3,
@@ -4766,6 +5708,10 @@
   {
     "id": "dsa-20.4",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Backtracking and Dynamic Programming",
     "week": 20,
     "number": 4,
@@ -4798,6 +5744,10 @@
   {
     "id": "dsa-21.1",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Backtracking and Dynamic Programming",
     "week": 21,
     "number": 1,
@@ -4830,6 +5780,10 @@
   {
     "id": "dsa-21.2",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Backtracking and Dynamic Programming",
     "week": 21,
     "number": 2,
@@ -4862,6 +5816,10 @@
   {
     "id": "dsa-21.3",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Backtracking and Dynamic Programming",
     "week": 21,
     "number": 3,
@@ -4894,6 +5852,10 @@
   {
     "id": "dsa-21.4",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Backtracking and Dynamic Programming",
     "week": 21,
     "number": 4,
@@ -4927,6 +5889,10 @@
   {
     "id": "dsa-22.1",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Greedy, Bits, and Advanced Range Structures",
     "week": 22,
     "number": 1,
@@ -4959,6 +5925,10 @@
   {
     "id": "dsa-22.2",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Greedy, Bits, and Advanced Range Structures",
     "week": 22,
     "number": 2,
@@ -4991,6 +5961,10 @@
   {
     "id": "dsa-22.3",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Greedy, Bits, and Advanced Range Structures",
     "week": 22,
     "number": 3,
@@ -5023,6 +5997,10 @@
   {
     "id": "dsa-22.4",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Greedy, Bits, and Advanced Range Structures",
     "week": 22,
     "number": 4,
@@ -5055,6 +6033,10 @@
   {
     "id": "dsa-23.1",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Greedy, Bits, and Advanced Range Structures",
     "week": 23,
     "number": 1,
@@ -5087,6 +6069,10 @@
   {
     "id": "dsa-23.2",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Greedy, Bits, and Advanced Range Structures",
     "week": 23,
     "number": 2,
@@ -5119,6 +6105,10 @@
   {
     "id": "dsa-23.3",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Greedy, Bits, and Advanced Range Structures",
     "week": 23,
     "number": 3,
@@ -5151,6 +6141,10 @@
   {
     "id": "dsa-23.4",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Greedy, Bits, and Advanced Range Structures",
     "week": 23,
     "number": 4,
@@ -5183,6 +6177,10 @@
   {
     "id": "dsa-24.1",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Greedy, Bits, and Advanced Range Structures",
     "week": 24,
     "number": 1,
@@ -5215,6 +6213,10 @@
   {
     "id": "dsa-24.2",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Greedy, Bits, and Advanced Range Structures",
     "week": 24,
     "number": 2,
@@ -5247,6 +6249,10 @@
   {
     "id": "dsa-24.3",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Greedy, Bits, and Advanced Range Structures",
     "week": 24,
     "number": 3,
@@ -5279,6 +6285,10 @@
   {
     "id": "dsa-24.4",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Greedy, Bits, and Advanced Range Structures",
     "week": 24,
     "number": 4,
@@ -5311,6 +6321,10 @@
   {
     "id": "dsa-25.1",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Mixed Coding Mocks and Final Calibration",
     "week": 25,
     "number": 1,
@@ -5344,6 +6358,10 @@
   {
     "id": "dsa-25.2",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Mixed Coding Mocks and Final Calibration",
     "week": 25,
     "number": 2,
@@ -5376,6 +6394,10 @@
   {
     "id": "dsa-25.3",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Mixed Coding Mocks and Final Calibration",
     "week": 25,
     "number": 3,
@@ -5408,6 +6430,10 @@
   {
     "id": "dsa-25.4",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Mixed Coding Mocks and Final Calibration",
     "week": 25,
     "number": 4,
@@ -5440,6 +6466,10 @@
   {
     "id": "dsa-26.1",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Mixed Coding Mocks and Final Calibration",
     "week": 26,
     "number": 1,
@@ -5473,6 +6503,10 @@
   {
     "id": "dsa-26.2",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Mixed Coding Mocks and Final Calibration",
     "week": 26,
     "number": 2,
@@ -5505,6 +6539,10 @@
   {
     "id": "dsa-26.3",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Mixed Coding Mocks and Final Calibration",
     "week": 26,
     "number": 3,
@@ -5537,6 +6575,10 @@
   {
     "id": "dsa-26.4",
     "kind": "DSA",
+    "competencyTopics": [
+      "DSA"
+    ],
+    "rubricKind": null,
     "topic": "Mixed Coding Mocks and Final Calibration",
     "week": 26,
     "number": 4,
@@ -5570,6 +6612,11 @@
     "id": "go-1",
     "kind": "General",
     "contentTrack": "go",
+    "competencyTopics": [
+      "Go Fundamentals",
+      "Go APIs & Services"
+    ],
+    "rubricKind": "coding",
     "topic": "Go Foundations and Services",
     "week": 1,
     "number": 1,
@@ -5593,6 +6640,10 @@
     "id": "go-2",
     "kind": "General",
     "contentTrack": "go",
+    "competencyTopics": [
+      "Go Concurrency & Runtime"
+    ],
+    "rubricKind": "debug",
     "topic": "Go Foundations and Services",
     "week": 1,
     "number": 2,
@@ -5616,6 +6667,10 @@
     "id": "go-3",
     "kind": "General",
     "contentTrack": "go",
+    "competencyTopics": [
+      "Go Concurrency & Runtime"
+    ],
+    "rubricKind": "design",
     "topic": "Go Foundations and Services",
     "week": 1,
     "number": 3,
@@ -5639,6 +6694,11 @@
     "id": "go-4",
     "kind": "General",
     "contentTrack": "go",
+    "competencyTopics": [
+      "Go Service Architecture",
+      "Go Fundamentals"
+    ],
+    "rubricKind": "communication",
     "topic": "Go Foundations and Services",
     "week": 1,
     "number": 4,
@@ -5662,6 +6722,12 @@
     "id": "go-5",
     "kind": "General",
     "contentTrack": "go",
+    "competencyTopics": [
+      "Go Concurrency & Runtime",
+      "Go APIs & Services",
+      "Go Fundamentals"
+    ],
+    "rubricKind": "coding",
     "topic": "Go Concurrency and Ownership",
     "week": 2,
     "number": 1,
@@ -5685,6 +6751,10 @@
     "id": "go-6",
     "kind": "General",
     "contentTrack": "go",
+    "competencyTopics": [
+      "Go Concurrency & Runtime"
+    ],
+    "rubricKind": "design",
     "topic": "Go Concurrency and Ownership",
     "week": 2,
     "number": 2,
@@ -5708,6 +6778,11 @@
     "id": "go-7",
     "kind": "General",
     "contentTrack": "go",
+    "competencyTopics": [
+      "Go Concurrency & Runtime",
+      "Go APIs & Services"
+    ],
+    "rubricKind": "debug",
     "topic": "Go Concurrency and Ownership",
     "week": 2,
     "number": 3,
@@ -5731,6 +6806,10 @@
     "id": "go-8",
     "kind": "General",
     "contentTrack": "go",
+    "competencyTopics": [
+      "Go Concurrency & Runtime"
+    ],
+    "rubricKind": "coding",
     "topic": "Go Concurrency and Ownership",
     "week": 2,
     "number": 4,
@@ -5754,6 +6833,11 @@
     "id": "go-9",
     "kind": "General",
     "contentTrack": "go",
+    "competencyTopics": [
+      "Go Fundamentals",
+      "Go APIs & Services"
+    ],
+    "rubricKind": "design",
     "topic": "Go Production Operations and Staff Practice",
     "week": 3,
     "number": 1,
@@ -5777,6 +6861,10 @@
     "id": "go-10",
     "kind": "General",
     "contentTrack": "go",
+    "competencyTopics": [
+      "Go Concurrency & Runtime"
+    ],
+    "rubricKind": "debug",
     "topic": "Go Production Operations and Staff Practice",
     "week": 3,
     "number": 2,
@@ -5800,6 +6888,11 @@
     "id": "go-11",
     "kind": "General",
     "contentTrack": "go",
+    "competencyTopics": [
+      "Go Fundamentals",
+      "Go APIs & Services"
+    ],
+    "rubricKind": "design",
     "topic": "Go Production Operations and Staff Practice",
     "week": 3,
     "number": 3,
@@ -5823,6 +6916,11 @@
     "id": "go-12",
     "kind": "General",
     "contentTrack": "go",
+    "competencyTopics": [
+      "Go Fundamentals",
+      "Go APIs & Services"
+    ],
+    "rubricKind": "communication",
     "topic": "Go Production Operations and Staff Practice",
     "week": 3,
     "number": 4,
@@ -5846,6 +6944,14 @@
     "id": "java-testing-dependencies",
     "kind": "General",
     "contentTrack": "java",
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Java Fundamentals",
+      "Java & API",
+      "Cloud & Platform",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "coding",
     "topic": "Staff Scenarios",
     "week": 4,
     "number": 4,
@@ -5869,6 +6975,10 @@
     "id": "go-testing-dependencies",
     "kind": "General",
     "contentTrack": "go",
+    "competencyTopics": [
+      "Go Fundamentals"
+    ],
+    "rubricKind": "coding",
     "topic": "Staff Scenarios",
     "week": 4,
     "number": 4,
@@ -5892,6 +7002,12 @@
     "id": "staff-quality-gates",
     "kind": "General",
     "contentTrack": null,
+    "competencyTopics": [
+      "Reliability",
+      "Leadership",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "communication",
     "topic": "Staff Scenarios",
     "week": 4,
     "number": 4,
@@ -5915,6 +7031,14 @@
     "id": "java-runtime-diagnostics",
     "kind": "General",
     "contentTrack": "java",
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Java Fundamentals",
+      "Reliability",
+      "System Design",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "coding",
     "topic": "Staff Scenarios",
     "week": 4,
     "number": 4,
@@ -5938,6 +7062,10 @@
     "id": "go-runtime-diagnostics",
     "kind": "General",
     "contentTrack": "go",
+    "competencyTopics": [
+      "Go Concurrency & Runtime"
+    ],
+    "rubricKind": "coding",
     "topic": "Staff Scenarios",
     "week": 4,
     "number": 4,
@@ -5961,6 +7089,11 @@
     "id": "staff-runtime-incident",
     "kind": "General",
     "contentTrack": null,
+    "competencyTopics": [
+      "Reliability",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "debug",
     "topic": "Staff Scenarios",
     "week": 4,
     "number": 4,
@@ -5984,6 +7117,13 @@
     "id": "java-client-practice",
     "kind": "General",
     "contentTrack": "java",
+    "competencyTopics": [
+      "Java Fundamentals",
+      "Java & API",
+      "Reliability",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "design",
     "topic": "Staff Scenarios",
     "week": 4,
     "number": 4,
@@ -6007,6 +7147,10 @@
     "id": "go-client-practice",
     "kind": "General",
     "contentTrack": "go",
+    "competencyTopics": [
+      "Go Fundamentals"
+    ],
+    "rubricKind": "design",
     "topic": "Staff Scenarios",
     "week": 4,
     "number": 4,
@@ -6030,6 +7174,13 @@
     "id": "java-database-practice",
     "kind": "General",
     "contentTrack": "java",
+    "competencyTopics": [
+      "Java Fundamentals",
+      "Databases",
+      "Reliability",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "debug",
     "topic": "Staff Scenarios",
     "week": 4,
     "number": 4,
@@ -6053,6 +7204,11 @@
     "id": "go-database-practice",
     "kind": "General",
     "contentTrack": "go",
+    "competencyTopics": [
+      "Go Fundamentals",
+      "Go APIs & Services"
+    ],
+    "rubricKind": "debug",
     "topic": "Staff Scenarios",
     "week": 4,
     "number": 4,
@@ -6076,6 +7232,12 @@
     "id": "java-security-practice",
     "kind": "General",
     "contentTrack": "java",
+    "competencyTopics": [
+      "Java Fundamentals",
+      "Security",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "design",
     "topic": "Staff Scenarios",
     "week": 4,
     "number": 4,
@@ -6099,6 +7261,10 @@
     "id": "go-security-practice",
     "kind": "General",
     "contentTrack": "go",
+    "competencyTopics": [
+      "Go Service Architecture"
+    ],
+    "rubricKind": "design",
     "topic": "Staff Scenarios",
     "week": 4,
     "number": 4,
@@ -6122,6 +7288,13 @@
     "id": "java-platform-practice",
     "kind": "General",
     "contentTrack": "java",
+    "competencyTopics": [
+      "Java Fundamentals",
+      "Cloud & Platform",
+      "Reliability",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "debug",
     "topic": "Staff Scenarios",
     "week": 4,
     "number": 4,
@@ -6145,6 +7318,10 @@
     "id": "go-platform-practice",
     "kind": "General",
     "contentTrack": "go",
+    "competencyTopics": [
+      "Go Concurrency & Runtime"
+    ],
+    "rubricKind": "debug",
     "topic": "Staff Scenarios",
     "week": 4,
     "number": 4,
@@ -6168,6 +7345,14 @@
     "id": "java-overload-practice",
     "kind": "General",
     "contentTrack": "java",
+    "competencyTopics": [
+      "JVM & Concurrency",
+      "Java Fundamentals",
+      "Java & API",
+      "System Design",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "design",
     "topic": "Staff Scenarios",
     "week": 4,
     "number": 4,
@@ -6191,6 +7376,11 @@
     "id": "go-overload-practice",
     "kind": "General",
     "contentTrack": "go",
+    "competencyTopics": [
+      "Go Concurrency & Runtime",
+      "Go APIs & Services"
+    ],
+    "rubricKind": "design",
     "topic": "Staff Scenarios",
     "week": 4,
     "number": 4,
@@ -6214,6 +7404,13 @@
     "id": "staff-language-transfer",
     "kind": "General",
     "contentTrack": null,
+    "competencyTopics": [
+      "Java Fundamentals",
+      "Java & API",
+      "Databases",
+      "Staff Scenarios"
+    ],
+    "rubricKind": "communication",
     "topic": "Staff Scenarios",
     "week": 4,
     "number": 4,
@@ -6237,6 +7434,12 @@
     "id": "go-architecture-composition",
     "kind": "General",
     "contentTrack": "go",
+    "competencyTopics": [
+      "Go Service Architecture",
+      "Go APIs & Services",
+      "Go Fundamentals"
+    ],
+    "rubricKind": "design",
     "topic": "Staff Scenarios",
     "week": 4,
     "number": 4,
@@ -6260,6 +7463,11 @@
     "id": "go-architecture-migration",
     "kind": "General",
     "contentTrack": "go",
+    "competencyTopics": [
+      "Go Service Architecture",
+      "Go Fundamentals"
+    ],
+    "rubricKind": "design",
     "topic": "Staff Scenarios",
     "week": 4,
     "number": 4,
@@ -6283,6 +7491,10 @@
     "id": "go-architecture-operations",
     "kind": "General",
     "contentTrack": "go",
+    "competencyTopics": [
+      "Go APIs & Services"
+    ],
+    "rubricKind": "debug",
     "topic": "Staff Scenarios",
     "week": 4,
     "number": 4,
