@@ -382,24 +382,42 @@ struct PracticeView: View {
     }
 }
 
+private enum PracticeSubmissionState: Equatable {
+    case idle
+    case validationFailure(String)
+    case submitting
+    case submitted
+}
+
 private struct PracticeDetail: View {
     @EnvironmentObject private var model: AppModel
     let item: PracticeItem
+    let record: PracticeRecord?
     let track: LanguageTrack
     let scrollsInternally: Bool
-    @State private var status: PracticeStatus
     @State private var score: Int?
     @State private var notes: String
+    @State private var draftArtifact: String
+    @State private var satisfiedCriterionIDs: Set<String>
+    @State private var submissionState = PracticeSubmissionState.idle
+    @State private var isDirty = false
     @State private var guideOpen = false
     @State private var modelAnswerOpen = false
+    @AccessibilityFocusState private var validationFocused: Bool
 
     init(item: PracticeItem, record: PracticeRecord?, track: LanguageTrack, scrollsInternally: Bool) {
         self.item = item
+        self.record = record
         self.track = track
         self.scrollsInternally = scrollsInternally
-        _status = State(initialValue: record?.status ?? .notStarted)
+        let validCriterionIDs = Set(item.completionCriteria.map(\.id))
+        let selectedCriterionIDs = Set(
+            (record?.draftSatisfiedCriterionIDs ?? []).filter(validCriterionIDs.contains)
+        )
         _score = State(initialValue: record?.score)
         _notes = State(initialValue: record?.notes ?? "")
+        _draftArtifact = State(initialValue: record?.draftArtifact ?? "")
+        _satisfiedCriterionIDs = State(initialValue: selectedCriterionIDs)
     }
 
     @ViewBuilder
@@ -409,119 +427,325 @@ private struct PracticeDetail: View {
                 detailContent
             }
             .background(Color.staffPaper)
+            .onChange(of: record) { _, nextRecord in
+                refreshLocalState(from: nextRecord)
+            }
         } else {
             detailContent
                 .background(Color.staffPaper)
+                .onChange(of: record) { _, nextRecord in
+                    refreshLocalState(from: nextRecord)
+                }
         }
     }
 
     private var detailContent: some View {
         VStack(alignment: .leading, spacing: 20) {
-                HStack {
-                    Text(item.kind)
+            HStack {
+                Text(item.kind)
+                    .font(.caption.bold())
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(Color.staffLime.opacity(0.35), in: Capsule())
+                Text("Week \(item.week) · Exercise \(item.number)")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            Text(item.title)
+                .font(.system(.title, design: .serif, weight: .medium))
+            assignment("Assignment", item.prompt)
+            assignment("Required evidence", item.artifact(for: track))
+
+            attemptEditor
+
+            if let rubric = item.generalRubric, persistedStatus != .notStarted {
+                GeneralPracticeRubricView(rubric: rubric)
+            }
+
+            coachingContent
+
+            assignment("Completion gate", item.completion)
+            if !item.followUps.isEmpty {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("INTERVIEWER FOLLOW-UPS")
                         .font(.caption.bold())
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 6)
-                        .background(Color.staffLime.opacity(0.35), in: Capsule())
-                    Text("Week \(item.week) · Exercise \(item.number)")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-                Text(item.title)
-                    .font(.system(.title, design: .serif, weight: .medium))
-                assignment("Assignment", item.prompt)
-                assignment("Required evidence", item.artifact(for: track))
-
-                if let guide = item.guide {
-                    DisclosureGroup("Worked guide", isExpanded: $guideOpen) {
-                        VStack(alignment: .leading, spacing: 12) {
-                            assignment("Recognition cues", guide.recognition)
-                            assignment("Core invariant", guide.invariant)
-                            assignment("Anchor problem", guide.anchorProblem)
-                            assignment("Answer guide", guide.answer)
-                            assignment("Complexity", guide.complexity)
-                            if !guide.pitfalls.isEmpty {
-                                VStack(alignment: .leading, spacing: 6) {
-                                    Text("PITFALLS")
-                                        .font(.caption.bold())
-                                        .tracking(1)
-                                        .foregroundStyle(Color.staffCoral)
-                                    ForEach(guide.pitfalls, id: \.self) { pitfall in
-                                        Label(pitfall, systemImage: "exclamationmark.triangle")
-                                            .lineSpacing(3)
-                                    }
-                                }
-                            }
-                        }
-                        .padding(.top, 10)
+                        .foregroundStyle(Color.staffGreen)
+                    ForEach(item.followUps, id: \.self) {
+                        Label($0, systemImage: "questionmark.bubble")
                     }
                 }
-
-                if let modelAnswer = item.modelAnswer, !modelAnswer.isEmpty {
-                    DisclosureGroup(
-                        item.kind == "DSA" ? "This drill's approach" : "Model answer",
-                        isExpanded: $modelAnswerOpen
-                    ) {
-                        VStack(alignment: .leading, spacing: 8) {
-                            ForEach(modelAnswer, id: \.self) { point in
-                                Label(point, systemImage: "checkmark.circle")
-                                    .lineSpacing(3)
-                            }
-                        }
-                        .padding(.top, 10)
-                    }
-                }
-
-                GroupBox("Attempt record") {
-                    VStack(alignment: .leading, spacing: 14) {
-                        Picker("Status", selection: $status) {
-                            ForEach(PracticeStatus.allCases) { Text($0.title).tag($0) }
-                        }
-                        Picker("Score", selection: $score) {
-                            Text("Not scored").tag(Int?.none)
-                            ForEach(1...4, id: \.self) { Text("\($0) / 4").tag(Int?.some($0)) }
-                        }
-                        PencilCapableTextEditor(
-                            text: $notes,
-                            minHeight: 130,
-                            prompt: "Attempt notes, trade-offs, and what to improve…"
-                        )
-                        HStack {
-                            Button("Record attempt") {
-                                status = .attempted
-                                save(increment: true)
-                            }
-                            Button("Mark completed") {
-                                status = .completed
-                                save(increment: false)
-                            }
-                            .buttonStyle(.borderedProminent)
-                            .tint(.staffGreen)
-                            Spacer()
-                            Button("Save notes") { save(increment: false) }
-                        }
-                    }
-                }
-
-                if let rubric = item.generalRubric, status != .notStarted {
-                    GeneralPracticeRubricView(rubric: rubric)
-                }
-
-                assignment("Completion gate", item.completion)
-                if !item.followUps.isEmpty {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("INTERVIEWER FOLLOW-UPS")
-                            .font(.caption.bold())
-                            .foregroundStyle(Color.staffGreen)
-                        ForEach(item.followUps, id: \.self) {
-                            Label($0, systemImage: "questionmark.bubble")
-                        }
-                    }
-                }
+            }
         }
         .padding(26)
         .frame(maxWidth: 850, alignment: .leading)
         .frame(maxWidth: .infinity)
+    }
+
+    private var attemptEditor: some View {
+        GroupBox("Attempt evidence") {
+            VStack(alignment: .leading, spacing: 14) {
+                LabeledContent("Status") {
+                    Label(persistedStatus.title, systemImage: statusIcon)
+                        .foregroundStyle(.secondary)
+                }
+
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Completion criteria")
+                        .font(.headline)
+                    ForEach(item.completionCriteria) { criterion in
+                        criterionToggle(criterion)
+                    }
+                }
+
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Artifact evidence")
+                        .font(.headline)
+                    PencilCapableTextEditor(
+                        text: artifactBinding,
+                        minHeight: 160,
+                        prompt: "Paste the artifact or describe the evidence you produced…"
+                    )
+                    .accessibilityLabel("Artifact evidence")
+                }
+
+                Picker("Score", selection: scoreBinding) {
+                    Text("Not scored").tag(Int?.none)
+                    ForEach(1...4, id: \.self) { Text("\($0) / 4").tag(Int?.some($0)) }
+                }
+
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Notes")
+                        .font(.headline)
+                    PencilCapableTextEditor(
+                        text: notesBinding,
+                        minHeight: 130,
+                        prompt: "Attempt notes, trade-offs, and what to improve…"
+                    )
+                    .accessibilityLabel("Attempt notes")
+                }
+
+                submissionFeedback
+                submissionActions
+            }
+            .padding(.top, 8)
+        }
+    }
+
+    @ViewBuilder
+    private var submissionFeedback: some View {
+        switch submissionState {
+        case .validationFailure(let message):
+            Label(message, systemImage: "exclamationmark.circle.fill")
+                .font(.callout)
+                .foregroundStyle(.red)
+                .fixedSize(horizontal: false, vertical: true)
+                .accessibilityFocused($validationFocused)
+        case .submitted:
+            Label("Attempt submitted", systemImage: "checkmark.circle.fill")
+                .font(.callout)
+                .foregroundStyle(Color.staffGreen)
+        case .idle, .submitting:
+            EmptyView()
+        }
+    }
+
+    private var submissionActions: some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: 12) {
+                saveDraftButton
+                Spacer()
+                submitAttemptButton
+            }
+            VStack(alignment: .leading, spacing: 12) {
+                submitAttemptButton
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                saveDraftButton
+            }
+        }
+    }
+
+    private var saveDraftButton: some View {
+        Button("Save draft", action: saveDraft)
+            .buttonStyle(.bordered)
+            .disabled(!isDirty || isSubmitting)
+            #if os(iOS)
+            .frame(minHeight: 44)
+            #endif
+    }
+
+    private var submitAttemptButton: some View {
+        Button(action: submitAttempt) {
+            if isSubmitting {
+                HStack(spacing: 8) {
+                    ProgressView()
+                        .controlSize(.small)
+                    Text("Submitting…")
+                }
+            } else {
+                Text("Submit attempt")
+            }
+        }
+        .buttonStyle(.borderedProminent)
+        .tint(.staffGreen)
+        .disabled(isSubmitting)
+        #if os(iOS)
+        .frame(minHeight: 44)
+        #endif
+    }
+
+    @ViewBuilder
+    private var coachingContent: some View {
+        if coachingUnlocked {
+            if let guide = item.guide {
+                DisclosureGroup("Worked guide", isExpanded: $guideOpen) {
+                    VStack(alignment: .leading, spacing: 12) {
+                        assignment("Recognition cues", guide.recognition)
+                        assignment("Core invariant", guide.invariant)
+                        assignment("Anchor problem", guide.anchorProblem)
+                        assignment("Answer guide", guide.answer)
+                        assignment("Complexity", guide.complexity)
+                        if !guide.pitfalls.isEmpty {
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text("PITFALLS")
+                                    .font(.caption.bold())
+                                    .tracking(1)
+                                    .foregroundStyle(Color.staffCoral)
+                                ForEach(guide.pitfalls, id: \.self) { pitfall in
+                                    Label(pitfall, systemImage: "exclamationmark.triangle")
+                                        .lineSpacing(3)
+                                }
+                            }
+                        }
+                    }
+                    .padding(.top, 10)
+                }
+            }
+
+            if let modelAnswer = item.modelAnswer, !modelAnswer.isEmpty {
+                DisclosureGroup(modelAnswerTitle, isExpanded: $modelAnswerOpen) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        ForEach(modelAnswer, id: \.self) { point in
+                            Label(point, systemImage: "checkmark.circle")
+                                .lineSpacing(3)
+                        }
+                    }
+                    .padding(.top, 10)
+                }
+            }
+        } else {
+            if item.guide != nil {
+                lockedCoachingGroup("Worked guide")
+            }
+            if let modelAnswer = item.modelAnswer, !modelAnswer.isEmpty {
+                lockedCoachingGroup(modelAnswerTitle)
+            }
+        }
+    }
+
+    private var persistedStatus: PracticeStatus {
+        record?.status ?? .notStarted
+    }
+
+    private var statusIcon: String {
+        switch persistedStatus {
+        case .notStarted: "circle"
+        case .attempted: "circle.lefthalf.filled"
+        case .completed: "checkmark.circle.fill"
+        }
+    }
+
+    private var modelAnswerTitle: String {
+        item.kind == "DSA" ? "This drill's approach" : "Model answer"
+    }
+
+    private var coachingUnlocked: Bool {
+        model.hasSubmittedEvidence(for: item.id)
+    }
+
+    private var isSubmitting: Bool {
+        submissionState == .submitting
+    }
+
+    private var orderedSatisfiedCriterionIDs: [String] {
+        item.completionCriteria.map(\.id).filter(satisfiedCriterionIDs.contains)
+    }
+
+    private var scoreBinding: Binding<Int?> {
+        Binding(
+            get: { score },
+            set: { nextScore in
+                guard score != nextScore else { return }
+                score = nextScore
+                markDirty()
+            }
+        )
+    }
+
+    private var notesBinding: Binding<String> {
+        Binding(
+            get: { notes },
+            set: { nextNotes in
+                guard notes != nextNotes else { return }
+                notes = nextNotes
+                markDirty()
+            }
+        )
+    }
+
+    private var artifactBinding: Binding<String> {
+        Binding(
+            get: { draftArtifact },
+            set: { nextArtifact in
+                guard draftArtifact != nextArtifact else { return }
+                draftArtifact = nextArtifact
+                markDirty()
+            }
+        )
+    }
+
+    private func criterionToggle(_ criterion: PracticeCompletionCriterion) -> some View {
+        let isSelected = satisfiedCriterionIDs.contains(criterion.id)
+        return Toggle(isOn: criterionBinding(for: criterion.id)) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(criterion.requirement)
+                Text(criterion.evidencePrompt)
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .accessibilityLabel(criterion.requirement)
+        .accessibilityValue(isSelected ? "Selected" : "Not selected")
+        .accessibilityHint(criterion.evidencePrompt)
+        #if os(iOS)
+        .frame(minHeight: 44)
+        #endif
+    }
+
+    private func criterionBinding(for criterionID: String) -> Binding<Bool> {
+        Binding(
+            get: { satisfiedCriterionIDs.contains(criterionID) },
+            set: { isSelected in
+                var nextCriterionIDs = satisfiedCriterionIDs
+                if isSelected {
+                    nextCriterionIDs.insert(criterionID)
+                } else {
+                    nextCriterionIDs.remove(criterionID)
+                }
+                guard nextCriterionIDs != satisfiedCriterionIDs else { return }
+                satisfiedCriterionIDs = nextCriterionIDs
+                markDirty()
+            }
+        )
+    }
+
+    private func lockedCoachingGroup(_ title: String) -> some View {
+        GroupBox(title) {
+            Label("Submit evidence to unlock", systemImage: "lock.fill")
+                .foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(title). Submit evidence to unlock")
     }
 
     private func assignment(_ title: String, _ body: String) -> some View {
@@ -538,14 +762,59 @@ private struct PracticeDetail: View {
         .background(Color.staffSurface.opacity(0.9), in: RoundedRectangle(cornerRadius: 12))
     }
 
-    private func save(increment: Bool) {
-        model.savePractice(
+    private func markDirty() {
+        isDirty = true
+        validationFocused = false
+        if !isSubmitting {
+            submissionState = .idle
+        }
+    }
+
+    private func refreshLocalState(from nextRecord: PracticeRecord?) {
+        guard !isDirty else { return }
+        let validCriterionIDs = Set(item.completionCriteria.map(\.id))
+        score = nextRecord?.score
+        notes = nextRecord?.notes ?? ""
+        draftArtifact = nextRecord?.draftArtifact ?? ""
+        satisfiedCriterionIDs = Set(
+            (nextRecord?.draftSatisfiedCriterionIDs ?? []).filter(validCriterionIDs.contains)
+        )
+    }
+
+    private func saveDraft() {
+        model.savePracticeDraft(
             itemID: item.id,
-            status: status,
+            status: persistedStatus,
             score: score,
             notes: notes,
-            incrementAttempt: increment
+            artifact: draftArtifact,
+            satisfiedCriterionIDs: orderedSatisfiedCriterionIDs
         )
+        isDirty = false
+        submissionState = .idle
+        validationFocused = false
+    }
+
+    private func submitAttempt() {
+        submissionState = .submitting
+        validationFocused = false
+        do {
+            try model.submitPracticeAttempt(
+                itemID: item.id,
+                score: score,
+                notes: notes,
+                artifact: draftArtifact,
+                satisfiedCriterionIDs: orderedSatisfiedCriterionIDs
+            )
+            isDirty = false
+            submissionState = .submitted
+            AccessibilityNotification.Announcement("Attempt submitted").post()
+        } catch {
+            submissionState = .validationFailure(error.localizedDescription)
+            Task { @MainActor in
+                validationFocused = true
+            }
+        }
     }
 }
 
