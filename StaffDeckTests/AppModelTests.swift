@@ -242,4 +242,246 @@ final class AppModelTests: XCTestCase {
             $0.generalRubric != nil && $0.followUps.count == 3 && !$0.completion.isEmpty
         })
     }
+
+    func testLegacyPracticeItemDecodesCompletionIntoLegacyCriterion() throws {
+        let json = """
+        {
+            "id": "legacy-item-1",
+            "kind": "General",
+            "topic": "JVM & Concurrency",
+            "week": 1,
+            "number": 1,
+            "title": "Legacy Practice Title",
+            "prompt": "Legacy prompt text",
+            "artifact": "Legacy artifact description",
+            "followUps": ["Follow up 1"],
+            "completion": "State the invariant and failure modes."
+        }
+        """.data(using: .utf8)!
+
+        let item = try JSONDecoder().decode(PracticeItem.self, from: json)
+        XCTAssertEqual(item.id, "legacy-item-1")
+        XCTAssertEqual(item.completion, "State the invariant and failure modes.")
+        XCTAssertEqual(item.completionCriteria.count, 1)
+        let criterion = try XCTUnwrap(item.completionCriteria.first)
+        XCTAssertEqual(criterion.id, "legacy-completion")
+        XCTAssertEqual(criterion.requirement, "State the invariant and failure modes.")
+        XCTAssertEqual(criterion.evidencePrompt, "Legacy artifact description")
+    }
+
+    func testNewPracticeItemDecodesExplicitCompletionCriteria() throws {
+        let json = """
+        {
+            "id": "structured-item-1",
+            "kind": "General",
+            "topic": "System Design",
+            "week": 2,
+            "number": 3,
+            "title": "Structured Criteria Practice",
+            "prompt": "Design an outbox worker",
+            "artifact": "Design doc and sequence diagram",
+            "followUps": [],
+            "completion": "Legacy completion summary",
+            "completionCriteria": [
+                {
+                    "id": "invariant-definition",
+                    "requirement": "Define exactly-once relay invariant",
+                    "evidencePrompt": "Explain outbox table deduplication"
+                },
+                {
+                    "id": "backoff-policy",
+                    "requirement": "Describe exponential retry backoff",
+                    "evidencePrompt": "Provide jitter formula and limits"
+                }
+            ]
+        }
+        """.data(using: .utf8)!
+
+        let item = try JSONDecoder().decode(PracticeItem.self, from: json)
+        XCTAssertEqual(item.completionCriteria.count, 2)
+        XCTAssertEqual(item.completionCriteria[0].id, "invariant-definition")
+        XCTAssertEqual(item.completionCriteria[0].requirement, "Define exactly-once relay invariant")
+        XCTAssertEqual(item.completionCriteria[0].evidencePrompt, "Explain outbox table deduplication")
+        XCTAssertEqual(item.completionCriteria[1].id, "backoff-policy")
+        XCTAssertEqual(item.completionCriteria[1].requirement, "Describe exponential retry backoff")
+        XCTAssertEqual(item.completionCriteria[1].evidencePrompt, "Provide jitter formula and limits")
+
+        let reencoded = try JSONEncoder().encode(item)
+        let decodedAgain = try JSONDecoder().decode(PracticeItem.self, from: reencoded)
+        XCTAssertEqual(decodedAgain.completion, "Legacy completion summary")
+        XCTAssertEqual(decodedAgain.completionCriteria, item.completionCriteria)
+    }
+
+    func testLegacyPracticeItemWithEmptyCompletionHasEmptyCriteria() throws {
+        let json = """
+        {
+            "id": "empty-completion-item",
+            "kind": "General",
+            "topic": "Databases",
+            "week": 1,
+            "number": 1,
+            "title": "Empty Completion",
+            "prompt": "Prompt",
+            "artifact": "Artifact",
+            "followUps": [],
+            "completion": "   "
+        }
+        """.data(using: .utf8)!
+
+        let item = try JSONDecoder().decode(PracticeItem.self, from: json)
+        XCTAssertTrue(item.completionCriteria.isEmpty)
+    }
+
+    func testLegacyPracticeRecordDecodesDraftFieldsAndBaselineDefaulting() throws {
+        let now = Date(timeIntervalSince1970: 1_700_000_000)
+        let json = """
+        {
+            "practiceID": "general-1.1",
+            "status": "attempted",
+            "score": 3,
+            "notes": "Good progress",
+            "attempts": 4,
+            "updatedAt": 1700000000000
+        }
+        """.data(using: .utf8)!
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .millisecondsSince1970
+        let record = try decoder.decode(PracticeRecord.self, from: json)
+
+        XCTAssertEqual(record.practiceID, "general-1.1")
+        XCTAssertEqual(record.status, .attempted)
+        XCTAssertEqual(record.score, 3)
+        XCTAssertEqual(record.notes, "Good progress")
+        XCTAssertEqual(record.attempts, 4)
+        XCTAssertEqual(record.draftArtifact, "")
+        XCTAssertEqual(record.draftSatisfiedCriterionIDs, [])
+        XCTAssertEqual(record.legacyAttemptBaseline, 4)
+        XCTAssertNil(record.nextReviewAt)
+        XCTAssertEqual(record.updatedAt.timeIntervalSince1970, now.timeIntervalSince1970, accuracy: 0.001)
+    }
+
+    func testNewPracticeRecordRoundTripWithDraftFields() throws {
+        let now = Date(timeIntervalSince1970: 1_700_000_000)
+        let record = PracticeRecord(
+            practiceID: "general-1.2",
+            status: .completed,
+            score: 4,
+            notes: "Ready for review",
+            attempts: 5,
+            draftArtifact: "Drafting code snippet...",
+            draftSatisfiedCriterionIDs: ["crit-1", "crit-2"],
+            legacyAttemptBaseline: 3,
+            nextReviewAt: now.addingTimeInterval(86400),
+            updatedAt: now
+        )
+
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .millisecondsSince1970
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .millisecondsSince1970
+
+        let data = try encoder.encode(record)
+        let decoded = try decoder.decode(PracticeRecord.self, from: data)
+
+        XCTAssertEqual(decoded.practiceID, "general-1.2")
+        XCTAssertEqual(decoded.status, .completed)
+        XCTAssertEqual(decoded.score, 4)
+        XCTAssertEqual(decoded.notes, "Ready for review")
+        XCTAssertEqual(decoded.attempts, 5)
+        XCTAssertEqual(decoded.draftArtifact, "Drafting code snippet...")
+        XCTAssertEqual(decoded.draftSatisfiedCriterionIDs, ["crit-1", "crit-2"])
+        XCTAssertEqual(decoded.legacyAttemptBaseline, 3)
+        XCTAssertEqual(decoded.nextReviewAt?.timeIntervalSince1970, now.addingTimeInterval(86400).timeIntervalSince1970)
+        XCTAssertEqual(decoded.updatedAt.timeIntervalSince1970, now.timeIntervalSince1970, accuracy: 0.001)
+    }
+
+    func testLegacyPracticeAttemptDecodesNilSubmission() throws {
+        let now = Date(timeIntervalSince1970: 1_700_000_000)
+        let json = """
+        {
+            "id": "attempt-legacy-1",
+            "practiceID": "general-1.1",
+            "status": "attempted",
+            "score": 2,
+            "notes": "First attempt notes",
+            "completedAt": 1700000000000,
+            "updatedAt": 1700000000000
+        }
+        """.data(using: .utf8)!
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .millisecondsSince1970
+        let attempt = try decoder.decode(PracticeAttempt.self, from: json)
+
+        XCTAssertEqual(attempt.id, "attempt-legacy-1")
+        XCTAssertEqual(attempt.practiceID, "general-1.1")
+        XCTAssertEqual(attempt.status, .attempted)
+        XCTAssertEqual(attempt.score, 2)
+        XCTAssertEqual(attempt.notes, "First attempt notes")
+        XCTAssertNil(attempt.submission)
+        XCTAssertEqual(attempt.completedAt.timeIntervalSince1970, now.timeIntervalSince1970, accuracy: 0.001)
+    }
+
+    func testNewPracticeAttemptRoundTripWithSubmission() throws {
+        let now = Date(timeIntervalSince1970: 1_700_000_000)
+        let submission = PracticeSubmissionEvidence(
+            artifact: "Final solution implementation",
+            satisfiedCriterionIDs: ["crit-1", "crit-2"]
+        )
+        let attempt = PracticeAttempt(
+            id: "attempt-submission-1",
+            practiceID: "general-1.1",
+            status: .completed,
+            score: 4,
+            notes: "Passed all criteria",
+            submission: submission,
+            completedAt: now,
+            updatedAt: now
+        )
+
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .millisecondsSince1970
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .millisecondsSince1970
+
+        let data = try encoder.encode(attempt)
+        let decoded = try decoder.decode(PracticeAttempt.self, from: data)
+
+        XCTAssertEqual(decoded.id, "attempt-submission-1")
+        XCTAssertEqual(decoded.practiceID, "general-1.1")
+        XCTAssertEqual(decoded.status, .completed)
+        XCTAssertEqual(decoded.score, 4)
+        XCTAssertEqual(decoded.notes, "Passed all criteria")
+        let decodedSubmission = try XCTUnwrap(decoded.submission)
+        XCTAssertEqual(decodedSubmission.artifact, "Final solution implementation")
+        XCTAssertEqual(decodedSubmission.satisfiedCriterionIDs, ["crit-1", "crit-2"])
+    }
+
+    func testModelInitializersSensibleDefaults() {
+        let now = Date()
+        let record = PracticeRecord(
+            practiceID: "test-rec",
+            status: .notStarted,
+            updatedAt: now
+        )
+        XCTAssertEqual(record.attempts, 0)
+        XCTAssertEqual(record.draftArtifact, "")
+        XCTAssertEqual(record.draftSatisfiedCriterionIDs, [])
+        XCTAssertEqual(record.legacyAttemptBaseline, 0)
+        XCTAssertNil(record.score)
+        XCTAssertNil(record.nextReviewAt)
+        XCTAssertEqual(record.notes, "")
+
+        let attempt = PracticeAttempt(
+            id: "test-att",
+            practiceID: "test-rec",
+            status: .notStarted,
+            completedAt: now,
+            updatedAt: now
+        )
+        XCTAssertNil(attempt.submission)
+        XCTAssertNil(attempt.score)
+        XCTAssertEqual(attempt.notes, "")
+    }
 }

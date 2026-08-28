@@ -286,6 +286,28 @@ enum GeneralPracticeRubricKind: String, Codable, CaseIterable, Identifiable {
     }
 }
 
+struct PracticeCompletionCriterion: Codable, Identifiable, Hashable {
+    var id: String
+    var requirement: String
+    var evidencePrompt: String
+
+    init(id: String, requirement: String, evidencePrompt: String) {
+        self.id = id
+        self.requirement = requirement
+        self.evidencePrompt = evidencePrompt
+    }
+}
+
+struct PracticeSubmissionEvidence: Codable, Hashable {
+    var artifact: String
+    var satisfiedCriterionIDs: [String]
+
+    init(artifact: String = "", satisfiedCriterionIDs: [String] = []) {
+        self.artifact = artifact
+        self.satisfiedCriterionIDs = satisfiedCriterionIDs
+    }
+}
+
 struct PracticeItem: Codable, Identifiable, Hashable {
     let id: String
     let kind: String
@@ -300,11 +322,60 @@ struct PracticeItem: Codable, Identifiable, Hashable {
     let artifact: String
     let followUps: [String]
     let completion: String
+    let completionCriteria: [PracticeCompletionCriterion]
     let guide: PracticeGuide?
     let modelAnswer: [String]?
 
     enum CodingKeys: String, CodingKey {
-        case id, kind, contentTrack, competencyTopics, rubricKind, topic, week, number, title, prompt, artifact, followUps, completion, guide, modelAnswer
+        case id, kind, contentTrack, competencyTopics, rubricKind, topic, week, number, title, prompt, artifact, followUps, completion, completionCriteria, guide, modelAnswer
+    }
+
+    init(
+        id: String,
+        kind: String,
+        contentTrack: LanguageTrack? = nil,
+        competencyTopics: [InterviewTopic] = [],
+        rubricKind: GeneralPracticeRubricKind? = nil,
+        topic: String,
+        week: Int,
+        number: Int,
+        title: String,
+        prompt: String,
+        artifact: String,
+        followUps: [String] = [],
+        completion: String = "",
+        completionCriteria: [PracticeCompletionCriterion]? = nil,
+        guide: PracticeGuide? = nil,
+        modelAnswer: [String]? = nil
+    ) {
+        self.id = id
+        self.kind = kind
+        self.contentTrack = contentTrack
+        self.competencyTopics = competencyTopics
+        self.rubricKind = rubricKind
+        self.topic = topic
+        self.week = week
+        self.number = number
+        self.title = title
+        self.prompt = prompt
+        self.artifact = artifact
+        self.followUps = followUps
+        self.completion = completion
+        if let completionCriteria {
+            self.completionCriteria = completionCriteria
+        } else if !completion.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            self.completionCriteria = [
+                PracticeCompletionCriterion(
+                    id: "legacy-completion",
+                    requirement: completion,
+                    evidencePrompt: artifact
+                )
+            ]
+        } else {
+            self.completionCriteria = []
+        }
+        self.guide = guide
+        self.modelAnswer = modelAnswer
     }
 
     init(from decoder: Decoder) throws {
@@ -319,12 +390,26 @@ struct PracticeItem: Codable, Identifiable, Hashable {
         prompt = try container.decode(String.self, forKey: .prompt)
         artifact = try container.decode(String.self, forKey: .artifact)
         followUps = try container.decode([String].self, forKey: .followUps)
-        completion = try container.decode(String.self, forKey: .completion)
+        completion = try container.decodeIfPresent(String.self, forKey: .completion) ?? ""
         guide = try container.decodeIfPresent(PracticeGuide.self, forKey: .guide)
         modelAnswer = try container.decodeIfPresent([String].self, forKey: .modelAnswer)
         rubricKind = try container.decodeIfPresent(GeneralPracticeRubricKind.self, forKey: .rubricKind)
         let rawTopics = try container.decodeIfPresent([String].self, forKey: .competencyTopics) ?? [topic]
         competencyTopics = rawTopics.compactMap(InterviewTopic.init(rawValue:))
+
+        if let decodedCriteria = try container.decodeIfPresent([PracticeCompletionCriterion].self, forKey: .completionCriteria) {
+            completionCriteria = decodedCriteria
+        } else if !completion.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            completionCriteria = [
+                PracticeCompletionCriterion(
+                    id: "legacy-completion",
+                    requirement: completion,
+                    evidencePrompt: artifact
+                )
+            ]
+        } else {
+            completionCriteria = []
+        }
     }
 
     func encode(to encoder: Encoder) throws {
@@ -342,10 +427,10 @@ struct PracticeItem: Codable, Identifiable, Hashable {
         try container.encode(artifact, forKey: .artifact)
         try container.encode(followUps, forKey: .followUps)
         try container.encode(completion, forKey: .completion)
+        try container.encode(completionCriteria, forKey: .completionCriteria)
         try container.encodeIfPresent(guide, forKey: .guide)
         try container.encodeIfPresent(modelAnswer, forKey: .modelAnswer)
     }
-
     func isAvailable(in track: LanguageTrack) -> Bool {
         if let contentTrack { return contentTrack == track }
         return !competencyTopics.contains { $0.languageTrack != nil && $0.languageTrack != track }
@@ -531,8 +616,54 @@ struct PracticeRecord: Codable, Hashable {
     var score: Int?
     var notes: String
     var attempts: Int
+    var draftArtifact: String
+    var draftSatisfiedCriterionIDs: [String]
+    var legacyAttemptBaseline: Int
     var nextReviewAt: Date?
     var updatedAt: Date
+
+    enum CodingKeys: String, CodingKey {
+        case practiceID, status, score, notes, attempts, draftArtifact, draftSatisfiedCriterionIDs, legacyAttemptBaseline, nextReviewAt, updatedAt
+    }
+
+    init(
+        practiceID: String,
+        status: PracticeStatus,
+        score: Int? = nil,
+        notes: String = "",
+        attempts: Int = 0,
+        draftArtifact: String = "",
+        draftSatisfiedCriterionIDs: [String] = [],
+        legacyAttemptBaseline: Int? = nil,
+        nextReviewAt: Date? = nil,
+        updatedAt: Date
+    ) {
+        self.practiceID = practiceID
+        self.status = status
+        self.score = score
+        self.notes = notes
+        self.attempts = attempts
+        self.draftArtifact = draftArtifact
+        self.draftSatisfiedCriterionIDs = draftSatisfiedCriterionIDs
+        self.legacyAttemptBaseline = legacyAttemptBaseline ?? attempts
+        self.nextReviewAt = nextReviewAt
+        self.updatedAt = updatedAt
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        practiceID = try container.decode(String.self, forKey: .practiceID)
+        status = try container.decode(PracticeStatus.self, forKey: .status)
+        score = try container.decodeIfPresent(Int.self, forKey: .score)
+        notes = try container.decodeIfPresent(String.self, forKey: .notes) ?? ""
+        let decodedAttempts = try container.decodeIfPresent(Int.self, forKey: .attempts) ?? 0
+        attempts = decodedAttempts
+        draftArtifact = try container.decodeIfPresent(String.self, forKey: .draftArtifact) ?? ""
+        draftSatisfiedCriterionIDs = try container.decodeIfPresent([String].self, forKey: .draftSatisfiedCriterionIDs) ?? []
+        legacyAttemptBaseline = try container.decodeIfPresent(Int.self, forKey: .legacyAttemptBaseline) ?? decodedAttempts
+        nextReviewAt = try container.decodeIfPresent(Date.self, forKey: .nextReviewAt)
+        updatedAt = try container.decode(Date.self, forKey: .updatedAt)
+    }
 }
 
 struct PracticeAttempt: Codable, Identifiable, Hashable {
@@ -541,8 +672,45 @@ struct PracticeAttempt: Codable, Identifiable, Hashable {
     var status: PracticeStatus
     var score: Int?
     var notes: String
+    var submission: PracticeSubmissionEvidence?
     var completedAt: Date
     var updatedAt: Date
+
+    enum CodingKeys: String, CodingKey {
+        case id, practiceID, status, score, notes, submission, completedAt, updatedAt
+    }
+
+    init(
+        id: String,
+        practiceID: String,
+        status: PracticeStatus,
+        score: Int? = nil,
+        notes: String = "",
+        submission: PracticeSubmissionEvidence? = nil,
+        completedAt: Date,
+        updatedAt: Date
+    ) {
+        self.id = id
+        self.practiceID = practiceID
+        self.status = status
+        self.score = score
+        self.notes = notes
+        self.submission = submission
+        self.completedAt = completedAt
+        self.updatedAt = updatedAt
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(String.self, forKey: .id)
+        practiceID = try container.decode(String.self, forKey: .practiceID)
+        status = try container.decode(PracticeStatus.self, forKey: .status)
+        score = try container.decodeIfPresent(Int.self, forKey: .score)
+        notes = try container.decodeIfPresent(String.self, forKey: .notes) ?? ""
+        submission = try container.decodeIfPresent(PracticeSubmissionEvidence.self, forKey: .submission)
+        completedAt = try container.decode(Date.self, forKey: .completedAt)
+        updatedAt = try container.decode(Date.self, forKey: .updatedAt)
+    }
 }
 
 struct CareerProfile: Codable, Hashable {
