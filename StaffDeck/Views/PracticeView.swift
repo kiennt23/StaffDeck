@@ -420,22 +420,20 @@ private struct PracticeDetail: View {
         _satisfiedCriterionIDs = State(initialValue: selectedCriterionIDs)
     }
 
-    @ViewBuilder
     var body: some View {
-        if scrollsInternally {
-            ScrollView {
-                detailContent
-            }
-            .background(Color.staffPaper)
-            .onChange(of: record) { _, nextRecord in
-                refreshLocalState(from: nextRecord)
-            }
-        } else {
-            detailContent
-                .background(Color.staffPaper)
-                .onChange(of: record) { _, nextRecord in
-                    refreshLocalState(from: nextRecord)
+        Group {
+            if scrollsInternally {
+                ScrollView {
+                    detailContent
                 }
+                .background(Color.staffPaper)
+            } else {
+                detailContent
+                    .background(Color.staffPaper)
+            }
+        }
+        .onChange(of: record) { _, nextRecord in
+            refreshLocalState(from: nextRecord)
         }
     }
 
