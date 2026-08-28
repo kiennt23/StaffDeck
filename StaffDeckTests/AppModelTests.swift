@@ -484,4 +484,11 @@ final class AppModelTests: XCTestCase {
         XCTAssertNil(attempt.score)
         XCTAssertEqual(attempt.notes, "")
     }
+
+    func testPracticeCriterionAndEvidenceConformToSendable() {
+        assertSendable(PracticeCompletionCriterion.self)
+        assertSendable(PracticeSubmissionEvidence.self)
+    }
+
+    private func assertSendable<T: Sendable>(_: T.Type) {}
 }

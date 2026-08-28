@@ -286,7 +286,7 @@ enum GeneralPracticeRubricKind: String, Codable, CaseIterable, Identifiable {
     }
 }
 
-struct PracticeCompletionCriterion: Codable, Identifiable, Hashable {
+struct PracticeCompletionCriterion: Codable, Identifiable, Hashable, Sendable {
     var id: String
     var requirement: String
     var evidencePrompt: String
@@ -298,7 +298,7 @@ struct PracticeCompletionCriterion: Codable, Identifiable, Hashable {
     }
 }
 
-struct PracticeSubmissionEvidence: Codable, Hashable {
+struct PracticeSubmissionEvidence: Codable, Hashable, Sendable {
     var artifact: String
     var satisfiedCriterionIDs: [String]
 
