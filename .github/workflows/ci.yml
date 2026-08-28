@@ -16,7 +16,9 @@ jobs:
         with:
           node-version: 22
       - name: Test content exporter
-        run: node --test Scripts/export-content.test.mjs
+        run: node --test Scripts/*.test.mjs
+      - name: Check generated content
+        run: node Scripts/export-content.mjs --check
 
   macos:
     runs-on: macos-15
