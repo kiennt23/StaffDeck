@@ -50,11 +50,39 @@ final class ProgressMetricsTests: XCTestCase {
         model.rate(cardID: sharedCard.id, rating: .good, now: now)
         model.rate(cardID: 999999, rating: .good, now: now)
 
-        model.savePractice(itemID: javaPractice.id, status: .completed, score: 4, notes: "", incrementAttempt: true)
-        model.savePractice(itemID: goPractice.id, status: .completed, score: 2, notes: "", incrementAttempt: true)
-        model.savePractice(itemID: sharedPractice.id, status: .completed, score: 3, notes: "", incrementAttempt: true)
-        model.savePractice(itemID: unscoredSharedPractice.id, status: .attempted, score: nil, notes: "", incrementAttempt: true)
-        model.savePractice(itemID: "orphan-practice", status: .completed, score: 4, notes: "", incrementAttempt: true)
+        try! model.submitPracticeAttempt(
+            itemID: javaPractice.id,
+            score: 4,
+            notes: "",
+            artifact: "Java solution evidence",
+            satisfiedCriterionIDs: javaPractice.completionCriteria.map(\.id)
+        )
+        try! model.submitPracticeAttempt(
+            itemID: goPractice.id,
+            score: 2,
+            notes: "",
+            artifact: "Go solution evidence",
+            satisfiedCriterionIDs: goPractice.completionCriteria.map(\.id)
+        )
+        try! model.submitPracticeAttempt(
+            itemID: sharedPractice.id,
+            score: 3,
+            notes: "",
+            artifact: "Shared solution evidence",
+            satisfiedCriterionIDs: sharedPractice.completionCriteria.map(\.id)
+        )
+        model.savePracticeDraft(
+            itemID: unscoredSharedPractice.id,
+            status: .attempted,
+            score: nil,
+            notes: ""
+        )
+        model.savePracticeDraft(
+            itemID: "orphan-practice",
+            status: .completed,
+            score: 4,
+            notes: ""
+        )
 
         let javaMetrics = MasteryMetrics(
             track: .java,

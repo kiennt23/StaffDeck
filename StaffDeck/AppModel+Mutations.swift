@@ -61,22 +61,41 @@ extension AppModel {
         enqueue(record, key: key, milliseconds: milliseconds)
     }
 
-    func savePractice(
+    func savePracticeDraft(
         itemID: String,
-        status: PracticeStatus,
-        score: Int?,
-        notes: String,
-        incrementAttempt: Bool = false
+        status: PracticeStatus = .notStarted,
+        score: Int? = nil,
+        notes: String = "",
+        artifact: String = "",
+        satisfiedCriterionIDs: [String] = []
     ) {
         let previous = practiceRecords[itemID]
+        let attempts = previous?.attempts ?? 0
+        let legacyBaseline = previous?.legacyAttemptBaseline ?? attempts
+
+        if let previous {
+            if previous.status == status
+                && previous.score == score
+                && previous.notes == notes
+                && previous.draftArtifact == artifact
+                && previous.draftSatisfiedCriterionIDs == satisfiedCriterionIDs {
+                return
+            }
+        } else if status == .notStarted
+            && score == nil
+            && notes.isEmpty
+            && artifact.isEmpty
+            && satisfiedCriterionIDs.isEmpty {
+            return
+        }
+
         let key = SyncKey(collection: .practice, recordID: itemID)
         let now = dependencies.dateSource.now()
         let milliseconds = nextMilliseconds(key: key, current: previous?.updatedAt, candidate: now)
-        let attemptsCount = (previous?.attempts ?? 0) + (incrementAttempt ? 1 : 0)
         let nextReview = AdaptiveScheduler.schedulePractice(
             status: status,
             score: score,
-            attempts: attemptsCount,
+            attempts: attempts,
             now: now,
             calendar: dependencies.calendar
         )
@@ -85,30 +104,124 @@ extension AppModel {
             status: status,
             score: score,
             notes: notes,
-            attempts: attemptsCount,
+            attempts: attempts,
+            draftArtifact: artifact,
+            draftSatisfiedCriterionIDs: satisfiedCriterionIDs,
+            legacyAttemptBaseline: legacyBaseline,
             nextReviewAt: nextReview,
             updatedAt: Self.date(milliseconds)
         )
         practiceRecords[itemID] = record
         enqueue(record, key: key, milliseconds: milliseconds)
+    }
 
-        if status != .notStarted || incrementAttempt || !notes.isEmpty || score != nil {
-            let attemptID = UUID().uuidString
-            let attemptKey = SyncKey(collection: .practiceAttempts, recordID: attemptID)
-            let attempt = PracticeAttempt(
-                id: attemptID,
-                practiceID: itemID,
-                status: status,
-                score: score,
-                notes: notes,
-                completedAt: now,
-                updatedAt: Self.date(milliseconds)
-            )
-            var existingAttempts = practiceAttempts[itemID] ?? []
-            existingAttempts.append(attempt)
-            practiceAttempts[itemID] = existingAttempts
-            enqueue(attempt, key: attemptKey, milliseconds: milliseconds)
+    @discardableResult
+    func submitPracticeAttempt(
+        itemID: String,
+        score: Int? = nil,
+        notes: String = "",
+        artifact: String,
+        satisfiedCriterionIDs: [String]
+    ) throws -> PracticeAttempt {
+        guard let item = practices.first(where: { $0.id == itemID }) else {
+            throw PracticeSubmissionError.unknownPractice(itemID)
         }
+
+        let normalizedArtifact = artifact.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !normalizedArtifact.isEmpty else {
+            throw PracticeSubmissionError.emptyArtifact
+        }
+
+        guard !satisfiedCriterionIDs.isEmpty else {
+            throw PracticeSubmissionError.noCriteriaSelected
+        }
+
+        let validCriterionIDs = Set(item.completionCriteria.map(\.id))
+        for id in satisfiedCriterionIDs {
+            guard validCriterionIDs.contains(id) else {
+                throw PracticeSubmissionError.invalidCriterionID(id)
+            }
+        }
+
+        let selectedSet = Set(satisfiedCriterionIDs)
+        let orderedCriterionIDs = item.completionCriteria.map(\.id).filter { selectedSet.contains($0) }
+
+        let isCompleted = !item.completionCriteria.isEmpty && orderedCriterionIDs.count == item.completionCriteria.count
+        let derivedStatus: PracticeStatus = isCompleted ? .completed : .attempted
+
+        let previous = practiceRecords[itemID]
+        let legacyBaseline = previous?.legacyAttemptBaseline ?? (previous?.attempts ?? 0)
+        let attemptsCount = (previous?.attempts ?? 0) + 1
+
+        let now = dependencies.dateSource.now()
+        let nextReview = AdaptiveScheduler.schedulePractice(
+            status: derivedStatus,
+            score: score,
+            attempts: attemptsCount,
+            now: now,
+            calendar: dependencies.calendar
+        )
+
+        let attemptID = UUID().uuidString
+        let attemptKey = SyncKey(collection: .practiceAttempts, recordID: attemptID)
+        let recordKey = SyncKey(collection: .practice, recordID: itemID)
+
+        let recordMillis = nextMilliseconds(key: recordKey, current: previous?.updatedAt, candidate: now)
+        let attemptMillis = nextMilliseconds(key: attemptKey, current: nil, candidate: now)
+
+        let recordDate = Self.date(recordMillis)
+        let attemptDate = Self.date(attemptMillis)
+
+        let submission = PracticeSubmissionEvidence(
+            artifact: artifact,
+            satisfiedCriterionIDs: orderedCriterionIDs
+        )
+
+        let attempt = PracticeAttempt(
+            id: attemptID,
+            practiceID: itemID,
+            status: derivedStatus,
+            score: score,
+            notes: notes,
+            submission: submission,
+            completedAt: now,
+            updatedAt: attemptDate
+        )
+
+        let record = PracticeRecord(
+            practiceID: itemID,
+            status: derivedStatus,
+            score: score,
+            notes: notes,
+            attempts: attemptsCount,
+            draftArtifact: artifact,
+            draftSatisfiedCriterionIDs: orderedCriterionIDs,
+            legacyAttemptBaseline: legacyBaseline,
+            nextReviewAt: nextReview,
+            updatedAt: recordDate
+        )
+
+        let recordEnvelope = try SyncEnvelope.encode(
+            record,
+            collection: .practice,
+            recordID: itemID,
+            updatedAtMilliseconds: recordMillis
+        )
+        let attemptEnvelope = try SyncEnvelope.encode(
+            attempt,
+            collection: .practiceAttempts,
+            recordID: attemptID,
+            updatedAtMilliseconds: attemptMillis
+        )
+
+        practiceRecords[itemID] = record
+        var existingAttempts = practiceAttempts[itemID] ?? []
+        existingAttempts.append(attempt)
+        practiceAttempts[itemID] = existingAttempts
+
+        enqueue([recordEnvelope, attemptEnvelope])
+
+        return attempt
     }
 
     func saveProfile(_ next: CareerProfile) {
@@ -173,6 +286,26 @@ extension AppModel {
             records[index] = value
         } else {
             records.append(value)
+        }
+    }
+}
+
+enum PracticeSubmissionError: LocalizedError, Equatable {
+    case unknownPractice(String)
+    case emptyArtifact
+    case noCriteriaSelected
+    case invalidCriterionID(String)
+
+    var errorDescription: String? {
+        switch self {
+        case .unknownPractice(let id):
+            return "Practice exercise '\(id)' was not found."
+        case .emptyArtifact:
+            return "Evidence artifact cannot be empty."
+        case .noCriteriaSelected:
+            return "At least one completion criterion must be selected."
+        case .invalidCriterionID(let id):
+            return "Criterion '\(id)' does not belong to this practice exercise."
         }
     }
 }

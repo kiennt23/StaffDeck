@@ -1,6 +1,19 @@
 import Foundation
 
 extension AppModel {
+    func enqueue(_ envelopes: [SyncEnvelope]) {
+        guard !envelopes.isEmpty else { return }
+        for envelope in envelopes {
+            pendingMutations[envelope.key] = envelope
+        }
+        do {
+            try persistCache()
+            ensureFlush()
+        } catch {
+            syncState = .offline("Local mutation could not be cached: \(error.localizedDescription)")
+        }
+    }
+
     func enqueue<Value: Encodable>(
         _ value: Value,
         key: SyncKey,
@@ -15,9 +28,7 @@ extension AppModel {
                 updatedAtMilliseconds: milliseconds,
                 isDeleted: isDeleted
             )
-            pendingMutations[key] = mutation
-            try persistCache()
-            ensureFlush()
+            enqueue([mutation])
         } catch {
             syncState = .offline("Local mutation could not be cached: \(error.localizedDescription)")
         }
