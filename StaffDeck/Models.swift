@@ -128,17 +128,17 @@ enum WorkspaceSection: String, CaseIterable, Identifiable {
 }
 
 enum SidebarDestination: Hashable {
-    case topic(InterviewTopic)
-    case workspace(WorkspaceSection)
+    case topic(InterviewTopic, targetCardID: Int? = nil)
+    case workspace(WorkspaceSection, targetItemID: String? = nil)
 
     func resolved(for track: LanguageTrack) -> SidebarDestination {
         switch self {
-        case .workspace:
-            self
-        case .topic(let topic):
+        case let .workspace(section, targetItemID):
+            .workspace(section, targetItemID: targetItemID)
+        case let .topic(topic, targetCardID):
             topic.languageTrack == nil || topic.languageTrack == track
-                ? self
-                : .topic(track.defaultTopic)
+                ? .topic(topic, targetCardID: targetCardID)
+                : .topic(track.defaultTopic, targetCardID: nil)
         }
     }
 }
@@ -271,10 +271,27 @@ struct GeneralPracticeRubric: Hashable {
     let scoreGuide: String
 }
 
+enum GeneralPracticeRubricKind: String, Codable, CaseIterable, Identifiable {
+    case coding, design, debug, communication
+
+    var id: String { rawValue }
+
+    var rubric: GeneralPracticeRubric {
+        switch self {
+        case .coding: PracticeItem.codingRubric
+        case .design: PracticeItem.designRubric
+        case .debug: PracticeItem.debugRubric
+        case .communication: PracticeItem.communicationRubric
+        }
+    }
+}
+
 struct PracticeItem: Codable, Identifiable, Hashable {
     let id: String
     let kind: String
     let contentTrack: LanguageTrack?
+    let competencyTopics: [InterviewTopic]
+    let rubricKind: GeneralPracticeRubricKind?
     let topic: String
     let week: Int
     let number: Int
@@ -286,13 +303,52 @@ struct PracticeItem: Codable, Identifiable, Hashable {
     let guide: PracticeGuide?
     let modelAnswer: [String]?
 
+    enum CodingKeys: String, CodingKey {
+        case id, kind, contentTrack, competencyTopics, rubricKind, topic, week, number, title, prompt, artifact, followUps, completion, guide, modelAnswer
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(String.self, forKey: .id)
+        kind = try container.decode(String.self, forKey: .kind)
+        contentTrack = try container.decodeIfPresent(LanguageTrack.self, forKey: .contentTrack)
+        topic = try container.decode(String.self, forKey: .topic)
+        week = try container.decode(Int.self, forKey: .week)
+        number = try container.decode(Int.self, forKey: .number)
+        title = try container.decode(String.self, forKey: .title)
+        prompt = try container.decode(String.self, forKey: .prompt)
+        artifact = try container.decode(String.self, forKey: .artifact)
+        followUps = try container.decode([String].self, forKey: .followUps)
+        completion = try container.decode(String.self, forKey: .completion)
+        guide = try container.decodeIfPresent(PracticeGuide.self, forKey: .guide)
+        modelAnswer = try container.decodeIfPresent([String].self, forKey: .modelAnswer)
+        rubricKind = try container.decodeIfPresent(GeneralPracticeRubricKind.self, forKey: .rubricKind)
+        let rawTopics = try container.decodeIfPresent([String].self, forKey: .competencyTopics) ?? [topic]
+        competencyTopics = rawTopics.compactMap(InterviewTopic.init(rawValue:))
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(kind, forKey: .kind)
+        try container.encodeIfPresent(contentTrack, forKey: .contentTrack)
+        try container.encode(competencyTopics.map(\.rawValue), forKey: .competencyTopics)
+        try container.encodeIfPresent(rubricKind, forKey: .rubricKind)
+        try container.encode(topic, forKey: .topic)
+        try container.encode(week, forKey: .week)
+        try container.encode(number, forKey: .number)
+        try container.encode(title, forKey: .title)
+        try container.encode(prompt, forKey: .prompt)
+        try container.encode(artifact, forKey: .artifact)
+        try container.encode(followUps, forKey: .followUps)
+        try container.encode(completion, forKey: .completion)
+        try container.encodeIfPresent(guide, forKey: .guide)
+        try container.encodeIfPresent(modelAnswer, forKey: .modelAnswer)
+    }
+
     func isAvailable(in track: LanguageTrack) -> Bool {
         if let contentTrack { return contentTrack == track }
-        guard track == .go, kind != "DSA" else { return true }
-        let content = "\(topic) \(title) \(prompt) \(artifact)".localizedLowercase
-        return !["java", "jvm", "spring", "completablefuture", "virtual thread"].contains {
-            content.contains($0)
-        }
+        return !competencyTopics.contains { $0.languageTrack != nil && $0.languageTrack != track }
     }
 
     func artifact(for track: LanguageTrack) -> String {
@@ -302,26 +358,9 @@ struct PracticeItem: Codable, Identifiable, Hashable {
 
     var generalRubric: GeneralPracticeRubric? {
         guard kind == "General" else { return nil }
-        let normalizedTitle = title.localizedLowercase
-
-        if normalizedTitle.contains("debug") || normalizedTitle.contains("incident") {
-            return Self.debugRubric
-        }
-        if normalizedTitle.contains("communication")
-            || normalizedTitle.contains("narrative")
-            || normalizedTitle.contains("behavioral")
-            || normalizedTitle.contains("staff") {
-            return Self.communicationRubric
-        }
-        if normalizedTitle.contains("design")
-            || normalizedTitle.contains("architecture")
-            || normalizedTitle.contains("platform") {
-            return Self.designRubric
-        }
-        return Self.codingRubric
+        return rubricKind?.rubric ?? Self.codingRubric
     }
-
-    private static let codingRubric = GeneralPracticeRubric(
+    fileprivate static let codingRubric = GeneralPracticeRubric(
         signals: [
             "Starts with an explicit contract, constraints, and failure behavior.",
             "Chooses a simple design before optimizing and names its invariants.",
@@ -341,7 +380,7 @@ struct PracticeItem: Codable, Identifiable, Hashable {
         scoreGuide: "1 = incomplete or unsafe; 2 = works for the happy path; 3 = clear contract and tested trade-offs; 4 = production-ready judgment with concise communication."
     )
 
-    private static let designRubric = GeneralPracticeRubric(
+    fileprivate static let designRubric = GeneralPracticeRubric(
         signals: [
             "Discovers requirements, scale, SLOs, and non-goals before selecting components.",
             "Makes data ownership, failure modes, and trade-offs explicit.",
@@ -361,7 +400,7 @@ struct PracticeItem: Codable, Identifiable, Hashable {
         scoreGuide: "1 = component list; 2 = plausible architecture; 3 = requirements-led design with explicit trade-offs; 4 = Staff-level strategy, operability, and evolution plan."
     )
 
-    private static let debugRubric = GeneralPracticeRubric(
+    fileprivate static let debugRubric = GeneralPracticeRubric(
         signals: [
             "Forms discriminating hypotheses instead of guessing a root cause.",
             "Orders evidence gathering by impact, reversibility, and information value.",
@@ -381,7 +420,7 @@ struct PracticeItem: Codable, Identifiable, Hashable {
         scoreGuide: "1 = guesses at a fix; 2 = identifies a likely cause; 3 = evidence-led mitigation and prevention; 4 = calm incident leadership across technical and organizational boundaries."
     )
 
-    private static let communicationRubric = GeneralPracticeRubric(
+    fileprivate static let communicationRubric = GeneralPracticeRubric(
         signals: [
             "Leads with stakes, scope, and the decision rather than implementation detail.",
             "Shows personal influence, disagreement handling, and cross-team leverage.",
@@ -422,7 +461,45 @@ struct ReviewRecord: Codable, Hashable {
     var intervalDays: Int
     var rating: Rating
     var reviews: Int
+    var ease: Double
+    var lapses: Int
     var updatedAt: Date
+
+    enum CodingKeys: String, CodingKey {
+        case cardID, dueAt, intervalDays, rating, reviews, ease, lapses, updatedAt
+    }
+
+    init(
+        cardID: Int,
+        dueAt: Date,
+        intervalDays: Int,
+        rating: Rating,
+        reviews: Int,
+        ease: Double = 2.5,
+        lapses: Int = 0,
+        updatedAt: Date
+    ) {
+        self.cardID = cardID
+        self.dueAt = dueAt
+        self.intervalDays = intervalDays
+        self.rating = rating
+        self.reviews = reviews
+        self.ease = ease
+        self.lapses = lapses
+        self.updatedAt = updatedAt
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        cardID = try container.decode(Int.self, forKey: .cardID)
+        dueAt = try container.decode(Date.self, forKey: .dueAt)
+        intervalDays = try container.decode(Int.self, forKey: .intervalDays)
+        rating = try container.decode(Rating.self, forKey: .rating)
+        reviews = try container.decode(Int.self, forKey: .reviews)
+        ease = try container.decodeIfPresent(Double.self, forKey: .ease) ?? 2.5
+        lapses = try container.decodeIfPresent(Int.self, forKey: .lapses) ?? 0
+        updatedAt = try container.decode(Date.self, forKey: .updatedAt)
+    }
 }
 
 struct FlashcardWork: Codable, Hashable {
@@ -455,6 +532,16 @@ struct PracticeRecord: Codable, Hashable {
     var notes: String
     var attempts: Int
     var nextReviewAt: Date?
+    var updatedAt: Date
+}
+
+struct PracticeAttempt: Codable, Identifiable, Hashable {
+    var id: String
+    var practiceID: String
+    var status: PracticeStatus
+    var score: Int?
+    var notes: String
+    var completedAt: Date
     var updatedAt: Date
 }
 

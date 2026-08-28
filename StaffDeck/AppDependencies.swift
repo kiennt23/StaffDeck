@@ -29,6 +29,7 @@ struct AppDependencies {
     let cache: any StateCache
     let credentials: any CredentialsStore
     let dateSource: any DateSource
+    let calendar: Calendar
     let retrySleeper: any RetrySleeper
 
     static var live: AppDependencies {
@@ -37,6 +38,7 @@ struct AppDependencies {
             cache: UserDefaultsStateCache(defaults: .standard),
             credentials: KeychainCredentialsStore(),
             dateSource: SystemDateSource(),
+            calendar: Calendar(identifier: .gregorian),
             retrySleeper: TaskRetrySleeper()
         )
     }

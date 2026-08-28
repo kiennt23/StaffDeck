@@ -193,19 +193,19 @@ final class AppModelTests: XCTestCase {
         let model = AppModel()
         let generalPractices = model.practices.filter { $0.kind == "General" }
 
+        XCTAssertEqual(model.practices.count, 240)
         XCTAssertEqual(generalPractices.count, 136)
-        XCTAssertTrue(generalPractices.allSatisfy { practice in
-            guard let rubric = practice.generalRubric else { return false }
-            return !rubric.signals.isEmpty
-                && !rubric.strongAnswer.isEmpty
-                && !rubric.commonMisses.isEmpty
-                && !rubric.scoreGuide.isEmpty
-        })
-        XCTAssertTrue(model.practices.filter { $0.kind == "DSA" }.allSatisfy {
-            $0.generalRubric == nil
-        })
+        for practice in generalPractices {
+            XCTAssertNotNil(practice.rubricKind, "Practice \(practice.id) has nil rubricKind")
+            XCTAssertNotNil(practice.generalRubric, "Practice \(practice.id) has nil generalRubric")
+            XCTAssertFalse(practice.competencyTopics.isEmpty, "Practice \(practice.id) has empty competencyTopics")
+        }
+        for practice in model.practices.filter({ $0.kind == "DSA" }) {
+            XCTAssertNil(practice.generalRubric, "DSA practice \(practice.id) has non-nil generalRubric")
+            XCTAssertNil(practice.rubricKind, "DSA practice \(practice.id) has non-nil rubricKind")
+            XCTAssertEqual(practice.competencyTopics, [.dsa], "DSA practice \(practice.id) competencyTopics != [.dsa]")
+        }
     }
-
     func testGoPracticesHaveTheSameCoachingFeaturesAsGeneralPractices() {
         let model = AppModel()
         let goPractices = model.practices.filter { $0.contentTrack == .go }
