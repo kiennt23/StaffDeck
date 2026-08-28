@@ -9,6 +9,7 @@ struct FlashcardsView: View {
     @EnvironmentObject private var model: AppModel
     let topic: InterviewTopic
     let track: LanguageTrack
+    var initialCardID: Int? = nil
     @State private var mode = "Review due"
     @State private var fundamentalTopic: FundamentalTopic?
     @State private var goFundamentalTopic: GoFundamentalTopic?
@@ -135,6 +136,16 @@ struct FlashcardsView: View {
             loadDraft(for: cardID)
         }
         .onAppear {
+            if let targetID = initialCardID {
+                if let targetIdx = filtered.firstIndex(where: { $0.id == targetID }) {
+                    index = targetIdx
+                } else {
+                    mode = "Explore all"
+                    if let exploreIdx = model.flashcards.filter({ $0.topic == topic.rawValue && $0.isAvailable(in: track) }).firstIndex(where: { $0.id == targetID }) {
+                        index = exploreIdx
+                    }
+                }
+            }
             loadDraft(for: current?.id)
         }
         .onDisappear {

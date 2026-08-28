@@ -3,13 +3,13 @@ import SwiftUI
 struct PracticeView: View {
     @EnvironmentObject private var model: AppModel
     let track: LanguageTrack
+    var initialPracticeID: String? = nil
     @State private var kind = "All"
     @State private var topic = "All topics"
     @State private var week = 0
     @State private var progress = "Any progress"
     @State private var query = ""
     @State private var selectedID: String?
-
     private var topics: [String] {
         ["All topics"] + Set(model.practices.filter { $0.isAvailable(in: track) }.map(\.topic)).sorted()
     }
@@ -63,7 +63,16 @@ struct PracticeView: View {
         }
         .navigationTitle("Practice Lab")
         .onAppear {
-            if selectedID == nil { selectedID = filtered.first?.id }
+            if let targetID = initialPracticeID {
+                kind = "All"
+                topic = "All topics"
+                week = 0
+                progress = "Any progress"
+                query = ""
+                selectedID = targetID
+            } else if selectedID == nil {
+                selectedID = filtered.first?.id
+            }
         }
         .onChange(of: filtered.map(\.id)) { _, ids in
             if selectedID.map({ ids.contains($0) }) != true {

@@ -47,25 +47,25 @@ struct RootView: View {
         } detail: {
             Group {
                 switch selection ?? .workspace(.today) {
-                case let .topic(topic):
-                    FlashcardsView(topic: topic, track: track)
+                case let .topic(topic, targetCardID):
+                    FlashcardsView(topic: topic, track: track, initialCardID: targetCardID)
                         .id(topic.id)
-                case .workspace(.today):
+                case .workspace(.today, _):
                     TodayView(
                         track: track,
-                        openTopic: { selection = .topic($0) },
-                        openPractice: { selection = .workspace(.practice) },
-                        openCareer: { selection = .workspace(.career) }
+                        openTopic: { topic, cardID in selection = .topic(topic, targetCardID: cardID) },
+                        openPractice: { itemID in selection = .workspace(.practice, targetItemID: itemID) },
+                        openCareer: { _ in selection = .workspace(.career) }
                     )
-                case .workspace(.progress):
+                case .workspace(.progress, _):
                     LearningProgressView(track: track, openTopic: { selection = .topic($0) })
-                case .workspace(.compare):
+                case .workspace(.compare, _):
                     LanguageComparisonView()
-                case .workspace(.practice):
-                    PracticeView(track: track)
-                case .workspace(.career):
+                case let .workspace(.practice, targetItemID):
+                    PracticeView(track: track, initialPracticeID: targetItemID)
+                case .workspace(.career, _):
                     CareerView()
-                case .workspace(.settings):
+                case .workspace(.settings, _):
                     SettingsView()
                 }
             }
