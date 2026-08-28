@@ -56,7 +56,7 @@ final class ProgressMetricsTests: XCTestCase {
         model.savePractice(itemID: unscoredSharedPractice.id, status: .attempted, score: nil, notes: "", incrementAttempt: true)
         model.savePractice(itemID: "orphan-practice", status: .completed, score: 4, notes: "", incrementAttempt: true)
 
-        let javaMetrics = LearningProgressMetrics(
+        let javaMetrics = MasteryMetrics(
             track: .java,
             flashcards: model.flashcards,
             practices: model.practices,
@@ -66,8 +66,10 @@ final class ProgressMetricsTests: XCTestCase {
 
         XCTAssertEqual(javaMetrics.cardsReviewed, 2)
         XCTAssertEqual(javaMetrics.averagePracticeScore, 3.5)
+        XCTAssertEqual(javaMetrics.completedPracticesCount, 2)
+        XCTAssertEqual(javaMetrics.retentionRate, 1.0)
 
-        let goMetrics = LearningProgressMetrics(
+        let goMetrics = MasteryMetrics(
             track: .go,
             flashcards: model.flashcards,
             practices: model.practices,
@@ -77,5 +79,7 @@ final class ProgressMetricsTests: XCTestCase {
 
         XCTAssertEqual(goMetrics.cardsReviewed, 2)
         XCTAssertEqual(goMetrics.averagePracticeScore, 2.5)
+        XCTAssertEqual(goMetrics.completedPracticesCount, 2)
+        XCTAssertEqual(goMetrics.retentionRate, 1.0)
     }
 }

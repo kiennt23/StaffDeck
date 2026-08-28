@@ -23,8 +23,8 @@ struct LearningProgressView: View {
         baselineCards.filter { model.reviews[$0.id] != nil }.count
     }
 
-    private var metrics: LearningProgressMetrics {
-        LearningProgressMetrics(
+    private var metrics: MasteryMetrics {
+        MasteryMetrics(
             track: track,
             flashcards: model.flashcards,
             practices: model.practices,
@@ -98,14 +98,20 @@ struct LearningProgressView: View {
     }
 
     private func topicRow(_ topic: InterviewTopic) -> some View {
-        let cards = model.flashcards.filter {
-            $0.topic == topic.rawValue && $0.isAvailable(in: track)
-        }
-        let records = cards.compactMap { model.reviews[$0.id] }
-        let weakCount = records.filter { $0.rating == .again || $0.rating == .hard }.count
-        let status: (String, Color) = records.isEmpty
-            ? ("Not assessed", .secondary)
-            : weakCount > 0 ? ("Needs review", .orange) : ("Building evidence", .green)
+        let mastery = metrics.topicMasteries.first(where: { $0.topic == topic })
+        let reviewedCount = mastery?.reviewedCount ?? 0
+        let totalCount = mastery?.totalCards ?? 0
+        let weakCount = mastery?.weakCount ?? 0
+        let status = mastery?.status ?? .notAssessed
+
+        let statusColor: Color = {
+            switch status {
+            case .notAssessed: .secondary
+            case .needsReview: .orange
+            case .buildingEvidence: .green
+            case .mastered: .blue
+            }
+        }()
 
         return Button {
             openTopic(topic)
@@ -118,14 +124,14 @@ struct LearningProgressView: View {
                     Text(topic.rawValue)
                         .font(.headline)
                         .foregroundStyle(.primary)
-                    Text("\(records.count) of \(cards.count) reviewed · \(weakCount) hard or again")
+                    Text("\(reviewedCount) of \(totalCount) reviewed · \(weakCount) hard or again")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
                 Spacer()
-                Text(status.0)
+                Text(status.statusTitle)
                     .font(.caption.weight(.semibold))
-                    .foregroundStyle(status.1)
+                    .foregroundStyle(statusColor)
             }
             .padding(14)
             .background(Color.staffSurface, in: RoundedRectangle(cornerRadius: 12))
