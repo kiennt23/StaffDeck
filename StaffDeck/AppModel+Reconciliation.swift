@@ -14,6 +14,11 @@ extension AppModel {
             local: Array(practiceRecords.values), remote: remote[.practice], collection: .practice,
             id: \.practiceID, updatedAt: \.updatedAt
         ).reduce(into: [:]) { $0[$1.practiceID] = $1 }
+        let allAttempts = try reconcile(
+            local: practiceAttempts.values.flatMap { $0 }, remote: remote[.practiceAttempts],
+            collection: .practiceAttempts, id: \.id, updatedAt: \.updatedAt
+        )
+        practiceAttempts = Dictionary(grouping: allAttempts, by: \.practiceID)
         profile = try reconcile(
             local: [profile], remote: remote[.profile], collection: .profile,
             id: { _ in "default" }, updatedAt: \.updatedAt

@@ -74,6 +74,16 @@ extension AppModel {
             var value = try envelope.decode(PracticeRecord.self)
             value.updatedAt = Self.date(envelope.updatedAtMilliseconds)
             practiceRecords[value.practiceID] = value
+        case .practiceAttempts:
+            var value = try envelope.decode(PracticeAttempt.self)
+            value.updatedAt = Self.date(envelope.updatedAtMilliseconds)
+            var list = practiceAttempts[value.practiceID] ?? []
+            if let idx = list.firstIndex(where: { $0.id == value.id }) {
+                list[idx] = value
+            } else {
+                list.append(value)
+            }
+            practiceAttempts[value.practiceID] = list
         case .profile:
             var value = try envelope.decode(CareerProfile.self)
             value.updatedAt = Self.date(envelope.updatedAtMilliseconds)

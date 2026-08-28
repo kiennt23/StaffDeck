@@ -4,6 +4,7 @@ enum SyncCollection: String, Codable, CaseIterable, Sendable {
     case reviews = "flashcard-progress"
     case flashcardWork = "flashcard-work"
     case practice = "practice-progress"
+    case practiceAttempts = "practice-attempts"
     case profile = "career-profile"
     case stories = "career-stories"
     case companies = "career-companies"
